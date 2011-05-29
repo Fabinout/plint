@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3 -u
 
 import re
 import sys
@@ -6,18 +6,24 @@ import unicodedata
 import aspire
 from pprint import pprint
 
-consonants = "[bcçdfghjklmnpqrstvwxz*]"
+consonants = "[bcçdfghjklmnpqrstvwxz*-]"
 vowels = 'aeiouyœæ'
 
 # TODO -ment at hemistiche
 # TODO diaresis
 # TODO rhymes
+# TODO vers en -es sont masc, pas fém
 sure_end_fem = ['es', 'e']
 end_fem = sure_end_fem + ['ent']
 
-count_two = ['aë', 'aï', 'ao', 'ea', 'éa', 'éi', 'éo', 'éu', 'êa', 'êi',
-'êo', 'êu', 'èa', 'èi', 'èo', 'èu', 'oa', 'ua', 'oya']
-can_count_two = ['ia', 'ieue', 'ié', 'iées', 'io', 'iu', 'iue', 'ue']
+count_two = ['aë', 'aï', 'ao', 'éa', 'éi', 'éo', 'éu', 'êa', 'êi',
+'êo', 'êu', 'èa', 'èi', 'èo', 'èu', 'oa', 'oya' , 'ueu', 'euâ', 'éâ',
+'oï', 'aïeu', 'oüoi', 'ouï', 'aïe', 'oè', 'oüé', 'ii', 'uau', 'oé',
+'uï', 'uïe']
+# TODO 'ée' ? ('déesse')
+can_count_two = ['ia', 'ée', 'ieue', 'ieu', 'ua', 'ié', 'iée', 'io', 'iu',
+'iue', 'ue', 'ui', 'ie', 'oue', 'oua', 'oueu', 'ouaie', 'ouai', 'oui', 'iè',
+'oué', 'ué', 'uée', 'uia', 'iai', 'yau', 'uo', 'yo']
 
 # http://stackoverflow.com/questions/517923/what-is-the-best-way-to-remove-accents-in-a-python-unicode-string
 def strip_accents(s):
@@ -30,7 +36,7 @@ def norm_spaces(text):
 
 def rm_punct(text):
   text = re.sub("'", '', text)
-  pattern = re.compile('[^\w ]', re.UNICODE)
+  pattern = re.compile('[^\w -]', re.UNICODE)
   return pattern.sub(' ', text)
 
 def annotate_aspirated(word):
@@ -60,22 +66,29 @@ def possible_weights(chunk):
     return [1,2]
   return [1]
 
-def fit(chunks, left):
+def fit(chunks, left, past):
   if left == 7 and (len(chunks) < 2 or chunks[0] + chunks[1] in
       sure_end_fem):
     # no feminine at hemistiche
-    print ("refuse hemistiche")
-    return None
+    # maybe it's a lone word?
+    ok = False
+    for i in range(2):
+      for j in ' -':
+        if j in past[-i]:
+          ok = True
+    if not ok:
+      print ("refuse hemistiche", file=sys.stderr)
+      return None
   weights = possible_weights(chunks[0])
   for weight in weights:
     nleft = left - weight
-    #print("Take %s with weight %d, left %d" % (chunks[0], weight,
-      #nleft))
+    print("Take %s with weight %d, left %d" % (chunks[0], weight,
+      nleft), file=sys.stderr)
     result = maybe_sum([(chunks[0], weight)], skip(chunks[1:], nleft,
-      nleft == 6))
+      past+[chunks[0]], nleft == 6))
     if result != None:
       return result
-    #print ("FAIL!")
+    print("FAIL!", file=sys.stderr)
   return None
 
 def maybe_sum(a, b):
@@ -84,24 +97,24 @@ def maybe_sum(a, b):
   else:
     return a + b
   
-def skip(chunks, left, expect_space=False):
+def skip(chunks, left, past, expect_space=False):
   result = []
   chunks = list(chunks)
   if len(chunks) > 0 and not is_vowels(chunks[0]):
-    return maybe_sum([chunks[0]], skip(chunks[1:], left, expect_space
-      and not chunks[0] == ' '))
+    return maybe_sum([chunks[0]], skip(chunks[1:], left, past +
+      [chunks[0]], expect_space and not chunks[0] == ' '))
   if len(chunks) == 0:
     if left == 0:
-      #print("OK")
+      print("OK", file=sys.stderr)
       return []
     else:
-      #print("out of chunks")
+      print("out of chunks", file=sys.stderr)
       return None
   if expect_space:
     # we wanted a space and haven't got it, fail
-    #print("wanted space")
+    print("wanted space", file=sys.stderr)
     return None
-  return fit(chunks, left)
+  return fit(chunks, left, past)
 
 def get_feminine(text):
   for end in end_fem:
@@ -117,6 +130,8 @@ def nullify(chunk):
 
 def align(result):
   align, feminine = result
+  if align == None:
+    return "Non."
   l1 = ['F  '] if feminine else ["M  "]
   l2 = ['12 ']
   for x in align:
@@ -130,9 +145,12 @@ def align(result):
 
 def parse(text):
   text = norm_spaces(rm_punct(text.lower())).rstrip().lstrip()
-  end = get_feminine(text)
-  feminine = end != ''
+  oend = get_feminine(text)
+  feminine = oend != ''
+  end = oend
   text = re.sub("qu", 'q', text)
+  text = re.sub("gue", 'ge', text)
+  print(text, file=sys.stderr)
   words = text.split(' ')
   words = [annotate_aspirated(word) for word in words]
   pattern = re.compile('('+consonants+'*)', re.UNICODE)
@@ -141,13 +159,18 @@ def parse(text):
     words[i] = [chunk for chunk in words[i] if chunk != '']
     nwords = []
     for chunk in words[i]:
-      if 'y' not in chunk or len(chunk) == 1:
+      if 'y' not in chunk or len(chunk) == 1 or chunk[0] == 'y':
         nwords.append(chunk)
       else:
         a = chunk.split('y')
         nwords.append(a[0])
         nwords.append('Y')
-        nwords.append(a[1])
+        if a[1] != '':
+          nwords.append(a[1])
+        else:
+          # TODO ouais c'est foutu là...
+          if words[i] == ['p', 'ay', 's']:
+            nwords.append('y')
     words[i] = nwords
     if i > 0:
       if count_vowel_chunks(words[i-1]) > 1:
@@ -157,26 +180,36 @@ def parse(text):
   for word in words:
     word.append(' ')
   chunks = sum(words, [])[:-1]
-  
+ 
+  ochunks = list(chunks)
   end = [chunk for chunk in re.split(pattern, end)
           if chunk != '']
-  if chunks[-(len(end)+1)] != ' ' and chunks[-(len(end)+2)] != ' ' :
+  if len(chunks) >= 2 and chunks[-(len(end)+1)] != ' ' and chunks[-(len(end)+2)] != ' ' :
     if end != []:
       # drop end
       end.reverse()
       nend = []
       for x in end:
-        #print (chunks[-1])
         if chunks[-1] == x:
           chunks.pop()
           nend.append(nullify(x))
       nend.reverse()
       end = nend
   else:
+    try:
+      if end[-1] == chunks[-1] and chunks[-1] == 'nt':
+        feminine = False # OK this looks like fem but isnt (" cent$")
+    except IndexError:
+      pass
     end = []
 
-  #pprint(chunks)
-  return (maybe_sum(skip(chunks, 12), end), feminine)
+  print('/'.join(chunks), file=sys.stderr)
+  result = (maybe_sum(skip(chunks, 12, []), end), feminine)
+  if result[0] == None and oend == 'ent':
+    #super-ugly hack because ending 'ent' sometimes isn't dropped
+    return (maybe_sum(skip(ochunks, 12, []), end), False)
+  else:
+    return result
 
 while True:
   line = sys.stdin.readline()
