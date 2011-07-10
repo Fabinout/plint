@@ -18,6 +18,8 @@ consonants = "[bcçdfghjklmnpqrstvwxz*-]"
 # in some cases but not others...
 sure_end_fem = ['es', 'e']
 
+hemis_short = {'ok' : '/', 'bad' : '!', 'cut' : ':', 'fem' : '\\'}
+
 def annotate_aspirated(word):
   if word[0] != 'h':
     return word
@@ -204,7 +206,7 @@ class Error:
     #TODO optional
     self.say("Line is: %s" % (self.line))
     for l in t:
-      self.say("         " + l)
+      self.say(l)
     
 class ErrorBadRhyme(Error):
   def __init__(self, expected, inferred):
@@ -250,26 +252,47 @@ class ErrorBadMetric(Error):
     #TODO include a summary
     #TODO match to real line
     score, align = align
-    align, feminine = align
+    align, feminine, hemis = align
+    line = self.line
     l2 = []
     count = 0
-    for x in align:
+    ccount = 0
+    summary = []
+    done = False
+    for x in [''] + align:
       if isinstance(x, tuple):
-        l2 += ('{:^'+str(len(x[0]))+'}').format(str(x[1]))
+        orig = ""
+        while len(line) > 0 and is_vowels(line[0]):
+          orig += line[0]
+          line = line[1:]
+        l2 += ('{:^'+str(len(orig))+'}').format(str(x[1]))
         count += x[1]
+        ccount += x[1]
+        done = False
       else:
-        if x == ' ' and count in self.pattern.hemistiches:
-          l2 += '/'
+        orig = ""
+        while len(line) > 0 and not is_vowels(line[0]):
+          orig += line[0]
+          line = line[1:]
+        if count in hemis.keys() and not done:
+          done = True
+          summary.append(str(ccount))
+          ccount = 0
+          summary.append(hemis_short[hemis[count]])
+          l2 += ('{:^'+str(len(orig))+'}'
+              ).format(hemis_short[hemis[count]])
         else:
-          l2 += ' ' * len(x)
-    l2 += ' (%d)' % score
-    return ''.join(l2)
+          l2 += ' ' * len(orig)
+    summary.append(str(ccount))
+    result = ''.join(l2)
+    summary = ('{:^9}').format(''.join(summary))
+    return summary + result
 
   def report(self):
     num = min(len(self.possible), 4)
     Error.report(
         self,
-        ("Bad metric (expected %s, inferred the %d following)" %
+        ("Bad metric (expected %s, inferred %d options)" %
         (self.pattern.metric, num)),
         list(map(self.align, self.possible[:num])))
 
@@ -282,6 +305,7 @@ class Pattern:
     self.rhyme = rhyme
 
   def parse_metric(self):
+    """Parse from a metric description"""
     verse = [int(x) for x in self.metric.split('/')]
     self.hemistiches = []
     self.length = 0
@@ -293,41 +317,52 @@ class Pattern:
 class Template:
   def __init__(self, stream):
     self.template = []
-    for line in f.readlines():
-      line = line.strip()
-      if line != '' and line[0] != '#':
-        self.template.append(self.parse_template(line.lstrip().rstrip()))
+    self.pattern_line_no = 0
+    self.load(stream)
     self.reset_state()
     self.line_no = 0
 
+  def load(self, stream):
+    """Load from a stream"""
+    for line in f.readlines():
+      line = line.strip()
+      self.pattern_line_no += 1
+      if line != '' and line[0] != '#':
+        self.template.append(self.parse_template(line.lstrip().rstrip()))
+
   def count(self, align):
+    #TODO cleanup
     return sum([x[1] for x in align if isinstance(x, tuple)])
 
-  def rate(self, pattern, align):
-    align, fem = align
-    c = self.count(align)
-    #print("%d is len" % c)
-    #TODO one pass would be enough
-    hemis = []
-    ok = True
-    #print ("HEMIS")
+  def check_hemis(self, pattern, align):
+    hemis = {}
     pos = 0
     h2 = 0
     for h in pattern.hemistiches:
       r, pos = check_hemistiche(align, pos, h-h2)
       h2 = h
-      hemis.append(r)
-      #print (hemis[-1])
-      if hemis[-1] != "ok":
+      hemis[h] = r
+    return hemis
+
+  def rate(self, pattern, align):
+    """Rate align according to pattern"""
+    align, fem, hemis = align
+    c = self.count(align)
+    ok = True
+    for h in hemis.values():
+      if h != "ok":
         ok = False
     if ok and c == pattern.length:
       return 0
-    return (len(hemis)*abs(pattern.length - c)
-        + sum([1 for x in hemis if x == "ok"]))
+    return (len(hemis.keys())*abs(pattern.length - c)
+        + sum([1 for x in hemis.values() if x != "ok"]))
 
   def match(self, line):
+    """Check a line"""
     pattern = self.get()
     possible = parse(line, pattern.length + 2)
+    possible = list(map((lambda p : (p[0], p[1],
+      self.check_hemis(pattern, p[0]))), possible))
     #pprint("POSSIBLE")
     #pprint(possible)
     errors = []
@@ -383,11 +418,17 @@ class Template:
     return errors, pattern
 
   def parse_template(self, l):
+    """Parse template from a line"""
     split = l.split(' ')
     metric = split[0]
-    #TODO generate unique ids if need be
-    myid = split[1]
-    femid = split[2]
+    if len(split) >= 2:
+      myid = split[1]
+    else:
+      myid = str(self.pattern_line_no)
+    if len(split) >= 3:
+      femid = split[2]
+    else:
+      femid = str(self.pattern_line_no)
     if len(split) >= 4:
       rhyme = [int(x) for x in split[3].split('|')]
     else:
@@ -399,11 +440,13 @@ class Template:
     return Pattern(metric, myid, femid, rhyme)
 
   def reset_state(self):
+    """Reset our state"""
     self.position = 0
     self.env = {}
     self.femenv = {}
 
   def get(self):
+    """Get next state, resetting if needed"""
     if self.position >= len(self.template):
       self.reset_state()
     result = self.template[self.position]
@@ -411,6 +454,7 @@ class Template:
     return result
 
   def check(self, line):
+    """Check line (wrapper)"""
     self.line_no += 1
     line = line.rstrip()
     if line == '':
@@ -425,6 +469,8 @@ class Template:
 
 if len(sys.argv) != 2:
   print("Usage: %s TEMPLATE" % sys.argv[0], file=sys.stderr)
+  print("Check stdin according to template, report errors on stdout"
+      % sys.argv[0], file=sys.stderr)
   sys.exit(1)
 
 f = open(sys.argv[1])
@@ -439,6 +485,5 @@ def run():
     for error in template.check(line):
       error.report()
 
-#cProfile.run('run()', 'poetlint.prof')
 run()
 
