@@ -227,8 +227,15 @@ class ErrorBadRhymeGenre(ErrorBadRhyme):
 
 class ErrorBadRhymeSound(ErrorBadRhyme):
   def fmt(self, l):
-    #TODO
-    return 'TODO'
+    pron, spel, constraint = l
+    ok = []
+    if len(pron) > 0:
+      ok.append("")
+
+
+  def report(self):
+    Error.report(self, "Bad rhyme %s for type %s (expected %s)"
+        % (self.kind, self.pattern.myid, self.fmt(self.expected)))
 
   @property
   def kind(self):
@@ -330,7 +337,7 @@ class Template:
     if len(possible) == 0 or possible[0][0] != 0:
       errors.append(ErrorBadMetric(possible))
     if len(possible) == 0:
-      return errors
+      return errors, pattern
     possible2 = []
     for (score, x) in possible:
       possible2.append((score, x))
@@ -346,13 +353,14 @@ class Template:
       #pprint(self.env[pattern.myid])
       #pprint(self.env[pattern.myid])
     else:
+      old = list(self.env[pattern.myid])
       self.env[pattern.myid] = rhyme.check_rhyme(self.env[pattern.myid],
           (normalize(line), pattern.rhyme))
       #print("nVALUE")
       #pprint(self.env[pattern.myid])
       if (self.env[pattern.myid][1] == None and
           len(self.env[pattern.myid][0]) == 0):
-        errors.append(ErrorBadRhymeSound(None, None))
+        errors.append(ErrorBadRhymeSound(old, None))
     if pattern.femid not in self.femenv.keys():
       if pattern.femid == 'M':
         x = set(['M'])
