@@ -7,22 +7,12 @@ import haspirater
 import rhyme
 from pprint import pprint
 from vowels import possible_weights
-from common import strip_accents, normalize, is_vowels
-
-consonants = "[bcçdfghjklmnpqrstvwxz*-]"
-
-# Forbidden at the end of a hemistiche. "-ent" would also be forbidden
-# in some cases but not others...
-sure_end_fem = ['es', 'e']
-
-hemis_types = {
-  'ok' : '/', # correct
-  'bad' : '!', # something wrong
-  'cut' : ':', # falls at the middle of a word
-  'fem' : '\\', # preceding word ends by a mute e
-  }
+from common import strip_accents, normalize, is_vowels, consonants, \
+  sure_end_fem
+from hemistiches import check_hemistiches
 
 def annotate_aspirated(word):
+  """Annotate aspirated 'h'"""
   if word[0] != 'h':
     return word
   if haspirater.lookup(word):
@@ -30,40 +20,6 @@ def annotate_aspirated(word):
   else:
     return word
 
-def check_spaces(align, pos):
-  if pos >= len(align):
-    return "bad"
-  if align[pos] == ' ':
-    return "ok"
-  if not isinstance(align[pos], tuple):
-    return check_spaces(align, pos + 1)
-  return "cut"
-
-def check_hemistiche(align, pos, hem):
-  if pos >= len(align):
-    return ("bad", pos)
-  if hem == 0:
-    return (check_spaces(align, pos), pos)
-  if hem < 0:
-    return ("cut", pos)
-  if not isinstance(align[pos], tuple):
-    return check_hemistiche(align, pos +1, hem)
-  if hem == 1:
-    if pos + 1 >= len(align):
-      # this is weird
-      return ("bad", pos)
-    if ((align[pos][0] + align[pos+1]).rstrip() in sure_end_fem):
-      # no feminine at hemistiche
-      # maybe it's a lone word?
-      ok = False
-      for i in range(2):
-        for j in ' -':
-          if j in align[pos-i-1]:
-            ok = True
-      if not ok:
-        #print ("refuse hemistiche", file=sys.stderr)
-        return ("fem", pos)
-  return check_hemistiche(align, pos+1, hem - align[pos][1])
 
 def fit(chunks, pos, left):
   if pos >= len(chunks):
@@ -324,16 +280,6 @@ class Template:
     #TODO cleanup
     return sum([x[1] for x in align if isinstance(x, tuple)])
 
-  def check_hemis(self, pattern, align):
-    hemis = {}
-    pos = 0
-    h2 = 0
-    for h in pattern.hemistiches:
-      r, pos = check_hemistiche(align, pos, h-h2)
-      h2 = h
-      hemis[h] = r
-    return hemis
-
   def rate(self, pattern, align):
     """Rate align according to pattern"""
     align, fem, hemis = align
@@ -353,7 +299,7 @@ class Template:
     # compute alignments, check hemistiches, sort by score
     possible = parse(line, pattern.length + 2)
     possible = list(map((lambda p : (p[0], p[1],
-      self.check_hemis(pattern, p[0]))), possible))
+      check_hemistiches(p[0], pattern.hemistiches))), possible))
     possible = map((lambda x : (self.rate(pattern, x), x)), possible)
     possible = sorted(possible, key=(lambda x : x[0]))
 
