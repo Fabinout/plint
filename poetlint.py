@@ -9,16 +9,18 @@ from pprint import pprint
 from vowels import possible_weights
 from common import strip_accents, normalize, is_vowels
 
-#TODO no clear femid env for implicit repeat
-#TODO femid pattern groups (not all the same)
-
 consonants = "[bcçdfghjklmnpqrstvwxz*-]"
 
 # Forbidden at the end of a hemistiche. "-ent" would also be forbidden
 # in some cases but not others...
 sure_end_fem = ['es', 'e']
 
-hemis_short = {'ok' : '/', 'bad' : '!', 'cut' : ':', 'fem' : '\\'}
+hemis_types = {
+  'ok' : '/', # correct
+  'bad' : '!', # something wrong
+  'cut' : ':', # falls at the middle of a word
+  'fem' : '\\', # preceding word ends by a mute e
+  }
 
 def annotate_aspirated(word):
   if word[0] != 'h':
@@ -69,7 +71,7 @@ def fit(chunks, pos, left):
   if left < 0:
     return []
   if (not is_vowels(chunks[pos])):
-    return prepend([chunks[pos]], fit(chunks, pos+1, left))
+    return [[chunks[pos]] + x for x in fit(chunks, pos+1, left)]
   else:
     if (pos >= len(chunks) - 2 and chunks[pos] == 'e'):
       # special case for endings
@@ -86,8 +88,8 @@ def fit(chunks, pos, left):
     result = []
     for weight in weights:
       #print("Take %s with weight %d" % (chunks[pos], weight), file=sys.stderr)
-      result += prepend([(chunks[pos], weight)], fit(chunks, pos+1,
-        left - weight))
+      result += [[(chunks[pos], weight)] + x for x in fit(chunks, pos+1,
+        left - weight)]
     return result
 
 def feminine(align, verse):
@@ -133,17 +135,6 @@ def align1(result, success):
       l1 += x
   return ''.join(l1)
 
-def append(ls, l):
-  r = []
-  for x in ls:
-    r.append(x + l)
-  return r
-def prepend(l, ls):
-  r = []
-  for x in ls:
-    r.append(l + x)
-  return r
-
 def parse(text, bound):
   original_text = normalize(text)
   text = re.sub("qu", 'q', original_text)
@@ -169,7 +160,7 @@ def parse(text, bound):
         if a[1] != '':
           nwords.append(a[1])
         else:
-          # TODO very special case :-/
+          # very special case :-/
           if words[i] == ['p', 'ay', 's']:
             nwords.append('y')
     words[i] = nwords
@@ -203,7 +194,6 @@ class Error:
 
   def report(self, s, t = []):
     self.say("error: %s" % (s))
-    #TODO optional
     self.say("Line is: %s" % (self.line))
     for l in t:
       self.say(l)
@@ -249,8 +239,6 @@ class ErrorBadMetric(Error):
     self.possible = possible
 
   def align(self, align):
-    #TODO include a summary
-    #TODO match to real line
     score, align = align
     align, feminine, hemis = align
     line = self.line
@@ -278,9 +266,9 @@ class ErrorBadMetric(Error):
           done = True
           summary.append(str(ccount))
           ccount = 0
-          summary.append(hemis_short[hemis[count]])
+          summary.append(hemis_types[hemis[count]])
           l2 += ('{:^'+str(len(orig))+'}'
-              ).format(hemis_short[hemis[count]])
+              ).format(hemis_types[hemis[count]])
         else:
           l2 += ' ' * len(orig)
     summary.append(str(ccount))
@@ -319,8 +307,10 @@ class Template:
     self.template = []
     self.pattern_line_no = 0
     self.load(stream)
-    self.reset_state()
     self.line_no = 0
+    self.position = 0
+    self.env = {}
+    self.femenv = {}
 
   def load(self, stream):
     """Load from a stream"""
@@ -360,15 +350,14 @@ class Template:
   def match(self, line):
     """Check a line"""
     pattern = self.get()
+    # compute alignments, check hemistiches, sort by score
     possible = parse(line, pattern.length + 2)
     possible = list(map((lambda p : (p[0], p[1],
       self.check_hemis(pattern, p[0]))), possible))
-    #pprint("POSSIBLE")
-    #pprint(possible)
-    errors = []
-
     possible = map((lambda x : (self.rate(pattern, x), x)), possible)
     possible = sorted(possible, key=(lambda x : x[0]))
+
+    errors = []
     if len(possible) == 0 or possible[0][0] != 0:
       errors.append(ErrorBadMetric(possible))
     if len(possible) == 0:
@@ -402,8 +391,13 @@ class Template:
       elif pattern.femid == 'F':
         x = set(['F'])
       else:
-        x = set(['M', 'F'])
+        x = set(['M', 'F']) 
       self.femenv[pattern.femid] = x
+    # TODO this is simplistic and order-dependent
+    if pattern.femid.swapcase() in self.femenv.keys():
+      new = set(['M', 'F']) - self.femenv[pattern.femid.swapcase()]
+      if len(new) > 0:
+        self.femenv[pattern.femid] = new
     old = list(self.femenv[pattern.femid])
     #pprint(possible)
     new = list(set(['F' if x[1] else 'M' for (score, x) in possible]))
@@ -412,8 +406,6 @@ class Template:
     #print(new)
     if len(self.femenv[pattern.femid]) == 0:
       errors.append(ErrorBadRhymeGenre(old, new))
-      #TODO debug
-      #errors.append(ErrorBadMetric(possible))
 
     return errors, pattern
 
@@ -439,11 +431,14 @@ class Template:
       rhyme.append(-1)
     return Pattern(metric, myid, femid, rhyme)
 
-  def reset_state(self):
+  def reset_conditional(self, d):
+    return dict((k, v) for x, v in d.items() if x[-1] == '!')
+
+  def reset_state(self, with_femenv=False):
     """Reset our state"""
     self.position = 0
-    self.env = {}
-    self.femenv = {}
+    self.env = self.reset_conditional(self.env)
+    self.femenv = self.reset_conditional(self.femenv)
 
   def get(self):
     """Get next state, resetting if needed"""
