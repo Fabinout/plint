@@ -63,34 +63,6 @@ def nullify(chunk):
   else:
     return chunk
 
-def align2(result):
-  align, feminine, c, hemi = result
-  l2 = [('{:^2}').format(str(c))]
-  l2 += ['f'] if feminine else ["m"]
-  l2 += '-H'
-  l2 += [('{:^3}').format(hemi)]
-  l2 += ' '
-  count = 0
-  for x in align:
-    if isinstance(x, tuple):
-      l2 += ('{:^'+str(len(x[0]))+'}').format(str(x[1]))
-      count += x[1]
-    else:
-      if x == ' ' and count == hemistiche_pos:
-        l2 += '/'
-      else:
-        l2 += ' ' * len(x)
-  return ''.join(l2)
-
-def align1(result, success):
-  l1 = '-------- ' if success else '!!!ERROR '
-  for x in result[0]:
-    if isinstance(x, tuple):
-      l1 += x[0]
-    else:
-      l1 += x
-  return ''.join(l1)
-
 def parse(text, bound):
   original_text = normalize(text)
   text = re.sub("qu", 'q', original_text)
