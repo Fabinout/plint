@@ -1,4 +1,4 @@
-1 X A
-1 x A
-1 x A
-1 X A
+1 A X
+1 A x
+1 A x
+1 A X

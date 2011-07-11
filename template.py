@@ -122,13 +122,13 @@ class Template:
     split = l.split(' ')
     metric = split[0]
     if len(split) >= 2:
-      femid = split[1]
-    else:
-      femid = str(self.pattern_line_no) # unique
-    if len(split) >= 3:
-      myid = split[2]
+      myid = split[1]
     else:
       myid = str(self.pattern_line_no) # unique
+    if len(split) >= 3:
+      femid = split[2]
+    else:
+      femid = str(self.pattern_line_no) # unique
     idsplit = myid.split(':')
     if len(idsplit) >= 2:
       rhyme = [int(x) for x in idsplit[-1].split('|')]
