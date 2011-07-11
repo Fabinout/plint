@@ -38,7 +38,7 @@ class Template:
       line = line.strip()
       self.pattern_line_no += 1
       if line != '' and line[0] != '#':
-        self.template.append(self.parse_template(line.lstrip().rstrip()))
+        self.template.append(self.parse_line(line.lstrip().rstrip()))
 
   def count(self, align):
     """total weight of an align"""
@@ -94,7 +94,12 @@ class Template:
         errors.append(error.ErrorBadRhymeSound(old, None))
 
     # rhyme genres
-    # TODO refactor this
+    # inequality constraint
+    # TODO this is simplistic and order-dependent
+    if pattern.femid.swapcase() in self.femenv.keys():
+      new = set(['M', 'F']) - self.femenv[pattern.femid.swapcase()]
+      if len(new) > 0:
+        self.femenv[pattern.femid] = new
     if pattern.femid not in self.femenv.keys():
       if pattern.femid == 'M':
         x = set(['M'])
@@ -104,12 +109,6 @@ class Template:
         x = set(['M', 'F']) 
       self.femenv[pattern.femid] = x
     else:
-      # TODO this is simplistic and order-dependent
-      if pattern.femid.swapcase() in self.femenv.keys():
-        new = set(['M', 'F']) - self.femenv[pattern.femid.swapcase()]
-        if len(new) > 0:
-          self.femenv[pattern.femid] = new
-
       old = list(self.femenv[pattern.femid])
       new = list(set(['F' if x[1] else 'M' for (score, x) in possible]))
       self.femenv[pattern.femid] &= set(new)
@@ -118,20 +117,21 @@ class Template:
 
     return errors, pattern
 
-  def parse_template(self, l):
-    """Parse template from a line"""
+  def parse_line(self, l):
+    """Parse template line from a line"""
     split = l.split(' ')
     metric = split[0]
     if len(split) >= 2:
-      myid = split[1]
+      femid = split[1]
     else:
-      myid = str(self.pattern_line_no)
+      femid = str(self.pattern_line_no) # unique
     if len(split) >= 3:
-      femid = split[2]
+      myid = split[2]
     else:
-      femid = str(self.pattern_line_no)
-    if len(split) >= 4:
-      rhyme = [int(x) for x in split[3].split('|')]
+      myid = str(self.pattern_line_no) # unique
+    idsplit = myid.split(':')
+    if len(idsplit) >= 2:
+      rhyme = [int(x) for x in idsplit[-1].split('|')]
     else:
       rhyme = []
     if len(rhyme) == 0:
@@ -141,10 +141,10 @@ class Template:
     return Pattern(metric, myid, femid, rhyme)
 
   def reset_conditional(self, d):
-    return dict((k, v) for x, v in d.items() if x[-1] == '!')
+    return dict((k, v) for k, v in d.items() if k[0] == '!')
 
   def reset_state(self, with_femenv=False):
-    """Reset our state, except ids ending with '!'"""
+    """Reset our state, except ids starting with '!'"""
     self.position = 0
     self.env = self.reset_conditional(self.env)
     self.femenv = self.reset_conditional(self.femenv)
@@ -167,6 +167,7 @@ class Template:
     #possible = sorted(possible, key=rate)
     errors, pattern = self.match(line)
     for error in errors:
+      # update errors with line position and pattern
       error.pos(line, self.line_no, pattern)
     return errors
 

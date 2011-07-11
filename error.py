@@ -29,12 +29,15 @@ class ErrorBadRhyme(Error):
 
   def report(self):
     Error.report(self, "Bad rhyme %s for type %s (expected %s, inferred %s)"
-        % (self.kind, self.pattern.myid, self.fmt(self.expected),
+        % (self.kind, self.get_id(), self.fmt(self.expected),
           self.fmt(self.inferred)))
 
 class ErrorBadRhymeGenre(ErrorBadRhyme):
   def fmt(self, l):
     return ' or '.join(list(l))
+
+  def get_id(self):
+    return self.pattern.femid
 
   @property
   def kind(self):
@@ -47,6 +50,8 @@ class ErrorBadRhymeSound(ErrorBadRhyme):
     if len(pron) > 0:
       ok.append("")
 
+  def get_id(self):
+    return self.pattern.myid
 
   def report(self):
     Error.report(self, "Bad rhyme %s for type %s (expected %s)"

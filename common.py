@@ -9,7 +9,7 @@ consonants = "[bcçdfghjklmnpqrstvwxz*-]"
 
 # Forbidden at the end of a hemistiche. "-ent" would also be forbidden
 # in some cases but not others...
-sure_end_fem = ['es', 'e']
+sure_end_fem = ['es', 'e', 'ë']
 
 # http://stackoverflow.com/questions/517923/what-is-the-best-way-to-remove-accents-in-a-python-unicode-string
 def strip_accents_one(s, with_except):
