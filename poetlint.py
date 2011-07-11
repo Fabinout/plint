@@ -57,12 +57,6 @@ def feminine(align, verse):
     return True
   return False
 
-def nullify(chunk):
-  if is_vowels(chunk):
-    return (chunk, 0)
-  else:
-    return chunk
-
 def parse(text, bound):
   original_text = normalize(text)
   text = re.sub("qu", 'q', original_text)
