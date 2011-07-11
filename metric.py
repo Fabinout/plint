@@ -14,20 +14,25 @@ def annotate_aspirated(word):
     return word
 
 def fit(chunks, pos, left):
+  """bruteforce exploration of all possible vowel cluster weghting,
+  within a maximum total of left"""
   if pos >= len(chunks):
-    return [[]]
+    return [[]] # the only possibility is the empty list
   if left < 0:
-    return []
+    return [] # no possibilities
+  # skip consonants
   if (not is_vowels(chunks[pos])):
     return [[chunks[pos]] + x for x in fit(chunks, pos+1, left)]
   else:
     if (pos >= len(chunks) - 2 and chunks[pos] == 'e'):
-      # special case for endings
+      # special case for verse endings, which can get elided (or not)
       if pos == len(chunks) - 1:
-        weights = [0]
+        weights = [0] # ending 'e' is elided
       elif chunks[pos+1] == 's':
-        weights = [0]
+        weights = [0] # ending 'es' is elided
       elif chunks[pos+1] == 'nt':
+        # ending 'ent' is sometimes elided
+        # actually, this will have an influence on the rhyme's gender
         weights = [0, 1]
       else:
         weights = possible_weights(chunks[pos])
@@ -35,7 +40,7 @@ def fit(chunks, pos, left):
       weights = possible_weights(chunks[pos])
     result = []
     for weight in weights:
-      #print("Take %s with weight %d" % (chunks[pos], weight), file=sys.stderr)
+      # combine all possibilities
       result += [[(chunks[pos], weight)] + x for x in fit(chunks, pos+1,
         left - weight)]
     return result
@@ -44,7 +49,6 @@ def feminine(align, verse):
   for a in sure_end_fem:
     if verse.endswith(a):
       return True
-  #pprint(align)
   if verse.endswith('ent') and align[-2][1] != 1:
     return True
   return False
@@ -62,14 +66,19 @@ def parse(text, bound):
   text = re.sub("guè", 'gè', text)
   text = re.sub("gua", 'ga', text)
 
+  # split in words
   words = text.split(' ')
   words = [annotate_aspirated(word) for word in words if word != '']
 
   pattern = re.compile('('+consonants+'*)', re.UNICODE)
+
+  # cut each word in chunks of vowels and consonants, with some specific
+  # kludges
   for i in range(len(words)):
     words[i] = re.split(pattern, words[i])
     words[i] = [chunk for chunk in words[i] if chunk != '']
     nwords = []
+    # the case of 'y' is special
     for chunk in words[i]:
       if 'y' not in chunk or len(chunk) == 1 or chunk[0] == 'y':
         nwords.append(chunk)
@@ -80,19 +89,25 @@ def parse(text, bound):
         if a[1] != '':
           nwords.append(a[1])
         else:
-          # very special case :-/
+          # the case of "pays" is very special :-(
           if words[i] == ['p', 'ay', 's']:
             nwords.append('y')
     words[i] = nwords
+    # remove mute 'e'
     if i > 0:
       if sum([1 for chunk in words[i-1] if is_vowels(chunk)]) > 1:
         if words[i-1][-1] == 'e' and is_vowels(words[i][0], True):
           words[i-1].pop(-1)
           words[i-1][-1] = words[i-1][-1]+"'"
+
+  # group back words
   for word in words:
     word.append(' ')
   chunks = sum(words, [])[:-1]
  
+  # return all possibilities to weigh the vowel clusters, annotated by
+  # the femininity of the align (depending both on the align and
+  # original text)
   return list(map((lambda x : (x, feminine(x, original_text))),
     fit(chunks, 0, bound)))
 
