@@ -9,8 +9,8 @@ from pprint import pprint
 
 if len(sys.argv) != 2:
   print("Usage: %s TEMPLATE" % sys.argv[0], file=sys.stderr)
-  print("Check stdin according to template, report errors on stdout"
-      % sys.argv[0], file=sys.stderr)
+  print("Check stdin according to template, report errors on stdout",
+      file=sys.stderr)
   sys.exit(1)
 
 f = open(sys.argv[1])
@@ -22,8 +22,9 @@ def run():
     line = sys.stdin.readline()
     if not line:
       break
-    for error in template.check(line):
-      error.report()
+    errors = template.check(line)
+    for error in errors:
+      print(error.report(), file=sys.stderr)
 
 run()
 

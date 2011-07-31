@@ -48,10 +48,14 @@ def fit(chunks, pos, left):
 def feminine(align, verse):
   for a in sure_end_fem:
     if verse.endswith(a):
-      return True
-  if verse.endswith('ent') and align[-2][1] != 1:
-    return True
-  return False
+      return ['F']
+  if verse.endswith('ent') and align[-2][1] == 0:
+    return ['F'] # mute -ent
+  if verse.endswith('ent') and align[-2][1] > 0 and align[-2][0] == 'e':
+    return ['M'] # non-mute "-ent" by the choice of metric
+  # and now, what? "tient" vs. "lient" for instance, 
+  # TODO check pronunciation? :-/
+  return ['M', 'F']
 
 def parse(text, bound):
   """Return possible aligns for text, bound is an upper bound on the

@@ -31,6 +31,7 @@ class Template:
     self.position = 0
     self.env = {}
     self.femenv = {}
+    self.reject_errors = False
 
   def load(self, stream):
     """Load from a stream"""
@@ -110,7 +111,7 @@ class Template:
       self.femenv[pattern.femid] = x
     else:
       old = list(self.femenv[pattern.femid])
-      new = list(set(['F' if x[1] else 'M' for (score, x) in possible]))
+      new = list(set(sum([x[1] for (score, x) in possible], [])))
       self.femenv[pattern.femid] &= set(new)
       if len(self.femenv[pattern.femid]) == 0:
         errors.append(error.ErrorBadRhymeGenre(old, new))
@@ -151,17 +152,26 @@ class Template:
 
   def get(self):
     """Get next state, resetting if needed"""
+    self.old_position = self.position
+    self.old_env = dict(self.env)
+    self.old_femenv = dict(self.femenv)
     if self.position >= len(self.template):
       self.reset_state()
     result = self.template[self.position]
     self.position += 1
     return result
 
+  def back(self):
+    """Revert to previous state"""
+    self.position = self.old_position
+    self.env = dict(self.old_env)
+    self.femenv = dict(self.old_femenv)
+
   def check(self, line):
     """Check line (wrapper)"""
     self.line_no += 1
     line = line.rstrip()
-    if line == '':
+    if normalize(line) == '':
       return []
     #possible = [compute(p) for p in possible]
     #possible = sorted(possible, key=rate)
@@ -169,5 +179,8 @@ class Template:
     for error in errors:
       # update errors with line position and pattern
       error.pos(line, self.line_no, pattern)
+    if len(errors) > 0 and self.reject_errors:
+      self.back()
+      self.line_no -= 1
     return errors
 

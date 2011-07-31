@@ -1,3 +1,5 @@
+import common
+import hemistiches
 
 class Error:
   def __init__(self):
@@ -13,13 +15,15 @@ class Error:
     self.prefix = "stdin:%d: " % self.line_no
 
   def say(self, l):
-    print(self.prefix + l)
+    return self.prefix + l
 
   def report(self, s, t = []):
-    self.say("error: %s" % (s))
-    self.say("Line is: %s" % (self.line))
-    for l in t:
-      self.say(l)
+    l = []
+    l.append(self.say("error: %s" % (s)))
+    l.append(self.say("Line is: %s" % (self.line)))
+    for x in t:
+      l.append(self.say(x))
+    return '\n'.join(l)
     
 class ErrorBadRhyme(Error):
   def __init__(self, expected, inferred):
@@ -28,13 +32,16 @@ class ErrorBadRhyme(Error):
     self.inferred = inferred
 
   def report(self):
-    Error.report(self, "Bad rhyme %s for type %s (expected %s, inferred %s)"
+    return Error.report(self, "Bad rhyme %s for type %s (expected %s, inferred %s)"
         % (self.kind, self.get_id(), self.fmt(self.expected),
           self.fmt(self.inferred)))
 
 class ErrorBadRhymeGenre(ErrorBadRhyme):
   def fmt(self, l):
-    return ' or '.join(list(l))
+    result = ' or '.join(list(l))
+    if result == '':
+      result = "?"
+    return result
 
   def get_id(self):
     return self.pattern.femid
@@ -45,16 +52,18 @@ class ErrorBadRhymeGenre(ErrorBadRhyme):
 
 class ErrorBadRhymeSound(ErrorBadRhyme):
   def fmt(self, l):
+    #TODO handle other types
     pron, spel, constraint = l
     ok = []
     if len(pron) > 0:
       ok.append("")
+    return '/'.join(list(pron))
 
   def get_id(self):
     return self.pattern.myid
 
   def report(self):
-    Error.report(self, "Bad rhyme %s for type %s (expected %s)"
+    return Error.report(self, "Bad rhyme %s for type %s (expected %s)"
         % (self.kind, self.pattern.myid, self.fmt(self.expected)))
 
   @property
@@ -78,7 +87,7 @@ class ErrorBadMetric(Error):
     for x in [''] + align:
       if isinstance(x, tuple):
         orig = ""
-        while len(line) > 0 and is_vowels(line[0]):
+        while len(line) > 0 and common.is_vowels(line[0]):
           orig += line[0]
           line = line[1:]
         l2 += ('{:^'+str(len(orig))+'}').format(str(x[1]))
@@ -87,28 +96,30 @@ class ErrorBadMetric(Error):
         done = False
       else:
         orig = ""
-        while len(line) > 0 and not is_vowels(line[0]):
+        while len(line) > 0 and not common.is_vowels(line[0]):
           orig += line[0]
           line = line[1:]
         if count in hemis.keys() and not done:
           done = True
           summary.append(str(ccount))
           ccount = 0
-          summary.append(hemis_types[hemis[count]])
+          summary.append(hemistiches.hemis_types[hemis[count]])
           l2 += ('{:^'+str(len(orig))+'}'
-              ).format(hemis_types[hemis[count]])
+              ).format(hemistiches.hemis_types[hemis[count]])
         else:
           l2 += ' ' * len(orig)
-    summary.append(str(ccount))
+    summary.append(str(ccount)+':')
     result = ''.join(l2)
     summary = ('{:^9}').format(''.join(summary))
     return summary + result
 
   def report(self):
     num = min(len(self.possible), 4)
-    Error.report(
+    return Error.report(
         self,
-        ("Bad metric (expected %s, inferred %d options)" %
-        (self.pattern.metric, num)),
-        list(map(self.align, self.possible[:num])))
+        ("Bad metric (expected %s, inferred %d option%s)" %
+        (self.pattern.metric, num, ('s' if len(self.possible) != 1 else
+          ''))),
+        list(map(self.align, self.possible[:num]))
+        )
 
