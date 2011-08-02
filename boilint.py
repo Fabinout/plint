@@ -21,10 +21,10 @@ def manage(line, silent=False):
   global lbuf
   usebuf = False
   l = line.rstrip().split(' ')
-  text = ' '.join(l[2:])
+  text = ' '.join(l[1:])
   if normalize(text.strip()) == '':
     return True # no text
-  first = [a for a in line.split(' ')[2:] if a != ''][0]
+  first = [a for a in l[1:] if a != ''][0]
   # TODO ignore leading symbols except '...' and '/me'
   if first[-1] == ':' or first[0].upper() != first[0]:
     return True # ignore non-poem lines
@@ -34,7 +34,7 @@ def manage(line, silent=False):
       lbuf.append(l)
     else:
       if not silent:
-        print(' '.join(l[1:]), file=f)
+        print(' '.join(l), file=f)
         f.flush()
     return True
   if first[0] == '/':
@@ -91,7 +91,7 @@ def run():
     line = sys.stdin.readline()
     if not line:
       break
-    manage(line)
+    manage(' '.join(line.split(' ')[1:]))
 
 run()
 
