@@ -33,8 +33,17 @@ f = open(sys.argv[2], 'a')
 
 template.reject_errors = True
 
+buf = ""
+lbuf = []
+
+def output(l):
+  print(' '.join(l[1:]))
+  print(' '.join(l[1:]), file=f)
+
 def run():
+  global lbuf
   while True:
+    usebuf = False
     line = sys.stdin.readline()
     if not line:
       break
@@ -52,12 +61,26 @@ def run():
       continue
     if first[0] == '/':
       continue # ignore other commands
+    if first.lstrip().startswith("..."):
+      text = buf+text
+      usebuf = True
+    else:
+      lbuf = []
     errors = template.check(text)
+    if len(errors) > 0 and text.rstrip().endswith("..."):
+      # it might be a call
+      buf = text
+      lbuf.append(l)
+      continue
     for error in errors:
       print(error.report())
     if len(errors) == 0:
-      print(' '.join(l[1:]))
-      print(' '.join(l[1:]), file=f)
+      buf = ""
+      if usebuf:
+        for bl in lbuf:
+          output(bl)
+      output(l)
+      lbuf = []
       f.flush()
 
 run()
