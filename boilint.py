@@ -67,8 +67,6 @@ def run():
     if first.lstrip().startswith("..."):
       text = buf+text
       usebuf = True
-    else:
-      lbuf = []
     errors = template.check(text)
     if len(errors) > 0 and text.rstrip().endswith("..."):
       # it might be a call
