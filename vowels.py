@@ -41,4 +41,4 @@ def possible_weights(chunk):
   # only non-accented left
   
   # TODO hmm
-  return [99]
+  return [1, 2]
