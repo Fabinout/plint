@@ -1,6 +1,7 @@
 import error
 from metric import parse
 from hemistiches import check_hemistiches
+import copy
 import rhyme
 from common import normalize
 
@@ -153,8 +154,8 @@ class Template:
   def get(self):
     """Get next state, resetting if needed"""
     self.old_position = self.position
-    self.old_env = dict(self.env)
-    self.old_femenv = dict(self.femenv)
+    self.old_env = copy.deepcopy(self.env)
+    self.old_femenv = copy.deepcopy(self.femenv)
     if self.position >= len(self.template):
       self.reset_state()
     result = self.template[self.position]
@@ -164,8 +165,8 @@ class Template:
   def back(self):
     """Revert to previous state"""
     self.position = self.old_position
-    self.env = dict(self.old_env)
-    self.femenv = dict(self.old_femenv)
+    self.env = copy.deepcopy(self.old_env)
+    self.femenv = copy.deepcopy(self.old_femenv)
 
   def check(self, line):
     """Check line (wrapper)"""
