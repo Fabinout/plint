@@ -8,5 +8,5 @@ considère ça
              comme un vers ? il devrait vérifier le deuxième caractère,
              voir si 
                           c'est une majuscule...)
-appels
 
+TODO update environment only if successful, remove back()
