@@ -56,8 +56,11 @@ def run():
       continue # ignore non-poem lines
     if first == '/me':
       # always accept actions
-      print(' '.join(l[1:]), file=f)
-      f.flush()
+      if len(lbuf) > 0:
+        lbuf.append(l)
+      else:
+        print(' '.join(l[1:]), file=f)
+        f.flush()
       continue
     if first[0] == '/':
       continue # ignore other commands
