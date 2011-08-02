@@ -12,8 +12,8 @@ buf = ""
 lbuf = []
 
 def output(l):
-  print(' '.join(l[1:]))
-  print(' '.join(l[1:]), file=f)
+  print(' '.join(l))
+  print(' '.join(l), file=f)
 
 def manage(line, silent=False):
   """manage one line, indicate if an error occurred"""
