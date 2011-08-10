@@ -3,10 +3,8 @@ standalone letters
 make line reporting optional
 On était déjà coupable d'avoir failli <- wtf align?
 
-01:15 < NeK> a3nm: lorsque la ligne commence par une parenthèse lint
-considère ça 
-             comme un vers ? il devrait vérifier le deuxième caractère,
-             voir si 
-                          c'est une majuscule...)
-
 TODO update environment only if successful, remove back()
+
+TODO alignements
+TODO undo
+

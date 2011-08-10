@@ -25,9 +25,6 @@ def manage(line, silent=False):
   if normalize(text.strip()) == '':
     return True # no text
   first = [a for a in l[1:] if a != ''][0]
-  # TODO ignore leading symbols except '...' and '/me'
-  if first[-1] == ':' or first[0].upper() != first[0]:
-    return True # ignore non-poem lines
   if first == '/me':
     # always accept actions
     if len(lbuf) > 0:
@@ -38,10 +35,13 @@ def manage(line, silent=False):
         f.flush()
     return True
   if first[0] == '/':
-    return True # ignore other commands
+    return False # ignore other commands
   if first.lstrip().startswith("..."):
     text = buf+text
     usebuf = True
+  if (first[-1] == ':' or first[0].upper() != first[0]
+      or first[0].upper() == first[0].lower()) and not usebuf:
+    return False # ignore non-poem lines
   errors = template.check(text)
   if len(errors) > 0 and text.rstrip().endswith("..."):
     # it might be a call
@@ -78,6 +78,7 @@ template.reject_errors = True
 
 f = open(sys.argv[2], 'r')
 for line in f.readlines():
+  print("Read: %s" % line, file=sys.stderr)
   if not manage(line, True):
     print("Existing poem is wrong!", file=sys.stderr)
     sys.exit(2)
@@ -91,6 +92,7 @@ def run():
     line = sys.stdin.readline()
     if not line:
       break
+    print("Seen: %s" % line, file=sys.stderr)
     manage(' '.join(line.split(' ')[1:]))
 
 run()
