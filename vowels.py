@@ -43,7 +43,7 @@ def possible_weights(chunk):
     return [1, 2]
   if 'é' in chunk or 'è' in chunk:
     return [2]
-  
-  # TODO hmm
+
+  # we can't tell
   return [1, 2]
 

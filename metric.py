@@ -58,7 +58,7 @@ def feminine(align, verse):
     return ['F'] # mute -ent
   if align[-2][1] > 0 and align[-2][0] == 'e':
     return ['M'] # non-mute "-ent" by the choice of metric
-  # and now, what? "tient" vs. "lient" for instance, 
+  # what now? "tient" vs. "lient" for instance, 
   # TODO check pronunciation? :-/
   return ['M', 'F']
 
@@ -113,10 +113,10 @@ def parse(text, bound):
   for word in words:
     word.append(' ')
   chunks = sum(words, [])[:-1]
- 
+
   # return all possibilities to weigh the vowel clusters, annotated by
   # the femininity of the align (depending both on the align and
   # original text)
-  return list(map((lambda x : (x, feminine(x, original_text))),
+  return list(map((lambda x: (x, feminine(x, original_text))),
     fit(chunks, 0, bound)))
 
