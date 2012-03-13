@@ -15,6 +15,16 @@ def output(l):
   print(' '.join(l))
   print(' '.join(l), file=f)
 
+def leading_cap(text):
+  for c in text:
+    if c.upper() == c.lower():
+      continue # symbol
+    if c != c.lower():
+      return True
+    if c != c.upper():
+      return False
+  return False
+
 def manage(line, silent=False):
   """manage one line, indicate if an error occurred"""
   global buf
@@ -39,9 +49,11 @@ def manage(line, silent=False):
   if first.lstrip().startswith("..."):
     text = buf+text
     usebuf = True
-  if (first[-1] == ':' or first[0].upper() != first[0]
-      or first[0].upper() == first[0].lower()) and not usebuf:
-    return False # ignore non-poem lines
+  if not usebuf:
+    if first[-1] == ':':
+      return False
+    if not leading_cap(text):
+      return False
   errors = template.check(text)
   if len(errors) > 0 and text.rstrip().endswith("..."):
     # it might be a call
