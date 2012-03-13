@@ -13,7 +13,8 @@ obligatoire, les trois derniers sont facultatifs.
 La métrique indique le nombre de syllabes du vers, et la position des
 hémistiches éventuelles. Il s'agit de totaux de syllabes, séparés par
 '/' pour indiquer les hémistiches. Par exemple, "6/6" est un alexandrin
-classique, "12" est un alexandrin sans hémistiche.
+classique, "12" est un alexandrin non nécessairement pourvu de coupure à
+l'hémistiche.
 </p>
 <p>
 L'identifiant de rime sert à regrouper les vers qui doivent rimer
@@ -29,24 +30,23 @@ ainsi qu'un phonème vocalique obligatoirement : ainsi, une valeur de 1,
 2 ou 3 nécessite au minimum une rime pauvre, suffisante ou riche
 respectivement. Le second entier indique le nombre de caractères communs
 nécessaires pour une rime pour l'œil, ou -1 pour interdire (défaut -1).
-Le troisième entier indique le nombre de phonèmes vocaliques nécessaires
-pour une rime par assonance, qui ignore les phonèmes consonantiques
-(maximum 1, défaut -1).</p>
+Le troisième entier indique le nombre de phonèmes nécessaires pour une rime par
+assonance, ie. la longueur du suffixe commun en ignorant les phonèmes
+consonantiques (maximum 1, défaut -1).</p>
 <p>
-L'identifiant de rime féminine sert à regrouper les vers qui doivent
-avoir une rime de même genre. Les conventions supplémentaires sont que
-deux identifiants de casse inversée (tels que "ex" et "EX") ont des
-genres opposés obligatoirement, et que "m" et "f" sont obligatoirement
-masculin et féminin respectivement.</p>
+L'identifiant de genre de rime sert à regrouper les vers qui doivent avoir une
+rime de même genre. Les conventions supplémentaires sont que deux identifiants
+de casse inversée (tels que "ex" et "EX") ont des genres opposés
+obligatoirement, et que "m" et "f" sont obligatoirement masculin et féminin
+respectivement.</p>
 </p>
 <p>
-Si des identifiants ne sont pas spécifiés, alors la contrainte
-correspondante n'est pas spécifiée.
+Si des identifiants ne sont pas spécifiés, alors la contrainte correspondante
+n'est pas spécifiée.
 </p>
 <p>
-Une fois le format épuisé, il est lu à nouveau à partir du début,
-jusqu'à la fin du poème. Les identifiants de rime et de genre sont
-réinitialisés (ie. peuvent prendre n'importe quelle valeur), sauf s'ils
-commencent par '!'. Il n'est pas interdit que le poème et le format ne
-terminent pas simultanément.
+Une fois le format épuisé, il est lu à nouveau à partir du début, jusqu'à la fin
+du poème. Les identifiants de rime et de genre sont réinitialisés (ie. peuvent
+prendre n'importe quelle valeur), sauf ceux qui commencent par '!'. Il n'est pas
+interdit que le poème et le format ne terminent pas simultanément.
 </p>

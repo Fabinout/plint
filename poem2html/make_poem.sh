@@ -1,6 +1,7 @@
 #!/bin/bash
 
-cat top.html > www/index.html
-cat poem | ./make_poem.pl >> www/index.html
-cat bottom.html >> www/index.html
-cp style.css www/
+DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+cat $DIR/top.html
+cat $1 | $DIR/make_poem.pl
+cat $DIR/bottom.html
