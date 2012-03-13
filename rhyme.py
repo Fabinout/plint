@@ -11,6 +11,68 @@ NBEST = 5
 # phonetic vowels
 vowel = list("Eeaio592O#@y%u")
 
+class Constraint:
+  def __init__(self, phon, eye, aphon):
+    self.phon = phon # minimal number of common suffix phones
+    self.eye = eye # minimal number of common suffix letters
+    self.aphon = aphon # minimal number of common suffix vowel phones
+
+  def mmax(self, a, b):
+    """max, with -1 representing infty"""
+    if a == -1 or b == -1:
+      return -1
+    else:
+      return max(a, b)
+
+  def restrict(self, c):
+    """take the max between us and constraint object c"""
+    if not c:
+      return
+    self.phon = self.mmax(self.phon, c.phon)
+    self.eye = self.mmax(self.eye, c.eye)
+    self.aphon = self.mmax(self.aphon, c.aphon)
+
+class Rhyme:
+  def __init__(self, line, constraint):
+    self.constraint = constraint
+    self.phon = lookup(line)
+    self.eye = line
+
+  def match(self, phon, eye):
+    """limit our phon and eye to those which match phon and eye and which
+    respect constraints"""
+    new_phon = set()
+    for x in self.phon:
+      for y in phon:
+        val = phon_rhyme(x, y)
+        if val >= self.constraint.phon and self.constraint.phon >= 0:
+          new_phon.add(x[-val:])
+        val = assonance_rhyme(x, y)
+        if val >= self.constraint.aphon and self.constraint.aphon >= 0:
+          new_phon.add(x[-val:])
+    self.phon = new_phon
+    if self.eye:
+      val = eye_rhyme(self.eye, eye)
+      if val >= self.constraint.eye and self.constraint.eye >= 0:
+        self.eye = self.eye[-val:]
+      else:
+        self.eye = None
+
+  def restrict(self, r):
+    """take the intersection between us and rhyme object r"""
+    self.constraint.restrict(r.constraint)
+    self.match(r.phon, r.eye)
+
+  def feed(self, line, constraint=None):
+    """extend us with a line and a constraint"""
+    return self.restrict(Rhyme(line, constraint))
+
+  def satisfied(self):
+    return self.eye or len(self.phon) > 0
+
+  def print(self):
+    pprint(self.phon)
+
 def suffix(x, y):
   """length of the longest common suffix of x and y"""
   bound = min(len(x), len(y))
@@ -19,7 +81,7 @@ def suffix(x, y):
       return i
   return bound
 
-def rhyme(x, y):
+def phon_rhyme(x, y):
   """are x and y acceptable phonetic rhymes?"""
   assert(isinstance(x, str))
   assert(isinstance(y, str))
@@ -33,7 +95,7 @@ def strip_consonants(x):
   return str([a for a in x if a in vowel or a == 'j'])
 
 def assonance_rhyme(x, y):
-  return rhyme(strip_consonants(x), strip_consonants(y))
+  return phon_rhyme(strip_consonants(x), strip_consonants(y))
 
 def eye_rhyme(x, y):
   """value of x and y as an eye rhyme"""
@@ -55,51 +117,6 @@ def lookup(s):
     frhyme.lookup(escape(a), NBEST)])), s))
   return functools.reduce(concat_couples, sets, set(['']))
 
-def init_rhyme(line, constraint):
-  """initialize a rhyme"""
-  return (lookup(line), line, constraint)
-
-def mmax(a, b):
-  """max, with -1 representing infty"""
-  if a == -1 or b == -1:
-    return -1
-  else:
-    return max(a, b)
-
-def max_constraints(a, b):
-  # TODO get rid of that
-  return (mmax(a[0], b[0]), mmax(a[1], b[1]), mmax(a[2], b[2]))
-
-def check_rhyme(current, new):
-  oldp, old, old_constraints = current
-  new, new_constraints = new
-  constraints = max_constraints(new_constraints, old_constraints)
-  newp = lookup(new)
-  newp_r, new_r = match(oldp, old, newp, new, constraints)
-  return (newp_r, new_r, constraints)
-
-def match(ap, a, bp, b, constraints):
-  # ap is the possible pronunciations, a the only possible writing
-  normalc, eyec, assonancec = constraints
-  rp = set()
-  for x in ap:
-    for y in bp:
-      val = rhyme(x, y)
-      if val >= normalc and normalc >= 0:
-        rp.add(x[-val:])
-      val = assonance_rhyme(x, y)
-      if val >= assonancec and assonancec >= 0:
-        rp.add(x[-val:])
-  if a != None:
-    val = eye_rhyme(a, b)
-    if val >= eyec and eyec >= 0:
-      r = a[0][-val:]
-    else:
-      r = None
-  else:
-    r = None
-  return rp, r
-
 #workaround for lexique
 def escape(t):
   return re.sub('œ', 'oe', re.sub('æ', 'ae', t))
@@ -112,17 +129,14 @@ if __name__ == '__main__':
     line = line.lower().strip().split(' ')
     if len(line) < 1:
       continue
-    constraint = (1, -1, -1)
-    np, p, c = init_rhyme(line[0], constraint)
-    pprint(np)
-    ok = True
+    constraint = Constraint(1, -1, -1)
+    rhyme = Rhyme(line[0], constraint)
     for x in line[1:]:
-      np, n, c = check_rhyme((np, p, c), (x, constraint))
-      pprint(np)
-      if n == None and len(np) == 0:
+      rhyme.feed(x)
+      rhyme.print()
+      if not rhyme.satisfied():
         print("No.")
-        ok = False
         break
-    if ok:
+    if rhyme.satisfied():
       print ("Yes.")
 
