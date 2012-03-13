@@ -53,7 +53,7 @@ class ErrorBadRhymeGenre(ErrorBadRhyme):
 class ErrorBadRhymeSound(ErrorBadRhyme):
   def fmt(self, l):
     #TODO handle other types
-    pron, spel, constraint = l
+    pron = l.phon
     ok = []
     if len(pron) > 0:
       ok.append("")

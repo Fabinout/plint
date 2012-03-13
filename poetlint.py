@@ -2,7 +2,6 @@
 
 import re
 import sys
-import rhyme
 import metric
 import template
 from pprint import pprint

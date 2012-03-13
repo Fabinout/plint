@@ -6,12 +6,12 @@ import rhyme
 from common import normalize
 
 class Pattern:
-  def __init__(self, metric, myid, femid, rhyme):
+  def __init__(self, metric, myid, femid, constraint):
     self.metric = metric
     self.parse_metric()
     self.myid = myid
     self.femid = femid
-    self.rhyme = rhyme
+    self.constraint = constraint
 
   def parse_metric(self):
     """Parse from a metric description"""
@@ -64,13 +64,13 @@ class Template:
     pattern = self.get()
     # compute alignments, check hemistiches, sort by score
     possible = parse(line, pattern.length + 2)
-    possible = list(map((lambda p : (p[0], p[1],
+    possible = list(map((lambda p: (p[0], p[1],
       check_hemistiches(p[0], pattern.hemistiches))), possible))
-    possible = map((lambda x : (self.rate(pattern, x), x)), possible)
-    possible = sorted(possible, key=(lambda x : x[0]))
+    possible = map((lambda x: (self.rate(pattern, x), x)), possible)
+    possible = sorted(possible, key=(lambda x: x[0]))
 
     errors = []
-    
+
     # check metric
     if len(possible) == 0 or possible[0][0] != 0:
       errors.append(error.ErrorBadMetric(possible))
@@ -83,16 +83,14 @@ class Template:
     # rhymes
     if pattern.myid not in self.env.keys():
       # initialize the rhyme
-      self.env[pattern.myid] = rhyme.init_rhyme(normalize(line),
-          pattern.rhyme)
+      self.env[pattern.myid] = rhyme.Rhyme(normalize(line),
+          pattern.constraint)
     else:
       # update the rhyme
-      old = list(self.env[pattern.myid])
-      self.env[pattern.myid] = rhyme.check_rhyme(self.env[pattern.myid],
-          (normalize(line), pattern.rhyme))
+      old = self.env[pattern.myid]
+      self.env[pattern.myid].feed(normalize(line), pattern.constraint)
       # no more possible rhymes, something went wrong
-      if (self.env[pattern.myid][1] == None and
-          len(self.env[pattern.myid][0]) == 0):
+      if not self.env[pattern.myid].satisfied():
         errors.append(error.ErrorBadRhymeSound(old, None))
 
     # rhyme genres
@@ -108,7 +106,7 @@ class Template:
       elif pattern.femid == 'F':
         x = set(['F'])
       else:
-        x = set(['M', 'F']) 
+        x = set(['M', 'F'])
       self.femenv[pattern.femid] = x
     else:
       old = list(self.femenv[pattern.femid])
@@ -119,9 +117,9 @@ class Template:
 
     return errors, pattern
 
-  def parse_line(self, l):
+  def parse_line(self, line):
     """Parse template line from a line"""
-    split = l.split(' ')
+    split = line.split(' ')
     metric = split[0]
     if len(split) >= 2:
       myid = split[1]
@@ -133,14 +131,14 @@ class Template:
       femid = str(self.pattern_line_no) # unique
     idsplit = myid.split(':')
     if len(idsplit) >= 2:
-      rhyme = [int(x) for x in idsplit[-1].split('|')]
+      constraint = [int(x) for x in idsplit[-1].split('|')]
     else:
-      rhyme = []
-    if len(rhyme) == 0:
-      rhyme.append(1)
-    while len(rhyme) < 3:
-      rhyme.append(-1)
-    return Pattern(metric, myid, femid, rhyme)
+      constraint = []
+    if len(constraint) == 0:
+      constraint.append(1)
+    while len(constraint) < 3:
+      constraint.append(-1)
+    return Pattern(metric, myid, femid, rhyme.Constraint(*constraint))
 
   def reset_conditional(self, d):
     return dict((k, v) for k, v in d.items() if k[0] == '!')
