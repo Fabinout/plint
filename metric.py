@@ -1,6 +1,8 @@
+#!/usr/bin/python
+#coding: utf-8
+
 import re
-from common import strip_accents, normalize, is_vowels, consonants, \
-  sure_end_fem
+from common import normalize, is_vowels, consonants, sure_end_fem
 from vowels import possible_weights
 import haspirater
 
@@ -62,7 +64,7 @@ def feminine(align, verse):
 
 def parse(text, bound):
   """Return possible aligns for text, bound is an upper bound on the
-  align length to limit cost"""
+  align length to limit running time"""
 
   original_text = normalize(text)
 
@@ -77,7 +79,7 @@ def parse(text, bound):
   words = text.split(' ')
   words = [annotate_aspirated(word) for word in words if word != '']
 
-  pattern = re.compile('('+consonants+'*)', re.UNICODE)
+  pattern = re.compile('(['+consonants+'*-]*)', re.UNICODE)
 
   # cut each word in chunks of vowels and consonants, with some specific
   # kludges
