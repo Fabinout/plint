@@ -9,7 +9,7 @@ import functools
 # number of possible rhymes to consider
 NBEST = 5
 # phonetic vowels
-vowel = list("Eeaio592O#@y%u")
+vowel = list("Eeaio592O#@y%u()$")
 
 class Constraint:
   def __init__(self, phon, eye, aphon):
