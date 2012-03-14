@@ -80,6 +80,10 @@ def q():
   d['result'] = r
   d['firsterror'] = firsterror
   d['nerror'] = nerror
+  if nerror == 0:
+    d['title'] = "[Valid] " + get_title()
+  else:
+    d['title'] = "[Invalid] " + get_title()
   return env.get_template('results.html').render(**d)
 
 if __name__ == '__main__':
