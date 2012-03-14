@@ -23,15 +23,25 @@ bottle.py is a third-party file, its license is in file LICENSE_bottle.
 plint is a tool to check French poetry. Specifically, it validates metric,
 rhymes and rhyme genres against an unexpressive template language. It features a
 command-line interface, an IRC wrapper (for use with irctk) and a web interface.
-It depends on haspirater and frhyme.
-
-TODO more
+It depends on haspirater and frhyme, and the web interface requires CherryPy.
 
 == 2. Setup ==
 
-TODO
+Place the haspirater.json and haspirater.py from haspirater in the main
+directory. Place the generated frhyme.json and frhyme.py in the main directory.
 
 == 3. Usage ==
 
-TODO
+To use the program's command-line interface, run:
+
+  ./plint.py TEMPLATE
+
+where TEMPLATE is the template file, and provide the poem on stdin. Errors are
+reported on stderr.
+
+To run the web interface on port 5000, run plint_web.py. CherryPy is required
+(but the code is easy to adapt), see
+http://bottlepy.org/docs/dev/tutorial.html#deployment
+
+An undocumented IRC interface for use with irctk is available (plint_irc.py).
 
