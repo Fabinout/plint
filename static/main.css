@@ -8,6 +8,9 @@ h1 {
 }
 
 #body {
+  margin-top: 1em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
 
 h1 a, #about {
@@ -37,72 +40,9 @@ body {
   padding: 0;
 }
 
-.redundant {
-  display: none;
-}
-
-.num {
-  text-align: center;
-}
-
-table, .faketable {
-  width: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-.odd {
-  background: #dfd;
-}
-
 .help {
   vertical-align: super;
 }
-
-.ellipsis {
-  text-overflow: ellipsis;
-}
-
-.faketable {
-  display: table;
-}
-
-#body {
-  margin-top: 1em;
-  padding-left: 0.5em;
-  padding-right: 0.5em;
-}
-
-header form {
-  float: right;
-}
-
-header form input {
-  height: 100%;
-}
-
-.page {
-  text-align: center;
-}
-
-/*#col_word {
-  width: 10%;
-}
-#col_pron {
-  width: 10%;
-}
-#col_derivations {
-  width: 30%;
-}
-#col_freq {
-  width: 15%;
-}
-#col_phon {
-  width: 7%;
-}
-#col_eye {
-  width: 7%;
-}*/
 
 #bigform {
   max-width: 25em;
