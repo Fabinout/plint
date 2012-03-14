@@ -13,7 +13,9 @@ lbuf = []
 
 def output(l):
   print(' '.join(l))
+  f = open(sys.argv[2], 'a')
   print(' '.join(l), file=f)
+  f.close()
 
 def leading_cap(text):
   for c in text:
@@ -41,8 +43,9 @@ def manage(line, silent=False):
       lbuf.append(l)
     else:
       if not silent:
+        f = open(sys.argv[2], 'a')
         print(' '.join(l), file=f)
-        f.flush()
+        f.close()
     return True
   if first[0] == '/':
     return False # ignore other commands
@@ -72,7 +75,6 @@ def manage(line, silent=False):
         for bl in lbuf:
           output(bl)
       output(l)
-      f.flush()
     lbuf = []
   return len(errors) == 0
 
@@ -96,7 +98,7 @@ for line in f.readlines():
     sys.exit(2)
 f.close()
 
-f = open(sys.argv[2], 'a')
+print("ready", file=sys.stderr)
 
 def run():
   global lbuf
@@ -108,6 +110,4 @@ def run():
     manage(' '.join(line.split(' ')[1:]))
 
 run()
-
-f.close()
 
