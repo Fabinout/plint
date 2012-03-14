@@ -1,4 +1,5 @@
 #!/usr/bin/python3 -u
+#encoding: utf8
 
 import re
 import sys
@@ -70,7 +71,7 @@ class Rhyme:
   def satisfied(self):
     return self.eye or len(self.phon) > 0
 
-  def print(self):
+  def pprint(self):
     pprint(self.phon)
 
 def suffix(x, y):
@@ -133,7 +134,7 @@ if __name__ == '__main__':
     rhyme = Rhyme(line[0], constraint)
     for x in line[1:]:
       rhyme.feed(x)
-      rhyme.print()
+      rhyme.pprint()
       if not rhyme.satisfied():
         print("No.")
         break
