@@ -16,12 +16,14 @@
       {% if lang == 'fr' %}
       <h2 class="incorrect">Ce poème est invalide pour le modèle
         <span class="template">{{template}}</span>&nbsp;!
-        <p id="firsterror">{{nerror}} erreur(s) trouvée(s) &mdash; <a
+        <p id="firsterror">{{nerror}} erreur{% if nerror != 1 %}s{%endif%}
+        trouvée{% if nerror != 1 %}s{%endif%} &mdash; <a
           href="#l{{firsterror}}">aller à la première erreur</a></p></h2>
       {% else %}
       <h2 class="incorrect">This poem is invalid for template
         <span class="template">{{template}}</span>!
-      <p id="firsterror">{{nerror}} error(s) found &mdash; <a
+      <p id="firsterror">{{nerror}} error{% if nerror != 1 %}s{%endif%} found
+      &mdash; <a
         href="#l{{firsterror}}">jump to first error</a></p></h2>
       {% endif %}
       <ol class="incorrect" id="dump">
