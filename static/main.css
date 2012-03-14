@@ -55,11 +55,6 @@ body {
   overflow: auto;
 }
 
-#bigform input {
-  margin-bottom: 0.7em;
-  width: 50%;
-}
-
 #bigform label {
 }
 
