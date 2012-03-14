@@ -56,7 +56,7 @@ class Template:
         ok = False
     if ok and c == pattern.length:
       return 0
-    return (len(hemis.keys())*abs(pattern.length - c)
+    return ((1+len(hemis.keys()))*abs(pattern.length - c)
         + sum([1 for x in hemis.values() if x != "ok"]))
 
   def match(self, line):
@@ -87,11 +87,14 @@ class Template:
           pattern.constraint)
     else:
       # update the rhyme
-      old = self.env[pattern.myid]
+      old_p = self.env[pattern.myid].phon
+      old_e = self.env[pattern.myid].eye
       self.env[pattern.myid].feed(normalize(line), pattern.constraint)
       # no more possible rhymes, something went wrong
       if not self.env[pattern.myid].satisfied():
-        errors.append(error.ErrorBadRhymeSound(old, None))
+        self.env[pattern.myid].phon = old_p
+        self.env[pattern.myid].eye = old_e
+        errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid], None))
 
     # rhyme genres
     # inequality constraint
