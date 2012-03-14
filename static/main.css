@@ -1,0 +1,185 @@
+h1 {
+  background: #040;
+  float: left;
+  margin: 0;
+  margin-right: 0.3em;
+  font-size: 100%;
+  padding: 0.2em;
+}
+
+#body {
+}
+
+h1 a, #about {
+  color: white;
+  text-decoration: none;
+}
+
+header {
+  background: black;
+  overflow: auto;
+  color: white;
+  width: 100%;
+}
+
+#about a {
+  float: right;
+  color: #0c0;
+}
+
+#poem {
+  width: 100%;
+  height: 15em;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.redundant {
+  display: none;
+}
+
+.num {
+  text-align: center;
+}
+
+table, .faketable {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.odd {
+  background: #dfd;
+}
+
+.help {
+  vertical-align: super;
+}
+
+.ellipsis {
+  text-overflow: ellipsis;
+}
+
+.faketable {
+  display: table;
+}
+
+#body {
+  margin-top: 1em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+header form {
+  float: right;
+}
+
+header form input {
+  height: 100%;
+}
+
+.page {
+  text-align: center;
+}
+
+/*#col_word {
+  width: 10%;
+}
+#col_pron {
+  width: 10%;
+}
+#col_derivations {
+  width: 30%;
+}
+#col_freq {
+  width: 15%;
+}
+#col_phon {
+  width: 7%;
+}
+#col_eye {
+  width: 7%;
+}*/
+
+#bigform {
+  max-width: 25em;
+  border: 3px outset #040;
+  padding: 1em;
+  background: #040;
+  color: white;
+  margin: auto;
+  margin-top: 4em;
+  overflow: auto;
+}
+
+#bigform input {
+  margin-bottom: 0.7em;
+  width: 50%;
+}
+
+#bigform label {
+}
+
+#bigform #submit {
+  float: right;
+  margin-top: 0.3em;
+  margin-bottom: 0;
+  width: 7em;
+}
+
+h2.correct, h2.incorrect {
+  font-size: 120%;
+  color: white;
+  font-family: "Bitstream Vera Sans", sans-serif;
+  padding: 0.2em;
+  text-align: center;
+}
+
+#dump {
+  padding: 1em;
+  padding-left: 5em;
+}
+
+#dump.correct {
+  border: 1px solid #55b05a;
+  border-left: 6px double #55b05a;
+}
+
+#dump.incorrect {
+  border: 1px solid #d23d24;
+  border-left: 6px double #d23d24;
+}
+
+ol {
+  margin: auto;
+  border: 1px solid black;
+  overflow: auto;
+}
+
+h2.correct {
+  background: #55b05a;
+}
+h2.incorrect {
+  background: #d23d24;
+}
+li.incorrect {
+  color: #d23d24;
+  border-right: 6px double #d23d24;
+}
+
+#firsterror {
+  font-size: 50%;
+  font-style: italic;
+  float: right;
+}
+
+#firsterror a {
+  color: white;
+}
+
+.template {
+  font-family: DejaVu Sans Mono, Liberation Mono, monospace;
+}

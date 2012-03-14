@@ -1,0 +1,46 @@
+{% extends "page.html" %}
+
+{% block body %}
+<div>
+  {% if result != [] %}
+    {% if nerror == 0 %}
+      {% if lang == 'fr' %}
+      <h2 class="correct">Ce poème est valide pour le modèle
+        <span class="template">{{template}}</span>&nbsp;!</h2>
+      {% else %}
+      <h2 class="correct">This poem was successfully checked against template
+        <span class="template">{{template}}</span>!</h2>
+      {% endif %}
+      <ol class="correct" id="dump">
+    {% else %}
+      {% if lang == 'fr' %}
+      <h2 class="incorrect">Ce poème est invalide pour le modèle
+        <span class="template">{{template}}</span>&nbsp;!
+        <p id="firsterror">{{nerror}} erreur(s) trouvée(s) &mdash; <a
+          href="#l{{firsterror}}">aller à la première erreur</a></p></h2>
+      {% else %}
+      <h2 class="incorrect">This poem is invalid for template
+        <span class="template">{{template}}</span>!
+      <p id="firsterror">{{nerror}} error(s) found &mdash; <a
+        href="#l{{firsterror}}">jump to first error</a></p></h2>
+      {% endif %}
+      <ol class="incorrect" id="dump">
+    {% endif %}
+    {% for line, errors in result %}
+      {% if errors == [] %}
+        <li class="correct" id="l{{loop.index}}">{{line}}
+      {% else %}
+        <li class="incorrect" id="l{{loop.index}}">{{line}}
+        <ul>
+          {% for error in errors %}
+            <li><pre>{{error}}</pre></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      </li>
+    {% endfor %}
+    </ol>
+  {% endif%}
+</div>
+{% endblock %}
+

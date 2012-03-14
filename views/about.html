@@ -1,0 +1,93 @@
+{% extends "page.html" %}
+
+{% block body %}
+{% if lang == 'fr' %}
+TODO TODO
+{% else %}
+<p>Welcome to <strong>plint</strong>!</p>
+<h2 id="info">Wait, what is this?</h2>
+<p>This is <a href="http://a3nm.net">a3nm</a>'s attempt to make a better world
+by eradicating incorrect French poetry. It checks the validity of a poem with
+respect to metric, rhyme and rhyme genre constraints. It uses <a
+  href="http://gitorious.org/frhyme">frhyme</a> for rhymes (itself built on the
+<a href="http://lexique.org">Lexique</a> database), <a
+  href="http://gitorious.org/haspirater">haspirater</a> for aspirated 'h'
+detection, and a carefully handwritten system for metric and genre. It is
+powered by <a href="http://python.org">Python</a> and <a
+  href="http://flask.pocoo.org">Flask</a>. You can get the code on the <a
+  href="http://gitorious.org/plint">plint gitorious repository</a> to run it
+locally.</p>
+
+<h2 id="help">How do I use it?</h2>
+<p>Enter your poem in the text area and select the poem template. Support for
+custom poem templates is coming soon!</p>
+
+<h2>What does plint check?</h2>
+<dl>
+  <dt>Metric.</dt>
+  <dd>French verse must obey metric constraints:
+  <dl>
+    <dt>Syllable count</dt>
+    <dd>The number of syllables in each verse is usually fixed (12 in
+    alexandrins, for instance). Syllables are counted in a reading with no
+    elision of mute <em>e</em>'s except at the end of a word <em>and</em> when
+    the following word starts with a vowel or non-aspirated <em>h</em> (or if it
+    is the last word). The syllable count is <em>not</em> what you get with a
+    colloquial everyday reading. Some vowels clusters can count for two
+    syllables either naturally ("Léon") or through <em>diérèse</em> ("passion");
+    plint uses a liberal approximation of allowed <em>diérèses</em>.</dd>
+    <dt>Hemistiche</dt>
+    <dd>For classical alexandrins, the 12 syllables are separated in two groups
+    of 6 with an intermediate cesura. The cesura must not split a word and must
+    not end in a weak sound (essentially, a non-elided feminine ending).</dd>
+  </dl>
+  <dt>Rhyme.</dt>
+  <dd>The most well-known constraint is that verses must rhyme. The rhyming
+  phonemes must include a vowel (eg. "tâte" and "bête" do not rhyme because
+  [t] does not include a vowel sound). plint enforces rhymes trough a liberal
+  approximation of the pronunciation of verse endings; it follows the brin/brun
+  distinction.</dd>
+  <dt>Rhyme genre.</dt>
+  <dd>In classical verse, rhymes must be made between feminine verse endings, or
+  masculine verse endings. A verse ending is feminine if it ends with a silent
+  "e", "es" or "ent", and masculine otherwise. plint enforces this, with a
+  liberal approximation to try to guess if an ending is indeed silent. Besides,
+  feminine and masculine rhymes must alternate.</dd>
+</dl>
+
+<h2>What isn't checked by plint?</h2>
+
+<p>Syllable count is performed by a liberal estimate which will allow invalid
+<em>diérèses</em> to make the count match. It is not checked if
+<em>hémistiches</em> occur at a sensible grammatical position. Rhyme is
+computed by a liberal heuristic, as well as rhyme genre. More importantly,
+plint will not check if your poem makes any sense, does not contain spelling
+mistakes or has any poetic value; it only enforces formal constraints. For
+instance, "Tatata tatati tatati tatata" is recognized as a perfectly correct
+classical alexandrin.</p>
+
+<h2>Troubleshooting</h2>
+<ul>
+  <li>There is no support for arabic numerals. Always spell out numbers in
+  full.</li>
+  <li>There is no support for acronyms or individual letters yet. Indicate the
+  pronunciation, ie. replace "ce S" by "ce èSse".</li>
+</ul>
+
+<h2 id="pron">How is pronunciation written?</h2>
+<p>It is <a href="http://en.wikipedia.org/wiki/X-SAMPA">X-SAMPA</a>. Information
+about French pronunciation can be found on the <a
+  href="https://fr.wiktionary.org/wiki/Annexe:Prononciation/fran%C3%A7ais">French
+  Wiktionary</a>. Be aware that because of various limitations, the leading
+phonemes might be completely wrong. The last few ones should match, however.</p>
+
+<h2>Is there an API?</h2>
+<p>Not yet. You can always run the code locally.</p>
+
+<h2>What about the name?</h2>
+
+<p>It's "plint" for "poem lint" (like the "lint" tool for programs), but also
+because "plint" in French would be read like "plainte", meaning "complaint".</p>
+{% endif %}
+{% endblock %}
+

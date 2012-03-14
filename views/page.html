@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+  <head>
+    <title>{{ title }}</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+{% if lang == 'fr' %}
+    <meta name="description" content="vérificateur de poèmes plint" />
+{% else %}
+    <meta name="description" content="plint French poetry checker" />
+{% endif %}
+    <link rel="stylesheet" href="static/main.css" type="text/css" media="screen" />
+  </head>
+  <body>
+    <header>
+    <h1><a href="/">plint</a></h1>
+    <sup><a id="about" href="/about">
+        {% if lang == 'fr' %}
+        aide
+        {% else %}
+        help
+        {% endif %}
+    </a></sup>
+    </header>
+
+    <div id="body">
+    {% block body %}
+    {% endblock %}
+    </div>
+  </body>
+</html>
