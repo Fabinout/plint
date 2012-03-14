@@ -20,8 +20,9 @@
   {% endif %}
 </label><br />
 <dl>
-  <dt><input type="radio" name="template" value="classical" checked="yes">
-  <span class="template">classical</span></input></dt>
+  <dt><input type="radio" name="template" value="classical"
+  id="classical" checked="yes" />
+  <label for="classical"><span class="template">classical</span></label></dt>
   {% if lang == 'fr' %}
   <dd>Alexandrins classiques avec césure à l'hémistiche, rimes plates, genres
   alternés.</dd>
@@ -29,31 +30,31 @@
   <dd>Classical alexandrine verse with <em>hémistiche</em>, flat rhymes, alternate
   rhyme genres.</dd>
   {% endif %}
-  <dt><input type="radio" name="template" value="sonnet">
-  <span class="template">sonnet</span></input></dt>
+  <dt><input type="radio" name="template" value="sonnet" id="sonnet" />
+  <label for="sonnet"><span class="template">sonnet</span></label></dt>
   {% if lang == 'fr' %}
   <dd>Sonnet classique&nbsp;:deux quatrains d'alexandrins
   classiques en rimes embrassées et genres alternés, deux tercets d'alexandrins
   classiques en rimes AAC BBC.</dd>
   {% else %}
-  <dd>Classical sonnet. TODO BLAH.</dd>
+  <dd>Classical sonnet: two <em>quatrains</em> of classical alexandrine verse
+  with <em>rimes embrassées</em> and alternate genres, two <em>tercets</em> of
+  classical alexandrine verse with rhyme pattern AAC BBC.</dd>
   {% endif %}
-  <dt><input type="radio" name="template" value="alexandrin">
-  <span class="template">alexandrin</span></input></dt>
+  <dt><input type="radio" name="template" value="alexandrin" id="alexandrin" />
+  <label for="alexandrin"><span class="template">alexandrin</span></label></dt>
   {% if lang == 'fr' %}
-  <dd>Alexandrins sans hémistiche, sans vérification de la
-  rime.</dd>
+  <dd>Alexandrins sans hémistiche, sans vérification de la rime.</dd>
   {% else %}
-  <dd>Alexandrine without <em>hémistiche</em> and without
-  rhyme.</dd>
+  <dd>Alexandrine without <em>hémistiche</em> and without rhyme.</dd>
   {% endif %}
-  <dt><input type="radio" name="template" value="custom">
-  <span class="template">custom</span> 
+  <dt><input type="radio" name="template" value="custom" id="custom" />
+  <label for="custom"><span class="template">custom</span>
   {% if lang == 'fr' %}
   (<a href="about#template">plus d'infos</a>)
   {%else%}
   (<a href="about#template">more info</a>)
-  {%endif%}</input></dt>
+  {%endif%}</label></dt>
   <dd>
   <textarea name="custom_template" id="custom_template"
   {% if lang == 'fr' %}
