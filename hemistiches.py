@@ -3,7 +3,7 @@ from common import sure_end_fem
 hemis_types = {
   'ok' : '/', # correct
   'bad' : '!', # something wrong
-  'cut' : ':', # falls at the middle of a word
+  'cut' : '?', # falls at the middle of a word
   'fem' : '\\', # preceding word ends by a mute e
   }
 
