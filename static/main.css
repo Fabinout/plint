@@ -55,7 +55,9 @@ body {
   overflow: auto;
 }
 
-#bigform label {
+#bigform ul {
+  list-style-type: none;
+  padding: 0px;
 }
 
 #bigform #submit {
