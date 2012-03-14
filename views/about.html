@@ -2,38 +2,107 @@
 
 {% block body %}
 {% if lang == 'fr' %}
-<h2 id="template">BLAH</h2>
+<p>Bienvenue sur <strong>plint</strong>!</p>
+<h2 id="info">De quoi s'agit-il exactement&nbsp;?</h2>
+<p>C'est la tentative d'<a href="http://a3nm.net">a3nm</a> pour éradiquer la
+poésie française incorrecte. Plint vérifie qu'un poème respecte des contraintes de
+métrique, de rime et de genre de rime. Il utilise <a
+  href="http://gitorious.org/frhyme">frhyme</a> pour les rimes (qui utilise
+lui-même la base de données <a href="http://lexique.org">Lexique</a>), <a
+  href="http://gitorious.org/haspirater">haspirater</a> pour la détection des
+'h' aspirés, et un système écrit à la main avec amour pour la métrique et le
+genre. Il est construit avec <a href="http://python.org">Python</a> et <a
+  href="http://bottlepy.org">Bottle</a>. Vous pouvez récupérer le code sur le <a
+  href="http://cgit.a3nm.net/plint">dépôt plint</a> pour le faire tourner
+localement.</p>
+<p>Publicité gratuite&nbsp;: si vous aimez plint, peut-être serez-vous
+intéressé par le dictionnaire de rimes <a
+  href="http://drime.a3nm.net">drime</a>.</p>
+
+<h2 id="help">Comment s'en servir&nbsp;?</h2>
+<p>Entrez votre poème dans la zone de texte et choisissez le modèle de poème. Si
+aucun des modèles ne vous convient, vous pouvez <a href="#template">écrire le
+  vôtre</a>.</p>
+
+<h2>Qu'est-ce qui est vérifié par plint&nbsp;?</h2>
+<dl>
+  <dt>Métrique.</dt>
+  <dd>La poésie doit obéir à des contraintes métriques&nbsp;:
+  <dl>
+    <dt>Nombre de syllabes</dt>
+    <dd>Le nombre de syllabes par vers est habituellement fixé (12 pour les
+    alexandrins, par exemple). Les syllabes sont comptées en scandant sans
+    élision des <em>e</em> muets sauf à la fin d'un mot lorsque le mot suivant
+    commence par une voyelle ou un <em>h</em> non aspiré (ou si c'est le dernier
+    mot du vers). Le nombre de syllabes n'est <em>pas</em> ce que vous obtenez
+    en lisant le poème comme vous parlez tous les jours. Certains groupes de
+    voyelles peuvent prendre deux syllabes soit systématiquement (par exemple
+    "Léon") ou par une <em>diérèse</em> facultative ou obligatoire
+    ("passion")&nbsp;; plint utilise une approximation permissive des diérèses
+    effectivement autorisées.</dd>
+    <dt>Hémistiche</dt>
+    <dd>Les alexandrins classiques sont divisés en deux <em>hémistiches</em> de
+    6 syllabes. La césure ne doit pas couper un mot et le premier hémistiche ne
+    doit pas se finir par un son faible (ie. une fin féminine non élidée).</dd>
+  </dl>
+  <dt>Rime.</dt>
+  <dd>La contrainte la plus connue est que les vers doivent rimer. Les phonèmes
+  commun dans une rime doivent inclure un son vocalique (par exemple "tâte" et
+  "bête" ne rime pas parce que leur suffixe commun est [t] qui ne contient pas
+  de son consonantique). Les rimes sont vérifiées par plint avec une
+  approximation permissive de la prononciation de la fin des vers&nbsp;; plint
+  suit la distinction brin/brun. Plint comprend des options pour autoriser les
+  rimes normandes (lettres communes à la fin) ou les rimes par assonance (même
+  son vocalique à la fin).</dd>
+  <dt>Genre des rimes.</dt>
+  <dd>En poésique classique, les rimes doivent être <em>féminines</em> ou
+  <em>masculines</em>. Une rime est féminine si elle se termine par un "e", "es"
+  ou "ent" silencieux, et est masculine dans le cas contraire. Les rimes doivent
+  faire rimer alternativement deux terminaisons féminines et deux terminaisons
+  masculines. plint vérifie cela, avec une approximation permissive pour
+  déterminer si une terminaison est féminine ou non.</dd>
+</dl>
+
+<h2>Qu'est-ce qui n'est pas vérifié par plint&nbsp;?</h2>
+
+<p>Le comptage des syllabes est effectué par une approximation permissive qui
+autorisera certaines diérèses ou synérèses non autorisées. Aucune vérification
+n'est faite pour s'assurer que la césure à l'hémistiche se fait à une position
+grammaticale raisonnable. Les rimes sont calculées par une approximation
+permissive, et il en va de même pour les genres. Plus important&nbsp;: plint ne
+vérifie pas si votre poème a un sens, il impose uniquement des contraintes
+formelles. Par exemple, <q>Tatata tatati tatati tatata</q> est reconnu comme un
+alexandrin classique parfaitement valide.</p>
+
+<h2 id="template">Comment faire pour définir ses propres modèles&nbsp;?</h2>
+
 <p>
-Écrivez ici le format suivi par votre poème. Chaque ligne du format
-correspond à un vers (ie. une ligne non-vide). Une ligne peut indiquer
-quatre éléments séparés par une espace : la métrique, l'identifiant de
-rime, l'identifiant de genre, et le type de rime. Le premier est
-obligatoire, les trois derniers sont facultatifs.
+Chaque ligne du format correspond à un vers (ie. une ligne non-vide). Une ligne
+peut indiquer trois éléments séparés par une espace : la métrique, l'identifiant
+de rime et l'identifiant de genre. Le premier est obligatoire, les deux derniers
+sont facultatifs.
 </p>
 <p>
 La métrique indique le nombre de syllabes du vers, et la position des
-hémistiches éventuelles. Il s'agit de totaux de syllabes, séparés par
-'/' pour indiquer les hémistiches. Par exemple, "6/6" est un alexandrin
-classique, "12" est un alexandrin non nécessairement pourvu de coupure à
-l'hémistiche.
+hémistiches éventuelles. Il s'agit de totaux de syllabes, séparés par '/' pour
+indiquer les hémistiches. Par exemple, "6/6" est un alexandrin classique, "12"
+est un alexandrin non nécessairement pourvu de césure à l'hémistiche.
 </p>
 <p>
-L'identifiant de rime sert à regrouper les vers qui doivent rimer
-ensemble. Les vers ayant le même identifiant doivent rimer. Pour
-préciser le type de rime attendue, il est possible de terminer
-l'identifiant par ':' suivie d'une liste d'entiers séparée par des '|'
-indiquant les types possibles pour cette rime. Une rime est acceptable
-si elle remplit l'un des critères. Le premier entier indique le nombre
-de phonèmes communs nécessaires (maximum 4, défaut 1), une rime étant
-acceptée pour ce critère si et seulement si le plus grand suffixe commun
-de la prononciation des vers étiquetés comprend ce nombre de phonèmes,
-ainsi qu'un phonème vocalique obligatoirement : ainsi, une valeur de 1,
-2 ou 3 nécessite au minimum une rime pauvre, suffisante ou riche
-respectivement. Le second entier indique le nombre de caractères communs
-nécessaires pour une rime pour l'œil, ou -1 pour interdire (défaut -1).
-Le troisième entier indique le nombre de phonèmes nécessaires pour une rime par
-assonance, ie. la longueur du suffixe commun en ignorant les phonèmes
-consonantiques (maximum 1, défaut -1).</p>
+L'identifiant de rime sert à regrouper les vers qui doivent rimer ensemble. Les
+vers ayant le même identifiant doivent rimer. Pour préciser le type de rime
+attendue, il est possible de terminer l'identifiant par ':' suivie d'une liste
+d'entiers séparée par des '|' indiquant les types possibles pour cette rime. Une
+rime est acceptable si elle remplit l'un des critères. Le premier entier indique
+le nombre de phonèmes communs nécessaires (maximum 4, défaut 1), une rime étant
+acceptée pour ce critère si et seulement si le plus grand suffixe commun de la
+prononciation des vers étiquetés comprend ce nombre de phonèmes, ainsi qu'un
+phonème vocalique obligatoirement : ainsi, une valeur de 1, 2 ou 3 nécessite au
+minimum une rime pauvre, suffisante ou riche respectivement. Le second entier
+indique le nombre de caractères communs nécessaires pour une rime pour l'œil, ou
+-1 pour interdire (défaut -1). Le troisième entier indique le nombre de phonèmes
+nécessaires pour une rime par assonance, ie. la longueur du suffixe commun en
+ignorant les phonèmes consonantiques (maximum 1, défaut -1).</p>
 <p>
 L'identifiant de genre de rime sert à regrouper les vers qui doivent avoir une
 rime de même genre. Les conventions supplémentaires sont que deux identifiants
@@ -51,7 +120,46 @@ du poème. Les identifiants de rime et de genre sont réinitialisés (ie. peuven
 prendre n'importe quelle valeur), sauf ceux qui commencent par '!'. Il n'est pas
 interdit que le poème et le format ne terminent pas simultanément.
 </p>
-TODO TODO
+
+<p>Désolé si tout cela semble un peu obscur. Vous pouvez regarder les modèles
+prédéfinis pour comprendre comment ils fonctionnent&nbsp;:</p>
+<ul>
+  <li><span class="template"><a
+      href="static/tpl/classical.tpl">classical</a></span></li>
+  <li><span class="template"><a
+      href="static/tpl/sonnet.tpl">sonnet</a></span></li>
+  <li><span class="template"><a
+      href="static/tpl/alexandrin.tpl">alexandrin</a></span></li>
+</ul>
+
+<h2>Problèmes fréquents</h2>
+<ul>
+  <li>Les chiffres arabes ne sont pas reconnus. Écrivez toujours les nombres en
+  toutes lettres.</li>
+  <li>Les sigles et les lettres isolées ne sont pas correctement supportées.
+  Indiquez la prononciation explicitement&nbsp;: remplacez "ce S" par "ce
+  èSse".</li>
+  <li>Si le compte de syllabes dans le vers est correct mais qu'une erreur de
+  métrique est signalée, vérifiez les hémistiches. Les césures incorrectes (qui
+  coupent un mot ou se terminent par un son féminin) sont signalées avec des
+  symboles comme '!', '?' ou ':'.</li>
+</ul>
+
+<h2 id="pron">Comment la prononciation est-elle indiquée&nbsp;?</h2>
+<p>Avec <a href="http://en.wikipedia.org/wiki/X-SAMPA">X-SAMPA</a>. Voyez aussi <a
+  href="https://fr.wiktionary.org/wiki/Annexe:Prononciation/fran%C3%A7ais">l'annexe
+  de Wiktionnaire sur la prononciation du français</a>. Notez qu'en raison de
+limitations diverses, la prononciation indiquée peut être complètement fausse
+pour les premiers phonèmes. Les derniers devraient être bons, cependant.</p>
+
+<h2>Est-ce qu'il y a une API&nbsp;?</h2>
+<p>Pas encore. Si vous voulez faire quelque chose d'original, <a
+  href="http://cgit.a3nm.net/plint">allez récupérer une copie du code</a>.</p>
+
+<h2>Et le nom&nbsp;?</h2>
+
+<p>C'est "plint" comme "poem lint" (comme l'outil "lint" pour les programmes),
+mais aussi pour l'homophonie avec "plainte".</p>
 {% else %}
 <p>Welcome to <strong>plint</strong>!</p>
 <h2 id="info">Wait, what is this?</h2>
@@ -65,6 +173,8 @@ detection, and a carefully handwritten system for metric and genre. It is
 powered by <a href="http://python.org">Python</a> and <a
   href="http://bottlepy.org">Bottle</a>. You can get the code on the <a
   href="http://cgit.a3nm.net/plint">plint repository</a> to run it locally.</p>
+<p>Ad: if you like plint, you might enjoy the French rhyme dictionary <a
+  href="http://drime.a3nm.net">drime</a>.</p>
 
 <h2 id="help">How do I use it?</h2>
 <p>Enter your poem in the text area and select the poem template. If none of the
@@ -96,7 +206,9 @@ predefined templates suit you, you can <a href="#template">write your
   phonemes must include a vowel (eg. "tâte" and "bête" do not rhyme because
   their common phoneme suffix is [t] which does not include a vowel sound).
   plint enforces rhymes trough a liberal approximation of the pronunciation of
-  verse endings; it follows the brin/brun distinction.</dd>
+  verse endings; it follows the brin/brun distinction. plint includes options
+  for rhymes <em>pour l'œil</em> (common letter endings) and <em>assonances</em>
+  (common ending vocalic phonemes)</dd>
   <dt>Rhyme genre.</dt>
   <dd>In classical verse, rhymes must be made between feminine verse endings, or
   masculine verse endings. A verse ending is feminine if it ends with a silent
@@ -127,7 +239,8 @@ interpreted in the following order:</p>
 <li>The first field is the <strong>metric indication</strong>. It is a list of
 syllable counts separated by '/'s to indicate <em>hémistiches</em>. For
 instance, "6/6" is a classical alexandrine, "12" is an alexandrine without
-<em>hémistiche</em>.</li>
+<em>hémistiche</em>. For technical reasons, the total number of syllables in a
+verse is limited to 16.</li>
 <li>The second field is the <strong>rhyme identifier</strong>. Verses with the
 same rhyme identifier must rhyme. You can suffix the pattern with ":" followed
 by a rhyme constraint. The rhyme constraint is up to three '|'-separated
@@ -161,7 +274,7 @@ templates to understand how this works:</p>
   full.</li>
   <li>There is no support for acronyms or individual letters yet. Indicate the
   pronunciation, ie. replace "ce S" by "ce èSse".</li>
-  <li>If the verse total is correct but an error is reported, check the
+  <li>If the verse total is correct but a metric error is reported, check the
   <em>hémistiche</em>. Wrong <em>hémistiches</em> (which cut a word or end in a
   feminine sound) are reported with symbols such as '!', '?' or ':'.</li>
 </ul>
