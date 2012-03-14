@@ -48,8 +48,12 @@
   rhyme.</dd>
   {% endif %}
   <dt><input type="radio" name="template" value="custom">
-  <span class="template">custom</span> TODO help link TODO make this
-  work</input></dt>
+  <span class="template">custom</span> 
+  {% if lang == 'fr' %}
+  (<a href="about#template">plus d'infos</a>)
+  {%else%}
+  (<a href="about#template">more info</a>)
+  {%endif%}</input></dt>
   <dd>
   <textarea name="custom_template" id="custom_template"
   {% if lang == 'fr' %}

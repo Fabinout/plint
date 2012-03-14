@@ -24,6 +24,10 @@ def get_title():
   else:
     return "plint -- French poetry checker"
 
+@app.route('/static/tpl/<filename>')
+def server_static(filename):
+  return static_file(filename, root="./static/tpl", mimetype="text/plain")
+
 @app.route('/static/<filename>')
 def server_static(filename):
   return static_file(filename, root="./static")
@@ -61,7 +65,7 @@ def q():
   if not re.match("^[a-z]+$", d['template']):
     return env.get_template('error.html').render(**d)
   try:
-    f = open("tpl/" + d['template'] + ".tpl")
+    f = open("static/tpl/" + d['template'] + ".tpl")
   except IOError:
     return env.get_template('error.html').render(**d)
   templ = template.Template(f)
