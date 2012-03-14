@@ -85,8 +85,9 @@ if len(sys.argv) != 3:
   sys.exit(1)
 
 f = open(sys.argv[1])
-template = template.Template(f)
+x = f.read()
 f.close()
+template = template.Template(x)
 
 template.reject_errors = True
 
