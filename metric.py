@@ -107,7 +107,7 @@ def parse(text, bound):
       if sum([1 for chunk in words[i-1] if is_vowels(chunk)]) > 1:
         if words[i-1][-1] == 'e' and is_vowels(words[i][0], True):
           words[i-1].pop(-1)
-          words[i-1][-1] = words[i-1][-1]+"'"
+          words[i-1][-1] = words[i-1][-1]+"`"
 
   # group back words
   for word in words:
