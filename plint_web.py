@@ -64,12 +64,19 @@ def q():
     return env.get_template('error.html').render(**d)
   if not re.match("^[a-z]+$", d['template']):
     return env.get_template('error.html').render(**d)
+  if d['template'] == 'custom':
+    x = request.forms.get('custom_template')
+  else:
+    try:
+      f = open("static/tpl/" + d['template'] + ".tpl")
+      x = f.read()
+      f.close()
+    except IOError:
+      return env.get_template('error.html').render(**d)
   try:
-    f = open("static/tpl/" + d['template'] + ".tpl")
-  except IOError:
+    templ = template.Template(x)
+  except ValueError:
     return env.get_template('error.html').render(**d)
-  templ = template.Template(f)
-  f.close()
   r = []
   firsterror = None
   nerror = 0

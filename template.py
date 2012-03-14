@@ -16,6 +16,8 @@ class Pattern:
   def parse_metric(self):
     """Parse from a metric description"""
     verse = [int(x) for x in self.metric.split('/')]
+    if sum(verse) > 16:
+      raise ValueError
     self.hemistiches = []
     self.length = 0
     for v in verse:
@@ -24,23 +26,23 @@ class Pattern:
     self.length = self.hemistiches.pop()
 
 class Template:
-  def __init__(self, stream):
+  def __init__(self, string):
     self.template = []
     self.pattern_line_no = 0
-    self.load(stream)
+    self.load(string)
     self.line_no = 0
     self.position = 0
     self.env = {}
     self.femenv = {}
     self.reject_errors = False
 
-  def load(self, stream):
-    """Load from a stream"""
-    for line in stream.readlines():
+  def load(self, s):
+    """Load from a string"""
+    for line in s.split('\n'):
       line = line.strip()
       self.pattern_line_no += 1
       if line != '' and line[0] != '#':
-        self.template.append(self.parse_line(line.lstrip().rstrip()))
+        self.template.append(self.parse_line(line.strip()))
 
   def count(self, align):
     """total weight of an align"""
