@@ -83,5 +83,5 @@ def q():
   return env.get_template('results.html').render(**d)
 
 if __name__ == '__main__':
-  run(app, host='localhost', port='5000')
+  run(app, host='0.0.0.0', port='5000')
 
