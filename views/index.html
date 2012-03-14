@@ -3,46 +3,63 @@
 {% block body %}
 <form method="POST" action="check" id="bigform">
   <label for="poem">
-  {% if lang == 'fr' %}
-    Poème&nbsp;:
-  {% else %}
-    Poem:
-  {% endif %}
   </label><br />
-  <textarea id="poem" name="poem"></textarea>
+  <textarea id="poem" name="poem"
+  {% if lang == 'fr' %}
+    placeholder="Entrez votre poème ici."
+  {% else %}
+    placeholder="Input your poem here."
+  {% endif %}
+    ></textarea>
   <br/>
   <label for="template">
   {% if lang == 'fr' %}
-    Type de poème&nbsp;:
+    Choisissez un modèle de poème&nbsp;:
   {% else %}
-    Poem type:
+    Choose a poem template:
   {% endif %}
 </label><br />
-<ul>
-  <li><input type="radio" name="template" value="classical" checked="yes">
+<dl>
+  <dt><input type="radio" name="template" value="classical" checked="yes">
+  <span class="template">classical</span></input></dt>
   {% if lang == 'fr' %}
-    Alexandrins classiques avec césure à l'hémistiche, rimes plates, genres
-    alternés.
+  <dd>Alexandrins classiques avec césure à l'hémistiche, rimes plates, genres
+  alternés.</dd>
   {% else %}
-    Classical alexandrine verse with <em>hémistiche</em>, flat rhymes, alternate
-    rhyme genres.
+  <dd>Classical alexandrine verse with <em>hémistiche</em>, flat rhymes, alternate
+  rhyme genres.</dd>
   {% endif %}
-  </input></li>
-  <li><input type="radio" name="template" value="sonnet">
+  <dt><input type="radio" name="template" value="sonnet">
+  <span class="template">sonnet</span></input></dt>
   {% if lang == 'fr' %}
-    Sonnet classique.
+  <dd>Sonnet classique&nbsp;:deux quatrains d'alexandrins
+  classiques en rimes embrassées et genres alternés, deux tercets d'alexandrins
+  classiques en rimes AAC BBC.</dd>
   {% else %}
-    Classical sonnet.
+  <dd>Classical sonnet. TODO BLAH.</dd>
   {% endif %}
-  </input></li>
-  <li><input type="radio" name="template" value="alexandrin">
+  <dt><input type="radio" name="template" value="alexandrin">
+  <span class="template">alexandrin</span></input></dt>
   {% if lang == 'fr' %}
-    Alexandrins sans hémistiche, sans vérification de la rime.
+  <dd>Alexandrins sans hémistiche, sans vérification de la
+  rime.</dd>
   {% else %}
-    Alexandrine without <em>hémistiche</em> and without rhyme.
+  <dd>Alexandrine without <em>hémistiche</em> and without
+  rhyme.</dd>
   {% endif %}
-  </input></li></ul>
-  <p style="font-style: italic;">More templates coming soon!</p>
+  <dt><input type="radio" name="template" value="custom">
+  <span class="template">custom</span> TODO help link TODO make this
+  work</input></dt>
+  <dd>
+  <textarea name="custom_template" id="custom_template"
+  {% if lang == 'fr' %}
+  placeholder="modèle personnalisé"
+  {% else %}
+  placeholder="custom template"
+  {% endif %}
+  ></textarea>
+</dd>
+</dl>
   <input id="submit" type="submit"
   {% if lang == 'fr' %}
     value="Valider"
