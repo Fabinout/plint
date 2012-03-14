@@ -1,10 +1,7 @@
 #!/usr/bin/python3 -uO
 
-import re
 import sys
-import metric
 import template
-from pprint import pprint
 
 if len(sys.argv) != 2:
   print("Usage: %s TEMPLATE" % sys.argv[0], file=sys.stderr)
