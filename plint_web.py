@@ -10,13 +10,31 @@ env = Environment(loader=PackageLoader('plint_web', 'views'))
 
 app = Bottle()
 
+def best_match(matches, header):
+  # inspired by http://www.xml.com/pub/a/2005/06/08/restful.html
+
+  def parse_one(t):
+    parts = t.split(";")
+    d = dict([tuple([s.strip() for s in param.split("=")])
+      for param in parts[1:]])
+    if 'q' not in d.keys():
+      d['q'] = "1"
+    return (parts[0], d)
+
+  parts = []
+  for p in header.split(","):
+    parsed = parse_one(p)
+    parts.append((float(parsed[1]['q']), parsed[0].split("-")))
+  for lang in [x[1] for x in sorted(parts, reverse=True)]:
+    for match in matches:
+      if match in lang:
+        return match
+  return matches[0]
+
 def get_locale():
-  # TODO
-  if "fr" in request.headers.get('Accept-Language'):
-    return "fr"
-  else:
-    return 'en'
-  #best_match(['en', 'fr'])
+  header = request.headers.get('Accept-Language')
+  print(header)
+  return best_match(['fr', 'en'], header)
 
 def get_title():
   if get_locale() == 'fr':
@@ -57,6 +75,7 @@ def q():
   d = {
       'poem': request.forms.get('poem'),
       'template': request.forms.get('template'),
+      'lang': get_locale(),
     }
   d['poem'] = re.sub(r'<>&', '', d['poem'])
   poem = check(d['poem'])
