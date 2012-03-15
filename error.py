@@ -66,7 +66,7 @@ class ErrorBadRhymeSound(ErrorBadRhyme):
     ok = []
     if len(pron) > 0:
       ok.append("")
-    return '/'.join([common.to_xsampa(x[-4:]) for x in pron])
+    return '/'.join(list(set([common.to_xsampa(x[-4:]) for x in pron])))
 
   def get_id(self):
     return self.pattern.myid
