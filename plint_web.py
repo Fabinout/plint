@@ -34,7 +34,10 @@ def best_match(matches, header):
 def get_locale():
   header = request.headers.get('Accept-Language')
   print(header)
-  return best_match(['fr', 'en'], header)
+  try:
+    return best_match(['fr', 'en'], header)
+  except AttributeError:
+    return 'en'
 
 def get_title():
   if get_locale() == 'fr':
