@@ -7,7 +7,7 @@ from common import strip_accents
 
 def contains_trema(chunk):
   """Test if a string contains a word with a trema"""
-  for x in ['ä', 'ï', 'ö', 'ü', 'ÿ']:
+  for x in ['ä', 'ë', 'ï', 'ö', 'ü', 'ÿ']:
     if x in chunk:
       return True
   return False
