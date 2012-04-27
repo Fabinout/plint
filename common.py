@@ -6,6 +6,7 @@ import re
 
 vowels = 'aeiouyœæ'
 consonants = "bcçdfghjklmnpqrstvwxz"
+legal = vowels + consonants + ' -'
 
 # a variant of x-sampa such that all french phonemes are one-character
 SUBSTS = [

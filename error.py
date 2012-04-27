@@ -34,6 +34,14 @@ class Error:
         l.append(self.say(x))
     return '\n'.join(l)
 
+class ErrorBadCharacters(Error):
+  def __init__(self, characters):
+    self.characters = characters
+
+  def report(self):
+    return Error.report(self, "Illegal character: %s"
+        % ', '.join(["'" + a + "'" for a in self.characters]))
+
 class ErrorBadRhyme(Error):
   def __init__(self, expected, inferred):
     Error.__init__(self)

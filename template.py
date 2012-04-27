@@ -3,7 +3,7 @@ from metric import parse
 from hemistiches import check_hemistiches
 import copy
 import rhyme
-from common import normalize
+from common import normalize, legal, strip_accents_one
 
 class Pattern:
   def __init__(self, metric, myid, femid, constraint):
@@ -63,6 +63,8 @@ class Template:
 
   def match(self, line):
     """Check a line against current pattern, return errors"""
+
+    line = normalize(line)
     pattern = self.get()
     # compute alignments, check hemistiches, sort by score
     possible = parse(line, pattern.length + 2)
@@ -72,6 +74,14 @@ class Template:
     possible = sorted(possible, key=(lambda x: x[0]))
 
     errors = []
+
+    # check characters
+    illegal = set()
+    for x in line:
+      if not strip_accents_one(x)[0] in legal:
+        illegal.add(x)
+    if len(illegal) > 0:
+      errors.append(error.ErrorBadCharacters(illegal))
 
     # check metric
     if len(possible) == 0 or possible[0][0] != 0:
@@ -85,13 +95,12 @@ class Template:
     # rhymes
     if pattern.myid not in self.env.keys():
       # initialize the rhyme
-      self.env[pattern.myid] = rhyme.Rhyme(normalize(line),
-          pattern.constraint)
+      self.env[pattern.myid] = rhyme.Rhyme(line, pattern.constraint)
     else:
       # update the rhyme
       old_p = self.env[pattern.myid].phon
       old_e = self.env[pattern.myid].eye
-      self.env[pattern.myid].feed(normalize(line), pattern.constraint)
+      self.env[pattern.myid].feed(line, pattern.constraint)
       # no more possible rhymes, something went wrong
       if not self.env[pattern.myid].satisfied():
         self.env[pattern.myid].phon = old_p
