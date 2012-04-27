@@ -15,6 +15,9 @@ def annotate_aspirated(word):
   else:
     return word
 
+def contains_break(chunk):
+  return ' ' in chunk or '-' in chunk
+
 def fit(chunks, pos, left):
   """bruteforce exploration of all possible vowel cluster weghting,
   within a maximum total of left"""
@@ -26,8 +29,11 @@ def fit(chunks, pos, left):
   if (not is_vowels(chunks[pos])):
     return [[chunks[pos]] + x for x in fit(chunks, pos+1, left)]
   else:
-    if (pos >= len(chunks) - 2 and chunks[pos] == 'e'):
+    if ((pos >= len(chunks) - 2 and chunks[pos] == 'e') and (
+        pos <= 0 or not contains_break(chunks[pos-1])) and (
+        pos <= 1 or not contains_break(chunks[pos-2]))):
       # special case for verse endings, which can get elided (or not)
+      # but we don't elide lone syllables ("prends-le", etc.)
       if pos == len(chunks) - 1:
         weights = [0] # ending 'e' is elided
       elif chunks[pos+1] == 's':
@@ -39,7 +45,12 @@ def fit(chunks, pos, left):
       else:
         weights = possible_weights(chunks[pos])
     else:
-      weights = possible_weights(chunks[pos])
+      if (pos >= len(chunks) - 1 and chunks[pos] == 'e' and 
+          pos > 0 and (chunks[pos-1].endswith('-c') or
+            chunks[pos-1].endswith('-j'))):
+        weights = [0] # -ce and -je are elided
+      else:
+        weights = possible_weights(chunks[pos])
     result = []
     for weight in weights:
       # combine all possibilities
@@ -77,6 +88,38 @@ def parse(text, bound):
 
   # split in words
   words = text.split(' ')
+
+  # other exceptions
+  for i in range(len(words)):
+    # no elision on y- words except "ypérite", "yeuse", "yeux"
+    if words[i].startswith('y') and words[i] != "y" and not (
+        words[i].startswith('yp') or words[i].startswith('yeu')):
+      words[i] = "*" + words[i]
+
+    # no elision for "oui", "ouis", "ouistitis"
+    # but elision for "ouighour"
+    # TODO boileau writes:
+    # "Ont l'esprit mieux tourné que n'a l'homme ? Oui sans doute."
+    # so it's unclear what should be done here
+    # if (words[i] == "oui" or words[i] == "ouis" or
+    #     words[i].startswith("ouistiti")):
+    #   words[i] = "*" + words[i]
+
+    # no elision on those numerals
+    # TODO "un" or "une" are sometimes elidable and sometimes non-elidable
+    # Belle, une fois encor, réponds à mon appel.
+    # Mon journal, il est vrai, a une belle une.
+    if (words[i] == "onze"):
+      words[i] = "*" + words[i]
+
+    if len(words[i]) == 1 and words[i][0] in consonants:
+      if (words[i] == 'w'):
+        words[i] = "doublevé"
+      else:
+        words[i] = words[i] + "a"
+
+
+  # aspirated
   words = [annotate_aspirated(word) for word in words if word != '']
 
   pattern = re.compile('(['+consonants+'*-]*)', re.UNICODE)
