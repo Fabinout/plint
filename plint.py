@@ -4,6 +4,7 @@ import sys
 import template
 
 def run():
+  ok = True
   while True:
     line = sys.stdin.readline()
     if not line:
@@ -11,6 +12,8 @@ def run():
     errors = template.check(line)
     for error in errors:
       print(error.report(), file=sys.stderr)
+      ok = False
+  return ok
 
 if __name__ == '__main__':
   if len(sys.argv) != 2:
@@ -24,5 +27,6 @@ if __name__ == '__main__':
   f.close()
   template = template.Template(x)
 
-  run()
+  ok = run()
+  sys.exit(0 if ok else 1)
 
