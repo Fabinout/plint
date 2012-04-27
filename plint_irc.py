@@ -80,7 +80,7 @@ def manage(line, silent=False):
 
 if len(sys.argv) != 3:
   print("Usage: %s TEMPLATE POEM" % sys.argv[0], file=sys.stderr)
-  print("Check stdin according to template, report errors on stdout",
+  print("Check POEM according to TEMPLATE, add valid verse from stdin to POEM",
       file=sys.stderr)
   sys.exit(1)
 
