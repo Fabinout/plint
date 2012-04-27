@@ -29,9 +29,9 @@ def fit(chunks, pos, left):
   if (not is_vowels(chunks[pos])):
     return [[chunks[pos]] + x for x in fit(chunks, pos+1, left)]
   else:
-    if ((pos >= len(chunks) - 2 and chunks[pos] == 'e') and (
-        pos <= 0 or not contains_break(chunks[pos-1])) and (
-        pos <= 1 or not contains_break(chunks[pos-2]))):
+    if ((pos >= len(chunks) - 2 and chunks[pos] == 'e') and not (
+        pos <= 0 or contains_break(chunks[pos-1])) and not (
+        pos <= 1 or contains_break(chunks[pos-2]))):
       # special case for verse endings, which can get elided (or not)
       # but we don't elide lone syllables ("prends-le", etc.)
       if pos == len(chunks) - 1:
