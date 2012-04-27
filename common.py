@@ -43,8 +43,11 @@ def norm_spaces(text):
 
 def rm_punct(text, with_apostrophe = False):
   """Remove punctuation from text"""
+  text = re.sub("’", "'", text) # no weird apostrophes
+  text = re.sub("' ", "'", text) # space after apostrophes
   if not with_apostrophe:
     text = re.sub("'", '', text)
+
   #TODO rather: keep only good chars
   pattern = re.compile("[^'\w -]", re.UNICODE)
   text2 = pattern.sub(' ', text)
