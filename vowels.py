@@ -19,7 +19,7 @@ def possible_weights(chunk):
   # old spelling and weird exceptions
   if chunk in ['ouï']:
     return [2]
-  if chunk in ['eüi', 'aoû']:
+  if chunk in ['eüi', 'aoû', 'uë']:
     return [1]
   if contains_trema(chunk):
     return [2]
