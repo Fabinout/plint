@@ -12,7 +12,7 @@ def check_spaces(align, pos):
   if pos >= len(align):
    # not enough syllabes for hemistiche
     return "bad"
-  if align[pos] == ' ':
+  if align[pos] == ' ' or '-' in align[pos]:
     # word boundary here, so this is ok
     return "ok"
   # skip consonants
