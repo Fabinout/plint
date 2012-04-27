@@ -45,7 +45,7 @@ def fit(chunks, pos, left):
       else:
         weights = possible_weights(chunks[pos])
     else:
-      if (pos >= len(chunks) - 1 and chunks[pos] == 'e' and 
+      if (pos >= len(chunks) - 1 and chunks[pos] == 'e' and
           pos > 0 and (chunks[pos-1].endswith('-c') or
             chunks[pos-1].endswith('-j'))):
         weights = [0] # -ce and -je are elided
