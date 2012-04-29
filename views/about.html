@@ -25,35 +25,34 @@ aucun des modèles ne vous convient, vous pouvez <a href="#template">écrire le
   vôtre</a>.</p>
 
 <h2>Qu'est-ce qui est vérifié par plint&nbsp;?</h2>
+<p>Ces explications simplifiées ne sont pas exhaustives. Pour une description
+exacte, se reporter au code source.</p>
 <dl>
-  <dt>Métrique.</dt>
-  <dd>La poésie doit obéir à des contraintes métriques&nbsp;:
-  <dl>
-    <dt>Nombre de syllabes</dt>
-    <dd>Le nombre de syllabes par vers est habituellement fixé (12 pour les
-    alexandrins, par exemple). Les syllabes sont comptées en scandant sans
-    élision des <em>e</em> muets sauf à la fin d'un mot lorsque le mot suivant
-    commence par une voyelle ou un <em>h</em> non aspiré (ou si c'est le dernier
-    mot du vers). Le nombre de syllabes n'est <em>pas</em> ce que vous obtenez
-    en lisant le poème comme vous parlez tous les jours. Certains groupes de
-    voyelles peuvent prendre deux syllabes soit systématiquement (par exemple
-    "Léon") ou par une <em>diérèse</em> facultative ou obligatoire
-    ("passion")&nbsp;; plint utilise une approximation permissive des diérèses
-    effectivement autorisées.</dd>
-    <dt>Hémistiche</dt>
-    <dd>Les alexandrins classiques sont divisés en deux <em>hémistiches</em> de
-    6 syllabes. La césure ne doit pas couper un mot et le premier hémistiche ne
-    doit pas se finir par un son faible (ie. une fin féminine non élidée).</dd>
-  </dl>
+  <dt>Nombre de syllabes</dt>
+  <dd>Le nombre de syllabes par vers est habituellement fixé (12 pour les
+  alexandrins, par exemple). Les syllabes sont comptées en scandant sans
+  élision des <em>e</em> muets sauf quand un mot se termine par un <em>e</em>
+  muet et le mot suivant commence par une voyelle ou un <em>h</em> non aspiré
+  (ou si c'est le dernier mot du vers). Le nombre de syllabes n'est <em>pas</em>
+  ce que vous obtenez en lisant le poème comme vous parlez tous les jours.
+  Certains groupes de voyelles peuvent prendre deux syllabes soit
+  systématiquement (par exemple "Léon") ou par une <em>diérèse</em> facultative
+  ou obligatoire ("passion")&nbsp;; plint utilise une approximation permissive
+  des diérèses effectivement autorisées.</dd>
+  <dt>Hémistiche</dt>
+  <dd>Les alexandrins classiques sont divisés en deux <em>hémistiches</em> de
+  6 syllabes. La césure ne doit pas couper un mot et le premier hémistiche ne
+  doit pas se finir par un son faible (ie. une fin féminine non élidée).</dd>
   <dt>Rime.</dt>
   <dd>La contrainte la plus connue est que les vers doivent rimer. Les phonèmes
-  commun dans une rime doivent inclure un son vocalique (par exemple "tâte" et
-  "bête" ne rime pas parce que leur suffixe commun est [t] qui ne contient pas
-  de son consonantique). Les rimes sont vérifiées par plint avec une
-  approximation permissive de la prononciation de la fin des vers&nbsp;; plint
-  suit la distinction brin/brun. Plint comprend des options pour autoriser les
-  rimes normandes (lettres communes à la fin) ou les rimes par assonance (même
-  son vocalique à la fin).</dd>
+  communs dans une rime doivent inclure un son vocalique (par exemple "tâte" et
+  "bête" ne riment pas parce que leur suffixe commun est [t] qui ne contient pas
+  de son vocalique). Les rimes sont vérifiées par plint avec une approximation
+  permissive de la prononciation de la fin des vers. Plint confond [ɛ] et [ɛː]
+  ("mettre" et "maître") et [a] et [ɑ] ("patte" et "pâte") mais pas [ɛ̃] et [œ̃]
+  ("brin" et "brun") ou [ɔ] et [o] ("cotte" et "côte"). Plint comprend des
+  options pour autoriser les rimes normandes (lettres communes à la fin) ou les
+  rimes par assonance (dernier son vocalique commun).</dd>
   <dt>Genre des rimes.</dt>
   <dd>En poésie classique, les rimes doivent être <em>féminines</em> ou
   <em>masculines</em>. Une rime est féminine si elle se termine par un "e", "es"
@@ -183,33 +182,33 @@ predefined templates suit you, you can <a href="#template">write your
   own</a>.</p>
 
 <h2>What does plint check?</h2>
+<p>Here are some simplified explanations. To know all the details, go read the
+source code.</p>
 <dl>
-  <dt>Metric.</dt>
-  <dd>French verse must obey metric constraints:
-  <dl>
-    <dt>Syllable count</dt>
-    <dd>The number of syllables in each verse is usually fixed (12 in
-    alexandrines, for instance). Syllables are counted in a reading with no
-    elision of mute <em>e</em>'s except at the end of a word <em>and</em> when
-    the following word starts with a vowel or non-aspirated <em>h</em> (or if it
-    is the last word). The syllable count is <em>not</em> what you get with a
-    colloquial everyday reading. Some vowels clusters can count for two
-    syllables either naturally ("Léon") or through <em>diérèse</em> ("passion");
-    plint uses a liberal approximation of allowed <em>diérèses</em>.</dd>
-    <dt>Hemistiche</dt>
-    <dd>For classical alexandrines, the 12 syllables are separated in two groups
-    of 6 with an intermediate cesura (the <em>hémistiche</em>). The cesura must
-    not split a word and must not end in a weak sound (essentially, a non-elided
-    feminine ending).</dd>
-  </dl>
+  <dt>Syllable count</dt>
+  <dd>The number of syllables in each verse is usually fixed (12 in
+  alexandrines, for instance). Syllables are counted in a reading with no
+  elision of mute <em>e</em>'s except at the end of a word <em>and</em> when
+  the following word starts with a vowel or non-aspirated <em>h</em> (or if it
+  is the last word). The syllable count is <em>not</em> what you get with a
+  colloquial everyday reading. Some vowels clusters can count for two
+  syllables either naturally ("Léon") or through <em>diérèse</em> ("passion");
+  plint uses a liberal approximation of allowed <em>diérèses</em>.</dd>
+  <dt>Hemistiche</dt>
+  <dd>For classical alexandrines, the 12 syllables are separated in two groups
+  of 6 with an intermediate cesura (the <em>hémistiche</em>). The cesura must
+  not split a word and must not end in a weak sound (essentially, a non-elided
+  feminine ending).</dd>
   <dt>Rhyme.</dt>
   <dd>The most well-known constraint is that verses must rhyme. The rhyming
   phonemes must include a vowel (eg. "tâte" and "bête" do not rhyme because
   their common phoneme suffix is [t] which does not include a vowel sound).
   plint enforces rhymes trough a liberal approximation of the pronunciation of
-  verse endings; it follows the brin/brun distinction. plint includes options
-  for rhymes <em>pour l'œil</em> (common letter endings) and <em>assonances</em>
-  (common ending vocalic phonemes)</dd>
+  verse endings. Plint merges [ɛ] et [ɛː] ("mettre" and "maître") and [a] and
+  [ɑ] ("patte" and "pâte") but distinguishes [ɛ̃] and [œ̃] ("brin" and "brun") and
+  [ɔ] and [o] ("cotte" and "côte"). plint includes options for rhymes <em>pour
+    l'œil</em> (common letter endings) and <em>assonances</em> (common ending
+  vocalic phonemes).</dd>
   <dt>Rhyme genre.</dt>
   <dd>In classical verse, rhymes must be made between feminine verse endings, or
   masculine verse endings. A verse ending is feminine if it ends with a silent
