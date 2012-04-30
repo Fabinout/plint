@@ -112,11 +112,18 @@ def parse(text, bound):
     if (words[i] == "onze"):
       words[i] = "*" + words[i]
 
-    if len(words[i]) == 1 and words[i][0] in consonants:
-      if (words[i] == 'w'):
-        words[i] = "doublevé"
-      else:
-        words[i] = words[i] + "a"
+    all_consonants = True
+    for x in words[i]:
+      if not x in consonants:
+        all_consonants = False
+    if all_consonants:
+      new_word = ''
+      for x in words[i]:
+        if (words[i] == 'w'):
+          new_word += "doublevé-"
+        else:
+          new_word += words[i]+'a-'
+      words[i] = new_word
 
 
   # aspirated
