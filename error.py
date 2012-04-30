@@ -164,3 +164,15 @@ class ErrorBadMetric(Error):
         + (["... other options omitted ..."] if truncated else [])
         )
 
+class ErrorMultipleWordOccurrence(Error):
+  def __init__(self, word, occurrences):
+    self.word = word
+    self.occurrences = occurrences
+
+  def get_id(self):
+    return self.pattern.myid
+
+  def report(self):
+    return Error.report(self, "%d occurrences of word %s for rhyme %s"
+        % (self.occurrences, self.word, self.get_id()))
+

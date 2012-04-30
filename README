@@ -27,6 +27,8 @@ It depends on haspirater and frhyme, and the web interface requires CherryPy.
 
 Place the haspirater.json and haspirater.py from haspirater in the main
 directory. Place the generated frhyme.json and frhyme.py in the main directory.
+Generate the occurrences file as the standard output of
+lexique_occurrences_retrieve.sh.
 
 == 3. Usage ==
 

@@ -76,9 +76,10 @@ def is_consonants(chunk):
       return False
   return True
 
-def normalize(text, with_apostrophe=False):
+def normalize(text, with_apostrophe=False, downcase=True):
   """Normalize text, ie. lowercase, no useless punctuation or whitespace"""
-  return norm_spaces(rm_punct(text.lower(), with_apostrophe)).rstrip().lstrip()
+  return norm_spaces(rm_punct(text.lower() if downcase else text,
+      with_apostrophe)).rstrip().lstrip()
 
 def subst(string, subs):
   if len(subs) == 0:

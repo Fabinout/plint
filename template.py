@@ -4,6 +4,7 @@ from hemistiches import check_hemistiches
 import copy
 import rhyme
 from common import normalize, legal, strip_accents_one
+from nature import nature_count
 
 class Pattern:
   def __init__(self, metric, myid, femid, constraint):
@@ -34,6 +35,7 @@ class Template:
     self.position = 0
     self.env = {}
     self.femenv = {}
+    self.occenv = {}
     self.reject_errors = False
 
   def load(self, s):
@@ -64,6 +66,7 @@ class Template:
   def match(self, line):
     """Check a line against current pattern, return errors"""
 
+    line_with_case = normalize(line, downcase=False)
     line = normalize(line)
     pattern = self.get()
     # compute alignments, check hemistiches, sort by score
@@ -106,6 +109,17 @@ class Template:
         self.env[pattern.myid].phon = old_p
         self.env[pattern.myid].eye = old_e
         errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid], None))
+
+    # occurrences
+    if pattern.myid not in self.occenv.keys():
+      self.occenv[pattern.myid] = {}
+    last_word = line_with_case.split(' ')[-1]
+    if last_word not in self.occenv[pattern.myid].keys():
+      self.occenv[pattern.myid][last_word] = 0
+    self.occenv[pattern.myid][last_word] += 1
+    if self.occenv[pattern.myid][last_word] > nature_count(last_word):
+      errors.append(error.ErrorMultipleWordOccurrence(last_word,
+        self.occenv[pattern.myid][last_word]))
 
     # rhyme genres
     # inequality constraint
@@ -162,6 +176,7 @@ class Template:
     self.position = 0
     self.env = self.reset_conditional(self.env)
     self.femenv = self.reset_conditional(self.femenv)
+    self.occenv = {} # always reset
 
   def get(self):
     """Get next state, resetting if needed"""
