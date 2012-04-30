@@ -66,14 +66,34 @@ class Template:
 
     line = normalize(line)
     pattern = self.get()
+
+    errors = []
+
+    # rhymes
+    if pattern.myid not in self.env.keys():
+      # initialize the rhyme
+      self.env[pattern.myid] = rhyme.Rhyme(line, pattern.constraint)
+    else:
+      # update the rhyme
+      old_p = self.env[pattern.myid].phon
+      old_e = self.env[pattern.myid].eye
+      self.env[pattern.myid].feed(line, pattern.constraint)
+      # no more possible rhymes, something went wrong
+      if not self.env[pattern.myid].satisfied():
+        self.env[pattern.myid].phon = old_p
+        self.env[pattern.myid].eye = old_e
+        errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid], None))
+
     # compute alignments, check hemistiches, sort by score
-    possible = parse(line, pattern.length + 2)
+    possible = parse(line, self.env[pattern.myid].phon, pattern.length + 2)
+    if not possible:
+      errors.append(error.ErrorForbiddenPattern())
+      possible = []
+      return errors, pattern
     possible = list(map((lambda p: (p[0], p[1],
       check_hemistiches(p[0], pattern.hemistiches))), possible))
     possible = map((lambda x: (self.rate(pattern, x), x)), possible)
     possible = sorted(possible, key=(lambda x: x[0]))
-
-    errors = []
 
     # check characters
     illegal = set()
@@ -91,21 +111,6 @@ class Template:
     # keep the best alignment as hypotheses
     possible = [(score, align) for (score, align) in possible
         if score == possible[0][0]]
-
-    # rhymes
-    if pattern.myid not in self.env.keys():
-      # initialize the rhyme
-      self.env[pattern.myid] = rhyme.Rhyme(line, pattern.constraint)
-    else:
-      # update the rhyme
-      old_p = self.env[pattern.myid].phon
-      old_e = self.env[pattern.myid].eye
-      self.env[pattern.myid].feed(line, pattern.constraint)
-      # no more possible rhymes, something went wrong
-      if not self.env[pattern.myid].satisfied():
-        self.env[pattern.myid].phon = old_p
-        self.env[pattern.myid].eye = old_e
-        errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid], None))
 
     # rhyme genres
     # inequality constraint

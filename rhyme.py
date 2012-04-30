@@ -1,6 +1,7 @@
 #!/usr/bin/python3 -u
 #encoding: utf8
 
+import copy
 import re
 import sys
 from pprint import pprint
@@ -11,6 +12,18 @@ import functools
 NBEST = 5
 # phonetic vowels
 vowel = list("Eeaio592O#@y%u()$")
+
+liaison = {
+    'c': 'k',
+    'd': 't',
+    'g': 'k',
+    'p': 'p',
+    'r': 'R',
+    's': 'z',
+    't': 't',
+    'x': 'z',
+    }
+
 
 class Constraint:
   def __init__(self, phon, eye, aphon):
@@ -113,8 +126,18 @@ def concat_couples(a, b):
 def lookup(s):
   """lookup the pronunciation of s, adding rime normande kludges"""
   result = raw_lookup(s)
-  if s.endswith('er'):
+  if s.endswith('er') or s.endswith('ers'):
     result.add("ER")
+  if s.endswith('aître'):
+    result.add("atR")
+  # TODO better here
+  result2 = copy.deepcopy(result)
+  # the case 'ent' would lead to trouble for gender
+  if s[-1] in liaison.keys() and not s.endswith('ent'):
+    for r in result2:
+      result.add(r + liaison[s[-1]])
+      if (s[-1] == 's'):
+        result.add(r + 's')
   return result
 
 def raw_lookup(s):

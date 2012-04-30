@@ -6,6 +6,7 @@ from common import normalize, is_vowels, consonants, sure_end_fem
 from vowels import possible_weights
 import haspirater
 
+
 def annotate_aspirated(word):
   """Annotate aspirated 'h'"""
   if word[0] != 'h':
@@ -58,7 +59,7 @@ def fit(chunks, pos, left):
         left - weight)]
     return result
 
-def feminine(align, verse):
+def feminine(align, verse, phon):
   for a in sure_end_fem:
     if verse.endswith(a):
       return ['F']
@@ -69,13 +70,23 @@ def feminine(align, verse):
     return ['F'] # mute -ent
   if align[-2][1] > 0 and align[-2][0] == 'e':
     return ['M'] # non-mute "-ent" by the choice of metric
-  # what now? "tient" vs. "lient" for instance, 
-  # TODO check pronunciation? :-/
-  return ['M', 'F']
+  possible = []
+  # now, we must check pronunciation?
+  # "tient" vs. "lient" for instance, "excellent"...
+  for possible_phon in phon:
+    if possible_phon.endswith(')') or possible_phon.endswith('#'):
+      possible.append('M')
+    else:
+      possible.append('F')
+      if possible_phon.endswith('E') and verse.endswith('aient'):
+        # imparfait and conditionnel are masculine...
+        possible.append('M')
+  return possible
 
-def parse(text, bound):
-  """Return possible aligns for text, bound is an upper bound on the
-  align length to limit running time"""
+
+def parse(text, phon, bound):
+  """Return possible aligns for text, bound is an upper bound on the align
+  length to limit running time, phon is the pronunciation to help for gender"""
 
   original_text = normalize(text)
 
@@ -124,6 +135,8 @@ def parse(text, bound):
 
   pattern = re.compile('(['+consonants+'*-]*)', re.UNICODE)
 
+  forbidden = False
+
   # cut each word in chunks of vowels and consonants, with some specific
   # kludges
   for i in range(len(words)):
@@ -147,10 +160,28 @@ def parse(text, bound):
     words[i] = nwords
     # remove mute 'e'
     if i > 0:
-      if sum([1 for chunk in words[i-1] if is_vowels(chunk)]) > 1:
-        if words[i-1][-1] == 'e' and is_vowels(words[i][0], True):
+      if is_vowels(words[i][0], True):
+        if words[i-1][-1] == 'e' and sum(
+            [1 for chunk in words[i-1] if is_vowels(chunk)]) > 1:
           words[i-1].pop(-1)
           words[i-1][-1] = words[i-1][-1]+"`"
+      else:
+        if words[i-1][-1] == 'ée' or words[i-1][-1] == 'ie':
+          forbidden = True
+      if words[i-1][-1] == 's' and len(words[i-1]):
+        if words[i-1][-2] == 'ée' or words[i-1][-2] == 'ie':
+          forbidden = True
+        # TODO there are arcane rules for "aient"
+      # case of "soient"
+      # TODO there are a lot of "oient" in boileau and malherme
+      # so apparently there is no simple way to check that
+      # if words[i-1][-1] == 'nt' and len(words[i-1]):
+      #   if words[i-1][-2] == 'oie':
+      #     if len(words[i-1]) != 3 or words[i-1][-3] != 's':
+      #       forbidden = True
+
+  if forbidden:
+    return None
 
   # group back words
   for word in words:
@@ -160,6 +191,6 @@ def parse(text, bound):
   # return all possibilities to weigh the vowel clusters, annotated by
   # the femininity of the align (depending both on the align and
   # original text)
-  return list(map((lambda x: (x, feminine(x, original_text))),
+  return list(map((lambda x: (x, feminine(x, original_text, phon))),
     fit(chunks, 0, bound)))
 

@@ -42,6 +42,14 @@ class ErrorBadCharacters(Error):
     return Error.report(self, "Illegal character: %s"
         % ', '.join(["'" + a + "'" for a in self.characters]))
 
+class ErrorForbiddenPattern(Error):
+  def __init__(self):
+    # TODO give more info
+    pass
+
+  def report(self):
+    return Error.report(self, "Illegal ambiguous pattern")
+
 class ErrorBadRhyme(Error):
   def __init__(self, expected, inferred):
     Error.__init__(self)
