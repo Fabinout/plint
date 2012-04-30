@@ -111,6 +111,13 @@ def concat_couples(a, b):
   return s
 
 def lookup(s):
+  """lookup the pronunciation of s, adding rime normande kludges"""
+  result = raw_lookup(s)
+  if s.endswith('er'):
+    result.add("ER")
+  return result
+
+def raw_lookup(s):
   # kludge: take the last three words and concatenate them to take short words
   # into account
   s = s.split(' ')[-3:]
