@@ -1,9 +1,5 @@
 - options for tolerant diaresis, no diarersis, classical diaresis
-- better check of rhyme genre (feed back the pronunciation, beware of
-  "chantaient" !)
 - option to check convoluted acceptability of rhymes
-- option to forbid "ée", "ie", "oient" (except "soient"), "aient" (except
-  imparfait/conditionnel)
 - better check of hemistiches with known words
 
 check that there are no more repetitions of the same word for a rhyme than there

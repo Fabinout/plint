@@ -32,6 +32,7 @@ class Template:
     self.load(string)
     self.line_no = 0
     self.position = 0
+    self.prev = None
     self.env = {}
     self.femenv = {}
     self.reject_errors = False
@@ -111,6 +112,20 @@ class Template:
     # keep the best alignment as hypotheses
     possible = [(score, align) for (score, align) in possible
         if score == possible[0][0]]
+
+    # TODO nazi rule, see how it breaks
+    if not self.prev:
+      self.prev = rhyme.consonant_suffix(line)
+    else:
+      current = rhyme.consonant_suffix(line)
+      if self.prev != current:
+        if (current[-1] not in rhyme.liaison.keys() or self.prev[-1] not in
+            rhyme.liaison.keys() or rhyme.liaison[current[-1]] !=
+            rhyme.liaison[self.prev[-1]]):
+          print(line)
+          print("CACA %s %s" % (rhyme.consonant_suffix(self.prev),
+            rhyme.consonant_suffix(line)))
+      self.prev = None
 
     # rhyme genres
     # inequality constraint

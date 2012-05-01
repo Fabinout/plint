@@ -7,6 +7,7 @@ import sys
 from pprint import pprint
 import frhyme
 import functools
+from common import consonants
 
 # number of possible rhymes to consider
 NBEST = 5
@@ -17,11 +18,13 @@ liaison = {
     'c': 'k',
     'd': 't',
     'g': 'k',
+    'k': 'k',
     'p': 'p',
     'r': 'R',
     's': 'z',
     't': 't',
     'x': 'z',
+    'z': 'z',
     }
 
 
@@ -123,11 +126,25 @@ def concat_couples(a, b):
       s.add(x + y)
   return s
 
+def consonant_suffix(s):
+  for i in range(len(s)):
+    if not s[-(i+1)] in consonants:
+      break
+  result = s[-(i+1):]
+  if result.endswith('m'):
+    result = result[:-1] + 'n'
+  if result.endswith('à'):
+    result = result[:-1] + 'a'
+  if result.endswith('û'):
+    result = result[:-1] + 'u'
+  return result
+
 def lookup(s):
   """lookup the pronunciation of s, adding rime normande kludges"""
   result = raw_lookup(s)
   if s.endswith('er') or s.endswith('ers'):
     result.add("ER")
+  # this is for "paroître" and stuff:
   if s.endswith('aître'):
     result.add("atR")
   # TODO better here
