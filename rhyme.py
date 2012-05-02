@@ -144,9 +144,6 @@ def lookup(s):
   result = raw_lookup(s)
   if s.endswith('er') or s.endswith('ers'):
     result.add("ER")
-  # this is for "paroître" and stuff:
-  if s.endswith('aître'):
-    result.add("atR")
   # TODO better here
   result2 = copy.deepcopy(result)
   # the case 'ent' would lead to trouble for gender
