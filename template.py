@@ -29,6 +29,9 @@ class Template:
   def __init__(self, string):
     self.template = []
     self.pattern_line_no = 0
+    self.forbidden_ok = False
+    self.normande_ok = True
+    self.mergers = []
     self.load(string)
     self.line_no = 0
     self.position = 0
@@ -37,13 +40,29 @@ class Template:
     self.femenv = {}
     self.reject_errors = False
 
+  def read_option(self, x):
+    key, value = x.split(':')
+    if key == "merge":
+      self.mergers.append(value)
+    elif key == "forbidden_ok":
+      self.forbidden_ok = str2bool(value)
+    elif key == "normande_ok":
+      self.normande_ok = str2bool(value)
+    else:
+      raise ValueError
+
   def load(self, s):
     """Load from a string"""
     for line in s.split('\n'):
       line = line.strip()
       self.pattern_line_no += 1
       if line != '' and line[0] != '#':
-        self.template.append(self.parse_line(line.strip()))
+        if line[0] == '!':
+          # don't count the '!' in the options, that's why we use [1:]
+          for option in line.split()[1:]:
+            self.read_option(option)
+        else:
+          self.template.append(self.parse_line(line.strip()))
 
   def count(self, align):
     """total weight of an align"""
@@ -73,8 +92,8 @@ class Template:
     # rhymes
     if pattern.myid not in self.env.keys():
       # initialize the rhyme
-      # TODO mergers
-      self.env[pattern.myid] = rhyme.Rhyme(line, pattern.constraint)
+      self.env[pattern.myid] = rhyme.Rhyme(line, pattern.constraint,
+          self.mergers, self.normande_ok)
     else:
       # update the rhyme
       old_p = self.env[pattern.myid].phon
@@ -87,7 +106,8 @@ class Template:
         errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid], None))
 
     # compute alignments, check hemistiches, sort by score
-    possible = parse(line, self.env[pattern.myid].phon, pattern.length + 2)
+    possible = parse(line, self.env[pattern.myid].phon, pattern.length + 2,
+        self.forbidden_ok)
     if not possible:
       errors.append(error.ErrorForbiddenPattern())
       possible = []
@@ -154,9 +174,9 @@ class Template:
     if len(idsplit) >= 2:
       constraint = idsplit[-1].split('|')
       if len(constraint) > 0:
-        constraint[0] = int(constraint[0])
+        constraint[0] = False if constraint[0] == "no" else constraint[0]
       if len(constraint) > 1:
-        constraint[1] = False if constraint[1] == "no" else constraint[1]
+        constraint[1] = int(constraint[1])
     else:
       constraint = []
     if len(constraint) == 0:
@@ -207,4 +227,11 @@ class Template:
       self.back()
       self.line_no -= 1
     return errors
+
+def str2bool(x):
+  if x == "yes":
+    return True
+  if x == "no":
+    return False
+  raise ValueError
 

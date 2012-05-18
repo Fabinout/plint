@@ -29,7 +29,7 @@ liaison = {
 
 
 class Constraint:
-  def __init__(self, phon, classical):
+  def __init__(self, classical, phon):
     self.phon = phon # minimal number of common suffix phones
     self.classical = classical # should we impose classical rhyme rules
 
@@ -57,13 +57,14 @@ class Rhyme:
       return x + liaison[x[-1]]
     return x
 
-  def __init__(self, line, constraint, mergers=[]):
+  def __init__(self, line, constraint, mergers=[], normande_ok=True):
     self.constraint = constraint
     self.mergers = {}
+    self.normande_ok = normande_ok
     for phon_set in mergers:
       for phon in phon_set[1:]:
         self.mergers[phon] = phon_set[0]
-    self.phon = set([self.apply_mergers(x) for x in lookup(line)])
+    self.phon = set([self.apply_mergers(x) for x in self.lookup(line)])
     self.eye = self.supposed_liaison(consonant_suffix(line))
 
   def match(self, phon, eye):
@@ -100,6 +101,22 @@ class Rhyme:
 
   def pprint(self):
     pprint(self.phon)
+
+  def lookup(self, s):
+    """lookup the pronunciation of s, adding rime normande kludges and liaisons"""
+    result = raw_lookup(s)
+    if self.normande_ok and (s.endswith('er') or s.endswith('ers')):
+      result.add("ER")
+    # TODO better here
+    result2 = copy.deepcopy(result)
+    # the case 'ent' would lead to trouble for gender
+    if s[-1] in liaison.keys() and not s.endswith('ent'):
+      for r in result2:
+        result.add(r + liaison[s[-1]])
+        if (s[-1] == 's'):
+          result.add(r + 's')
+    return result
+
 
 def suffix(x, y):
   """length of the longest common suffix of x and y"""
@@ -150,21 +167,6 @@ def consonant_suffix(s):
     result = result[:-1] + 'u'
   return result
 
-def lookup(s):
-  """lookup the pronunciation of s, adding rime normande kludges and liaisons"""
-  result = raw_lookup(s)
-  if s.endswith('er') or s.endswith('ers'):
-    result.add("ER")
-  # TODO better here
-  result2 = copy.deepcopy(result)
-  # the case 'ent' would lead to trouble for gender
-  if s[-1] in liaison.keys() and not s.endswith('ent'):
-    for r in result2:
-      result.add(r + liaison[s[-1]])
-      if (s[-1] == 's'):
-        result.add(r + 's')
-  return result
-
 def raw_lookup(s):
   # kludge: take the last three words and concatenate them to take short words
   # into account
@@ -185,8 +187,8 @@ if __name__ == '__main__':
     line = line.lower().strip().split(' ')
     if len(line) < 1:
       continue
-    constraint = Constraint(1, -1, -1)
-    rhyme = Rhyme(line[0], constraint)
+    constraint = Constraint(True, 1)
+    rhyme = Rhyme(line[0], constraint, self.mergers, self.normande_ok)
     for x in line[1:]:
       rhyme.feed(x)
       rhyme.pprint()

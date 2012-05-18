@@ -84,9 +84,10 @@ def feminine(align, verse, phon):
   return possible
 
 
-def parse(text, phon, bound):
+def parse(text, phon, bound, forbidden_ok):
   """Return possible aligns for text, bound is an upper bound on the align
-  length to limit running time, phon is the pronunciation to help for gender"""
+  length to limit running time, phon is the pronunciation to help for gender,
+  forbidden_ok is true if we allow classically forbidden patterns"""
 
   original_text = normalize(text)
 
@@ -180,7 +181,7 @@ def parse(text, phon, bound):
       #     if len(words[i-1]) != 3 or words[i-1][-3] != 's':
       #       forbidden = True
 
-  if forbidden:
+  if forbidden and not forbidden_ok:
     return None
 
   # group back words
