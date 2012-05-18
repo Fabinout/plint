@@ -50,9 +50,17 @@ class Constraint:
     self.aphon = self.mmax(self.aphon, c.aphon)
 
 class Rhyme:
-  def __init__(self, line, constraint):
+  def apply_mergers(self, phon):
+    return ''.join([(self.mergers[x] if x in self.mergers.keys()
+        else x) for x in phon])
+
+  def __init__(self, line, constraint, mergers=[]):
     self.constraint = constraint
-    self.phon = lookup(line)
+    self.mergers = {}
+    for phon_set in mergers:
+      for phon in phon_set[1:]:
+        self.mergers[phon] = phon_set[0]
+    self.phon = set([self.apply_mergers(x) for x in lookup(line)])
     self.eye = line
 
   def match(self, phon, eye):

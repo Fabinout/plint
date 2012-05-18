@@ -73,6 +73,7 @@ class Template:
     # rhymes
     if pattern.myid not in self.env.keys():
       # initialize the rhyme
+      # TODO mergers
       self.env[pattern.myid] = rhyme.Rhyme(line, pattern.constraint)
     else:
       # update the rhyme
