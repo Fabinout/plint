@@ -90,7 +90,7 @@ class Rhyme:
 
   def feed(self, line, constraint=None):
     """extend us with a line and a constraint"""
-    return self.restrict(Rhyme(line, constraint))
+    return self.restrict(Rhyme(line, constraint, self.mergers))
 
   def satisfied(self):
     return self.eye or len(self.phon) > 0
