@@ -1,22 +1,37 @@
 #!/usr/bin/python3 -u
 #encoding: utf8
 
+import copy
 import re
 import sys
 from pprint import pprint
 import frhyme
 import functools
+from common import consonants
 
 # number of possible rhymes to consider
 NBEST = 5
 # phonetic vowels
 vowel = list("Eeaio592O#@y%u()$")
 
+liaison = {
+    'c': 'k',
+    'd': 't',
+    'g': 'k',
+    'k': 'k',
+    'p': 'p',
+    'r': 'R',
+    's': 'z',
+    't': 't',
+    'x': 'z',
+    'z': 'z',
+    }
+
+
 class Constraint:
-  def __init__(self, phon, eye, aphon):
+  def __init__(self, classical, phon):
     self.phon = phon # minimal number of common suffix phones
-    self.eye = eye # minimal number of common suffix letters
-    self.aphon = aphon # minimal number of common suffix vowel phones
+    self.classical = classical # should we impose classical rhyme rules
 
   def mmax(self, a, b):
     """max, with -1 representing infty"""
@@ -30,14 +45,27 @@ class Constraint:
     if not c:
       return
     self.phon = self.mmax(self.phon, c.phon)
-    self.eye = self.mmax(self.eye, c.eye)
-    self.aphon = self.mmax(self.aphon, c.aphon)
+    self.eye = self.classical or c.classical
 
 class Rhyme:
-  def __init__(self, line, constraint):
+  def apply_mergers(self, phon):
+    return ''.join([(self.mergers[x] if x in self.mergers.keys()
+        else x) for x in phon])
+
+  def supposed_liaison(self, x):
+    if x[-1] in liaison.keys():
+      return x + liaison[x[-1]]
+    return x
+
+  def __init__(self, line, constraint, mergers=[], normande_ok=True):
     self.constraint = constraint
-    self.phon = lookup(line)
-    self.eye = line
+    self.mergers = {}
+    self.normande_ok = normande_ok
+    for phon_set in mergers:
+      for phon in phon_set[1:]:
+        self.mergers[phon] = phon_set[0]
+    self.phon = set([self.apply_mergers(x) for x in self.lookup(line)])
+    self.eye = self.supposed_liaison(consonant_suffix(line))
 
   def match(self, phon, eye):
     """limit our phon and eye to those which match phon and eye and which
@@ -49,30 +77,47 @@ class Rhyme:
         if val >= self.constraint.phon and self.constraint.phon >= 0:
           new_phon.add(x[-val:])
         val = assonance_rhyme(x, y)
-        if val >= self.constraint.aphon and self.constraint.aphon >= 0:
-          new_phon.add(x[-val:])
     self.phon = new_phon
     if self.eye:
       val = eye_rhyme(self.eye, eye)
-      if val >= self.constraint.eye and self.constraint.eye >= 0:
-        self.eye = self.eye[-val:]
+      if val == 0:
+        self.eye = ""
       else:
-        self.eye = None
+        self.eye = self.eye[-val:]
 
   def restrict(self, r):
     """take the intersection between us and rhyme object r"""
     self.constraint.restrict(r.constraint)
-    self.match(r.phon, r.eye)
+    self.match(set([self.apply_mergers(x) for x in r.phon]),
+        self.supposed_liaison(consonant_suffix(r.eye)))
 
   def feed(self, line, constraint=None):
     """extend us with a line and a constraint"""
-    return self.restrict(Rhyme(line, constraint))
+    return self.restrict(Rhyme(line, constraint, self.mergers))
 
   def satisfied(self):
-    return self.eye or len(self.phon) > 0
+    return (len(self.eye) >= self.constraint.eye
+        and len(self.phon) > 0 or not self.constraint.classical)
 
   def pprint(self):
     pprint(self.phon)
+
+  def lookup(self, s):
+    """lookup the pronunciation of s, adding rime normande kludges and liaisons"""
+    result = raw_lookup(s)
+    if self.normande_ok and (s.endswith('er') or s.endswith('ers')):
+      result.add("ER")
+    # TODO better here
+    result2 = copy.deepcopy(result)
+    # the case 'ent' would lead to trouble for gender
+    if self.constraint.classical:
+      if s[-1] in liaison.keys() and not s.endswith('ent'):
+        for r in result2:
+          result.add(r + liaison[s[-1]])
+          if (s[-1] == 's'):
+            result.add(r + 's')
+    return result
+
 
 def suffix(x, y):
   """length of the longest common suffix of x and y"""
@@ -110,11 +155,17 @@ def concat_couples(a, b):
       s.add(x + y)
   return s
 
-def lookup(s):
-  """lookup the pronunciation of s, adding rime normande kludges"""
-  result = raw_lookup(s)
-  if s.endswith('er'):
-    result.add("ER")
+def consonant_suffix(s):
+  for i in range(len(s)):
+    if not s[-(i+1)] in consonants:
+      break
+  result = s[-(i+1):]
+  if result.endswith('m'):
+    result = result[:-1] + 'n'
+  if result.endswith('à'):
+    result = result[:-1] + 'a'
+  if result.endswith('û'):
+    result = result[:-1] + 'u'
   return result
 
 def raw_lookup(s):
@@ -137,8 +188,8 @@ if __name__ == '__main__':
     line = line.lower().strip().split(' ')
     if len(line) < 1:
       continue
-    constraint = Constraint(1, -1, -1)
-    rhyme = Rhyme(line[0], constraint)
+    constraint = Constraint(True, 1)
+    rhyme = Rhyme(line[0], constraint, self.mergers, self.normande_ok)
     for x in line[1:]:
       rhyme.feed(x)
       rhyme.pprint()

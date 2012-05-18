@@ -30,13 +30,28 @@ class Template:
   def __init__(self, string):
     self.template = []
     self.pattern_line_no = 0
+    self.forbidden_ok = False
+    self.normande_ok = True
+    self.mergers = []
     self.load(string)
     self.line_no = 0
     self.position = 0
+    self.prev = None
     self.env = {}
     self.femenv = {}
     self.occenv = {}
     self.reject_errors = False
+
+  def read_option(self, x):
+    key, value = x.split(':')
+    if key == "merge":
+      self.mergers.append(value)
+    elif key == "forbidden_ok":
+      self.forbidden_ok = str2bool(value)
+    elif key == "normande_ok":
+      self.normande_ok = str2bool(value)
+    else:
+      raise ValueError
 
   def load(self, s):
     """Load from a string"""
@@ -44,7 +59,12 @@ class Template:
       line = line.strip()
       self.pattern_line_no += 1
       if line != '' and line[0] != '#':
-        self.template.append(self.parse_line(line.strip()))
+        if line[0] == '!':
+          # don't count the '!' in the options, that's why we use [1:]
+          for option in line.split()[1:]:
+            self.read_option(option)
+        else:
+          self.template.append(self.parse_line(line.strip()))
 
   def count(self, align):
     """total weight of an align"""
@@ -69,14 +89,36 @@ class Template:
     line_with_case = normalize(line, downcase=False)
     line = normalize(line)
     pattern = self.get()
+
+    errors = []
+
+    # rhymes
+    if pattern.myid not in self.env.keys():
+      # initialize the rhyme
+      self.env[pattern.myid] = rhyme.Rhyme(line, pattern.constraint,
+          self.mergers, self.normande_ok)
+    else:
+      # update the rhyme
+      old_p = self.env[pattern.myid].phon
+      old_e = self.env[pattern.myid].eye
+      self.env[pattern.myid].feed(line, pattern.constraint)
+      # no more possible rhymes, something went wrong
+      if not self.env[pattern.myid].satisfied():
+        self.env[pattern.myid].phon = old_p
+        self.env[pattern.myid].eye = old_e
+        errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid], None))
+
     # compute alignments, check hemistiches, sort by score
-    possible = parse(line, pattern.length + 2)
+    possible = parse(line, self.env[pattern.myid].phon, pattern.length + 2,
+        self.forbidden_ok)
+    if not possible:
+      errors.append(error.ErrorForbiddenPattern())
+      possible = []
+      return errors, pattern
     possible = list(map((lambda p: (p[0], p[1],
       check_hemistiches(p[0], pattern.hemistiches))), possible))
     possible = map((lambda x: (self.rate(pattern, x), x)), possible)
     possible = sorted(possible, key=(lambda x: x[0]))
-
-    errors = []
 
     # check characters
     illegal = set()
@@ -94,21 +136,6 @@ class Template:
     # keep the best alignment as hypotheses
     possible = [(score, align) for (score, align) in possible
         if score == possible[0][0]]
-
-    # rhymes
-    if pattern.myid not in self.env.keys():
-      # initialize the rhyme
-      self.env[pattern.myid] = rhyme.Rhyme(line, pattern.constraint)
-    else:
-      # update the rhyme
-      old_p = self.env[pattern.myid].phon
-      old_e = self.env[pattern.myid].eye
-      self.env[pattern.myid].feed(line, pattern.constraint)
-      # no more possible rhymes, something went wrong
-      if not self.env[pattern.myid].satisfied():
-        self.env[pattern.myid].phon = old_p
-        self.env[pattern.myid].eye = old_e
-        errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid], None))
 
     # occurrences
     if pattern.myid not in self.occenv.keys():
@@ -159,13 +186,17 @@ class Template:
       femid = str(self.pattern_line_no) # unique
     idsplit = myid.split(':')
     if len(idsplit) >= 2:
-      constraint = [int(x) for x in idsplit[-1].split('|')]
+      constraint = idsplit[-1].split('|')
+      if len(constraint) > 0:
+        constraint[0] = False if constraint[0] == "no" else constraint[0]
+      if len(constraint) > 1:
+        constraint[1] = int(constraint[1])
     else:
       constraint = []
     if len(constraint) == 0:
       constraint.append(1)
-    while len(constraint) < 3:
-      constraint.append(-1)
+    if len(constraint) < 2:
+      constraint.append(True)
     return Pattern(metric, myid, femid, rhyme.Constraint(*constraint))
 
   def reset_conditional(self, d):
@@ -211,4 +242,11 @@ class Template:
       self.back()
       self.line_no -= 1
     return errors
+
+def str2bool(x):
+  if x == "yes":
+    return True
+  if x == "no":
+    return False
+  raise ValueError
 

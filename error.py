@@ -42,6 +42,14 @@ class ErrorBadCharacters(Error):
     return Error.report(self, "Illegal character: %s"
         % ', '.join(["'" + a + "'" for a in self.characters]))
 
+class ErrorForbiddenPattern(Error):
+  def __init__(self):
+    # TODO give more info
+    pass
+
+  def report(self):
+    return Error.report(self, "Illegal ambiguous pattern")
+
 class ErrorBadRhyme(Error):
   def __init__(self, expected, inferred):
     Error.__init__(self)
@@ -49,6 +57,9 @@ class ErrorBadRhyme(Error):
     self.inferred = inferred
 
   def report(self, short=False):
+    # TODO indicate eye rhyme since this is also important
+    # TODO don't indicate more than the minimal required rhyme (in length and
+    # present of a vowel phoneme)
     return Error.report(self, "Bad rhyme %s for type %s (expected %s, inferred %s)"
         % (self.kind, self.get_id(), self.fmt(self.expected),
           self.fmt(self.inferred)), short)
