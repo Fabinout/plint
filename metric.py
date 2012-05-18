@@ -2,7 +2,7 @@
 #coding: utf-8
 
 import re
-from common import normalize, is_vowels, consonants, sure_end_fem
+from common import normalize, is_vowels, consonants, sure_end_fem, is_consonants
 from vowels import possible_weights
 import haspirater
 
@@ -124,11 +124,14 @@ def parse(text, phon, bound, forbidden_ok):
     if (words[i] == "onze"):
       words[i] = "*" + words[i]
 
-    if len(words[i]) == 1 and words[i][0] in consonants:
-      if (words[i] == 'w'):
-        words[i] = "doublevé"
-      else:
-        words[i] = words[i] + "a"
+    if is_consonants(words[i]):
+      new_word = []
+      for x in words[i]:
+        if (x == 'w'):
+          new_word.append("doublevé")
+        else:
+          new_word.append(x + "a")
+      words[i] = ''.join(new_word)
 
 
   # aspirated
