@@ -1,3 +1,4 @@
+! merge:oO
 6/6 A !X
 6/6 A !X
 6/6 B !x

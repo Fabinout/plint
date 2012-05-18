@@ -110,11 +110,12 @@ class Rhyme:
     # TODO better here
     result2 = copy.deepcopy(result)
     # the case 'ent' would lead to trouble for gender
-    if s[-1] in liaison.keys() and not s.endswith('ent'):
-      for r in result2:
-        result.add(r + liaison[s[-1]])
-        if (s[-1] == 's'):
-          result.add(r + 's')
+    if self.constraint.classical:
+      if s[-1] in liaison.keys() and not s.endswith('ent'):
+        for r in result2:
+          result.add(r + liaison[s[-1]])
+          if (s[-1] == 's'):
+            result.add(r + 's')
     return result
 
 
