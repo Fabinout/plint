@@ -152,13 +152,17 @@ class Template:
       femid = str(self.pattern_line_no) # unique
     idsplit = myid.split(':')
     if len(idsplit) >= 2:
-      constraint = [int(x) for x in idsplit[-1].split('|')]
+      constraint = idsplit[-1].split('|')
+      if len(constraint) > 0:
+        constraint[0] = int(constraint[0])
+      if len(constraint) > 1:
+        constraint[1] = False if constraint[1] == "no" else constraint[1]
     else:
       constraint = []
     if len(constraint) == 0:
       constraint.append(1)
-    while len(constraint) < 3:
-      constraint.append(-1)
+    if len(constraint) < 2:
+      constraint.append(True)
     return Pattern(metric, myid, femid, rhyme.Constraint(*constraint))
 
   def reset_conditional(self, d):

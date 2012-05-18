@@ -29,10 +29,9 @@ liaison = {
 
 
 class Constraint:
-  def __init__(self, phon, eye, aphon):
+  def __init__(self, phon, classical):
     self.phon = phon # minimal number of common suffix phones
-    self.eye = eye # minimal number of common suffix letters
-    self.aphon = aphon # minimal number of common suffix vowel phones
+    self.classical = classical # should we impose classical rhyme rules
 
   def mmax(self, a, b):
     """max, with -1 representing infty"""
@@ -46,8 +45,7 @@ class Constraint:
     if not c:
       return
     self.phon = self.mmax(self.phon, c.phon)
-    self.eye = self.mmax(self.eye, c.eye)
-    self.aphon = self.mmax(self.aphon, c.aphon)
+    self.eye = self.classical or c.classical
 
 class Rhyme:
   def apply_mergers(self, phon):
@@ -78,8 +76,6 @@ class Rhyme:
         if val >= self.constraint.phon and self.constraint.phon >= 0:
           new_phon.add(x[-val:])
         val = assonance_rhyme(x, y)
-        if val >= self.constraint.aphon and self.constraint.aphon >= 0:
-          new_phon.add(x[-val:])
     self.phon = new_phon
     if self.eye:
       val = eye_rhyme(self.eye, eye)
@@ -100,7 +96,7 @@ class Rhyme:
 
   def satisfied(self):
     return (len(self.eye) >= self.constraint.eye
-        and len(self.phon) >= self.constraint.phon)
+        and len(self.phon) > 0 or not self.constraint.classical)
 
   def pprint(self):
     pprint(self.phon)
@@ -155,7 +151,7 @@ def consonant_suffix(s):
   return result
 
 def lookup(s):
-  """lookup the pronunciation of s, adding rime normande kludges"""
+  """lookup the pronunciation of s, adding rime normande kludges and liaisons"""
   result = raw_lookup(s)
   if s.endswith('er') or s.endswith('ers'):
     result.add("ER")
