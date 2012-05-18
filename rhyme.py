@@ -54,6 +54,11 @@ class Rhyme:
     return ''.join([(self.mergers[x] if x in self.mergers.keys()
         else x) for x in phon])
 
+  def supposed_liaison(self, x):
+    if x[-1] in liaison.keys():
+      return x + liaison[x[-1]]
+    return x
+
   def __init__(self, line, constraint, mergers=[]):
     self.constraint = constraint
     self.mergers = {}
@@ -61,7 +66,7 @@ class Rhyme:
       for phon in phon_set[1:]:
         self.mergers[phon] = phon_set[0]
     self.phon = set([self.apply_mergers(x) for x in lookup(line)])
-    self.eye = line
+    self.eye = self.supposed_liaison(consonant_suffix(line))
 
   def match(self, phon, eye):
     """limit our phon and eye to those which match phon and eye and which
@@ -78,22 +83,24 @@ class Rhyme:
     self.phon = new_phon
     if self.eye:
       val = eye_rhyme(self.eye, eye)
-      if val >= self.constraint.eye and self.constraint.eye >= 0:
-        self.eye = self.eye[-val:]
+      if val == 0:
+        self.eye = ""
       else:
-        self.eye = None
+        self.eye = self.eye[-val:]
 
   def restrict(self, r):
     """take the intersection between us and rhyme object r"""
     self.constraint.restrict(r.constraint)
-    self.match(r.phon, r.eye)
+    self.match(set([self.apply_mergers(x) for x in r.phon]),
+        self.supposed_liaison(consonant_suffix(r.eye)))
 
   def feed(self, line, constraint=None):
     """extend us with a line and a constraint"""
     return self.restrict(Rhyme(line, constraint, self.mergers))
 
   def satisfied(self):
-    return self.eye or len(self.phon) > 0
+    return (len(self.eye) >= self.constraint.eye
+        and len(self.phon) >= self.constraint.phon)
 
   def pprint(self):
     pprint(self.phon)

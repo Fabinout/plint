@@ -57,6 +57,7 @@ class ErrorBadRhyme(Error):
     self.inferred = inferred
 
   def report(self, short=False):
+    # TODO indicate eye rhyme since this is also important
     return Error.report(self, "Bad rhyme %s for type %s (expected %s, inferred %s)"
         % (self.kind, self.get_id(), self.fmt(self.expected),
           self.fmt(self.inferred)), short)
