@@ -58,6 +58,8 @@ class ErrorBadRhyme(Error):
 
   def report(self, short=False):
     # TODO indicate eye rhyme since this is also important
+    # TODO don't indicate more than the minimal required rhyme (in length and
+    # present of a vowel phoneme)
     return Error.report(self, "Bad rhyme %s for type %s (expected %s, inferred %s)"
         % (self.kind, self.get_id(), self.fmt(self.expected),
           self.fmt(self.inferred)), short)
