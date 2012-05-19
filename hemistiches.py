@@ -5,8 +5,17 @@ hemis_types = {
   'bad' : '!', # something wrong
   'cut' : '?', # falls at the middle of a word
   'fem' : '\\', # preceding word ends by a mute e
+  'forbidden' : '#', # last word of hemistiche cannot occur at end of hemistiche
   }
 
+# these words are forbidden at hemistiche
+forbidden_hemistiche = [
+    "le",
+    "la",
+    ]
+
+def align2str(align):
+  return ''.join([x[0] if isinstance(x, tuple) else x for x in align])
 
 def check_spaces(align, pos):
   if pos >= len(align):
@@ -27,6 +36,8 @@ def check_hemistiche(align, pos, hem):
     return ("bad", pos)
   if hem == 0:
     # hemistiche should end here, check that this is a word boundary
+    if (align2str(align[:pos+1]).split()[-1]) in forbidden_hemistiche:
+      return ("forbidden", pos)
     return (check_spaces(align, pos), pos)
   if hem < 0:
     # hemistiche falls at the middle of a vowel cluster
