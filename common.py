@@ -5,7 +5,7 @@ import unicodedata
 import re
 
 vowels = 'aeiouyœæ'
-consonants = "bcçdfghjklmnpqrstvwxz"
+consonants = "bcçdfghjklmnpqrstvwxz'"
 legal = vowels + consonants + ' -'
 
 # a variant of x-sampa such that all french phonemes are one-character
@@ -42,12 +42,10 @@ def norm_spaces(text):
   """Remove multiple consecutive whitespace"""
   return re.sub("\s+-*\s*", ' ', text)
 
-def rm_punct(text, with_apostrophe = False):
+def rm_punct(text):
   """Remove punctuation from text"""
   text = re.sub("’", "'", text) # no weird apostrophes
   text = re.sub("' ", "'", text) # space after apostrophes
-  if not with_apostrophe:
-    text = re.sub("'", '', text)
 
   #TODO rather: keep only good chars
   pattern = re.compile("[^'\w -]", re.UNICODE)
@@ -76,10 +74,9 @@ def is_consonants(chunk):
       return False
   return True
 
-def normalize(text, with_apostrophe=False, downcase=True):
+def normalize(text, downcase=True):
   """Normalize text, ie. lowercase, no useless punctuation or whitespace"""
-  return norm_spaces(rm_punct(text.lower() if downcase else text,
-      with_apostrophe)).rstrip().lstrip()
+  return norm_spaces(rm_punct(text.lower() if downcase else text)).rstrip().lstrip()
 
 def subst(string, subs):
   if len(subs) == 0:
