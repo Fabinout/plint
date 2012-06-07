@@ -1,3 +1,5 @@
+- produce the working alignments for each word in the boileau dataset and learn
+  stuff on them
 - options for tolerant diaresis, no diarersis, classical diaresis
 
 larger label for radios
@@ -8,3 +10,4 @@ TODO undo for irc, edit for irc
 
 alignment display is broken for 'qu'
 
+- is "[^gq]ue [consonne]" or "[^gq]ues" ok ?
