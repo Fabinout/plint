@@ -3,7 +3,7 @@
 
 import re
 from common import normalize, is_vowels, consonants, sure_end_fem, is_consonants
-from vowels import possible_weights
+import vowels
 import haspirater
 
 
@@ -19,7 +19,13 @@ def annotate_aspirated(word):
 def contains_break(chunk):
   return ' ' in chunk or '-' in chunk
 
-def fit(chunks, pos, left):
+def possible_weights(chunks, pos, diaeresis):
+  if diaeresis == "classical":
+    return vowels.possible_weights_ctx(chunks, pos)
+  else:
+    return vowels.possible_weights_approx(chunks[pos])
+
+def fit(chunks, pos, left, diaeresis):
   """bruteforce exploration of all possible vowel cluster weghting,
   within a maximum total of left"""
   if pos >= len(chunks):
@@ -28,7 +34,7 @@ def fit(chunks, pos, left):
     return [] # no possibilities
   # skip consonants
   if (not is_vowels(chunks[pos])):
-    return [[chunks[pos]] + x for x in fit(chunks, pos+1, left)]
+    return [[chunks[pos]] + x for x in fit(chunks, pos+1, left, diaeresis)]
   else:
     if ((pos >= len(chunks) - 2 and chunks[pos] == 'e') and not (
         pos <= 0 or contains_break(chunks[pos-1])) and not (
@@ -44,19 +50,19 @@ def fit(chunks, pos, left):
         # actually, this will have an influence on the rhyme's gender
         weights = [0, 1]
       else:
-        weights = possible_weights(chunks[pos])
+        weights = possible_weights(chunks, pos, diaeresis)
     else:
       if (pos >= len(chunks) - 1 and chunks[pos] == 'e' and
           pos > 0 and (chunks[pos-1].endswith('-c') or
             chunks[pos-1].endswith('-j'))):
         weights = [0] # -ce and -je are elided
       else:
-        weights = possible_weights(chunks[pos])
+        weights = possible_weights(chunks, pos, diaeresis)
     result = []
     for weight in weights:
       # combine all possibilities
       result += [[(chunks[pos], weight)] + x for x in fit(chunks, pos+1,
-        left - weight)]
+        left - weight, diaeresis)]
     return result
 
 def feminine(align, verse, phon):
@@ -84,7 +90,7 @@ def feminine(align, verse, phon):
   return possible
 
 
-def parse(text, phon, bound, forbidden_ok):
+def parse(text, phon, bound, forbidden_ok, diaeresis):
   """Return possible aligns for text, bound is an upper bound on the align
   length to limit running time, phon is the pronunciation to help for gender,
   forbidden_ok is true if we allow classically forbidden patterns"""
@@ -196,5 +202,5 @@ def parse(text, phon, bound, forbidden_ok):
   # the femininity of the align (depending both on the align and
   # original text)
   return list(map((lambda x: (x, feminine(x, original_text, phon))),
-    fit(chunks, 0, bound)))
+    fit(chunks, 0, bound, diaeresis)))
 
