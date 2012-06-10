@@ -23,6 +23,8 @@ rhymes and rhyme genres against an unexpressive template language. It features a
 command-line interface, an IRC wrapper (for use with irctk) and a web interface.
 It depends on haspirater and frhyme, and the web interface requires CherryPy.
 
+The full documentation of plint's features is available in views/about.html.
+
 == 2. Setup ==
 
 Place the haspirater.json and haspirater.py from haspirater in the main
