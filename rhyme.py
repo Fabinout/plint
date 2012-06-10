@@ -28,7 +28,11 @@ liaison = {
     }
 
 tolerance = {
-    'ï': 'i'
+    'ï': 'i',
+    "ai": "é",
+    'm': 'n',
+    'à': 'a',
+    'û': 'u',
     }
 
 
@@ -129,10 +133,6 @@ def suffix(x, y):
   for i in range(bound):
     a = x[-(1+i)]
     b = y[-(1+i)]
-    if a in tolerance.keys():
-      a = tolerance[a]
-    if b in tolerance.keys():
-      b = tolerance[b]
     if a != b:
       return i
   return bound
@@ -166,16 +166,13 @@ def concat_couples(a, b):
   return s
 
 def consonant_suffix(s):
+  for k in tolerance.keys():
+    if s.endswith(k):
+      s = s[:-(len(k))] + tolerance[k]
   for i in range(len(s)):
     if not s[-(i+1)] in consonants:
       break
-  result = s[-(i+1):]
-  if result.endswith('m'):
-    result = result[:-1] + 'n'
-  if result.endswith('à'):
-    result = result[:-1] + 'a'
-  if result.endswith('û'):
-    result = result[:-1] + 'u'
+  result = s[-(i):]
   return result
 
 def raw_lookup(s):
