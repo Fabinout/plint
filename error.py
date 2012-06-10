@@ -60,7 +60,8 @@ class ErrorBadRhyme(Error):
     # TODO indicate eye rhyme since this is also important
     # TODO don't indicate more than the minimal required rhyme (in length and
     # present of a vowel phoneme)
-    return Error.report(self, "Bad rhyme %s for type %s (expected %s, inferred %s)"
+    return Error.report(self,
+        "Bad rhyme %s for type %s (expected %s, inferred %s)"
         % (self.kind, self.get_id(), self.fmt(self.expected),
           self.fmt(self.inferred)), short)
 
@@ -80,12 +81,12 @@ class ErrorBadRhymeGenre(ErrorBadRhyme):
 
 class ErrorBadRhymeSound(ErrorBadRhyme):
   def fmt(self, l):
-    #TODO handle other types
     pron = l.phon
     ok = []
     if len(pron) > 0:
       ok.append("")
-    return '/'.join(list(set([common.to_xsampa(x[-4:]) for x in pron])))
+    return ('/'.join(list(set([common.to_xsampa(x[-4:]) for x in pron]))) +
+        " (ending: " + l.eye + ")")
 
   def get_id(self):
     return self.pattern.myid
