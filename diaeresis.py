@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+"""Get the number of syllables of a vowel cluster with context"""
+
 import os
 import json
 import sys
