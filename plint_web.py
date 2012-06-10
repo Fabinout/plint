@@ -64,7 +64,7 @@ def about():
       lang=get_locale())
 
 def check(poem):
-  if len(poem) > 4096:
+  if len(poem) > 8192:
     return None
   s = poem.split("\n")
   for x in range(len(s)):
