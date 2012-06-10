@@ -27,6 +27,10 @@ liaison = {
     'z': 'z',
     }
 
+tolerance = {
+    'ï': 'i'
+    }
+
 
 class Constraint:
   def __init__(self, classical, phon):
@@ -123,7 +127,13 @@ def suffix(x, y):
   """length of the longest common suffix of x and y"""
   bound = min(len(x), len(y))
   for i in range(bound):
-    if x[-(1+i)] != y[-(1+i)]:
+    a = x[-(1+i)]
+    b = y[-(1+i)]
+    if a in tolerance.keys():
+      a = tolerance[a]
+    if b in tolerance.keys():
+      b = tolerance[b]
+    if a != b:
       return i
   return bound
 
