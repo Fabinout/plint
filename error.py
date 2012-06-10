@@ -38,7 +38,7 @@ class ErrorBadCharacters(Error):
   def __init__(self, characters):
     self.characters = characters
 
-  def report(self):
+  def report(self, short=False):
     return Error.report(self, "Illegal character: %s"
         % ', '.join(["'" + a + "'" for a in self.characters]))
 
@@ -47,7 +47,7 @@ class ErrorForbiddenPattern(Error):
     # TODO give more info
     pass
 
-  def report(self):
+  def report(self, short=False):
     return Error.report(self, "Illegal ambiguous pattern")
 
 class ErrorBadRhyme(Error):
@@ -184,7 +184,7 @@ class ErrorMultipleWordOccurrence(Error):
   def get_id(self):
     return self.pattern.myid
 
-  def report(self):
+  def report(self, short=False):
     return Error.report(self, "%d occurrences of word %s for rhyme %s"
         % (self.occurrences, self.word, self.get_id()))
 
