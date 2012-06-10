@@ -5,6 +5,21 @@ import copy
 import rhyme
 from common import normalize, legal, strip_accents_one
 from nature import nature_count
+from vowels import possible_weights_ctx, make_query
+
+
+def handle(poss):
+  l = []
+  #print(poss)
+  for i in range(len(poss)):
+    if isinstance(poss[i], tuple):
+      #print(cleared[:i][::-1])
+      #print(cleared[i+1:])
+      # print(poss)
+      # print (make_query(poss, i))
+      if len(possible_weights_ctx(poss, i)) > 1:
+        l.append((poss[i][1], make_query(poss, i)))
+  return l
 
 class Pattern:
   def __init__(self, metric, myid, femid, constraint):
@@ -32,6 +47,7 @@ class Template:
     self.pattern_line_no = 0
     self.forbidden_ok = False
     self.normande_ok = True
+    self.diaeresis = "classical"
     self.mergers = []
     self.load(string)
     self.line_no = 0
@@ -50,6 +66,10 @@ class Template:
       self.forbidden_ok = str2bool(value)
     elif key == "normande_ok":
       self.normande_ok = str2bool(value)
+    elif key == "diaeresis":
+      self.diaeresis = value
+      if value not in ["permissive", "classical"]:
+        raise ValueError
     else:
       raise ValueError
 
@@ -83,7 +103,7 @@ class Template:
     return ((1+len(hemis.keys()))*abs(pattern.length - c)
         + sum([1 for x in hemis.values() if x != "ok"]))
 
-  def match(self, line):
+  def match(self, line, ofile=None):
     """Check a line against current pattern, return errors"""
 
     line_with_case = normalize(line, downcase=False)
@@ -110,7 +130,7 @@ class Template:
 
     # compute alignments, check hemistiches, sort by score
     possible = parse(line, self.env[pattern.myid].phon, pattern.length + 2,
-        self.forbidden_ok)
+        self.forbidden_ok, self.diaeresis)
     if not possible:
       errors.append(error.ErrorForbiddenPattern())
       possible = []
@@ -136,6 +156,26 @@ class Template:
     # keep the best alignment as hypotheses
     possible = [(score, align) for (score, align) in possible
         if score == possible[0][0]]
+    if ofile:
+      if len(possible) == 1 and possible[0][0] == 0:
+        l = [(x[1][0]) for x in possible]
+        poss = []
+        for p in l:
+          c = []
+          while len(p) > 0:
+            x = p.pop()
+            if x == ' ':
+              poss.append(c[::-1])
+              c = []
+            else:
+              c.append(x)
+          if len(c) > 0:
+            poss.append(c[::-1])
+        for w in poss:
+          l = handle(w)
+          for x in l:
+            # print(x)
+            print((str(x[0]) + ' ' + ' '.join(x[1])), file=ofile)
 
     # occurrences
     if pattern.myid not in self.occenv.keys():
@@ -226,7 +266,7 @@ class Template:
     self.env = copy.deepcopy(self.old_env)
     self.femenv = copy.deepcopy(self.old_femenv)
 
-  def check(self, line):
+  def check(self, line, ofile=None):
     """Check line (wrapper)"""
     self.line_no += 1
     line = line.rstrip()
@@ -234,7 +274,7 @@ class Template:
       return []
     #possible = [compute(p) for p in possible]
     #possible = sorted(possible, key=rate)
-    errors, pattern = self.match(line)
+    errors, pattern = self.match(line, ofile)
     for error in errors:
       # update errors with line position and pattern
       error.pos(line, self.line_no, pattern)
