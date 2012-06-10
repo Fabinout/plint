@@ -29,8 +29,9 @@ The full documentation of plint's features is available in views/about.html.
 
 Place the haspirater.json and haspirater.py from haspirater in the main
 directory. Place the generated frhyme.json and frhyme.py in the main directory.
-Generate the occurrences file as the standard output of
-lexique_occurrences_retrieve.sh.
+Generate the occurrences file as follows:
+
+  ./lexique_occurrences_retrieve.sh > occurrences
 
 == 3. Usage ==
 
