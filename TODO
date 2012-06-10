@@ -1,18 +1,14 @@
 larger label for radios
 
-no diérèse on 'uei'?
-
 TODO undo for irc, edit for irc
 
-alignment display is broken for 'qu'
+- alignment display is broken for 'qu'
+- improve rhyme error reporting
 
 - is "[^gq]ue [consonne]" or "[^gq]ues" ok ?
 
 - should we forbid "[^gq]uent", "ient", "éent" ?
 
-- leftover errors
+- "prix"/"fils"
 
-- update documentation
-
-- improve rhyme error reporting
 
