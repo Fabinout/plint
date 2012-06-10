@@ -67,7 +67,9 @@ class Template:
     elif key == "normande_ok":
       self.normande_ok = str2bool(value)
     elif key == "diaeresis":
-      self.diaeresis = value # TODO: "none"
+      self.diaeresis = value
+      if value not in ["permissive", "classical"]:
+        raise ValueError
     else:
       raise ValueError
 

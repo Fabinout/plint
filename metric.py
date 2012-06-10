@@ -22,7 +22,7 @@ def contains_break(chunk):
 def possible_weights(chunks, pos, diaeresis):
   if diaeresis == "classical":
     return vowels.possible_weights_ctx(chunks, pos)
-  else:
+  elif diaeresis == "permissive":
     return vowels.possible_weights_approx(chunks[pos])
 
 def fit(chunks, pos, left, diaeresis):
