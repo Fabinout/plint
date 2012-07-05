@@ -4,6 +4,7 @@ TODO undo for irc, edit for irc
 
 - alignment display is broken for 'qu'
 - improve rhyme error reporting
+- improve "illegal ambiguous pattern" reporting
 
 - is "[^gq]ue [consonne]" or "[^gq]ues" ok ?
 
