@@ -48,6 +48,7 @@ class Template:
     self.forbidden_ok = False
     self.normande_ok = True
     self.check_end_hemistiche = True
+    self.check_occurrences = True
     self.diaeresis = "classical"
     self.mergers = []
     self.load(string)
@@ -73,6 +74,8 @@ class Template:
         raise ValueError
     elif key == "check_end_hemistiche":
       self.check_end_hemistiche = str2bool(value)
+    elif key == "check_occurrences":
+      self.check_occurrences = str2bool(value)
     else:
       raise ValueError
 
@@ -182,15 +185,16 @@ class Template:
             print((str(x[0]) + ' ' + ' '.join(x[1])), file=ofile)
 
     # occurrences
-    if pattern.myid not in self.occenv.keys():
-      self.occenv[pattern.myid] = {}
-    last_word = line_with_case.split(' ')[-1]
-    if last_word not in self.occenv[pattern.myid].keys():
-      self.occenv[pattern.myid][last_word] = 0
-    self.occenv[pattern.myid][last_word] += 1
-    if self.occenv[pattern.myid][last_word] > nature_count(last_word):
-      errors.append(error.ErrorMultipleWordOccurrence(last_word,
-        self.occenv[pattern.myid][last_word]))
+    if self.check_occurrences:
+      if pattern.myid not in self.occenv.keys():
+        self.occenv[pattern.myid] = {}
+      last_word = line_with_case.split(' ')[-1]
+      if last_word not in self.occenv[pattern.myid].keys():
+        self.occenv[pattern.myid][last_word] = 0
+      self.occenv[pattern.myid][last_word] += 1
+      if self.occenv[pattern.myid][last_word] > nature_count(last_word):
+        errors.append(error.ErrorMultipleWordOccurrence(last_word,
+          self.occenv[pattern.myid][last_word]))
 
     # rhyme genres
     # inequality constraint
