@@ -47,6 +47,7 @@ class Template:
     self.pattern_line_no = 0
     self.forbidden_ok = False
     self.normande_ok = True
+    self.check_end_hemistiche = True
     self.diaeresis = "classical"
     self.mergers = []
     self.load(string)
@@ -70,6 +71,8 @@ class Template:
       self.diaeresis = value
       if value not in ["permissive", "classical"]:
         raise ValueError
+    elif key == "check_end_hemistiche":
+      self.check_end_hemistiche = str2bool(value)
     else:
       raise ValueError
 
@@ -136,7 +139,8 @@ class Template:
       possible = []
       return errors, pattern
     possible = list(map((lambda p: (p[0], p[1],
-      check_hemistiches(p[0], pattern.hemistiches))), possible))
+      check_hemistiches(p[0], pattern.hemistiches, self.check_end_hemistiche))),
+      possible))
     possible = map((lambda x: (self.rate(pattern, x), x)), possible)
     possible = sorted(possible, key=(lambda x: x[0]))
 

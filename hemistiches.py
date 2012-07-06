@@ -30,21 +30,22 @@ def check_spaces(align, pos):
   # hemistiche falls at the middle of a word
   return "cut"
 
-def check_hemistiche(align, pos, hem):
+def check_hemistiche(align, pos, hem, check_end_hemistiche):
   if pos >= len(align):
    # not enough syllabes for hemistiche
     return ("bad", pos)
   if hem == 0:
     # hemistiche should end here, check that this is a word boundary
-    if (align2str(align[:pos+1]).split()[-1]) in forbidden_hemistiche:
-      return ("forbidden", pos)
+    if check_end_hemistiche:
+      if (align2str(align[:pos+1]).split()[-1]) in forbidden_hemistiche:
+        return ("forbidden", pos)
     return (check_spaces(align, pos), pos)
   if hem < 0:
     # hemistiche falls at the middle of a vowel cluster
     return ("cut", pos)
   # skip consonants
   if not isinstance(align[pos], tuple):
-    return check_hemistiche(align, pos +1, hem)
+    return check_hemistiche(align, pos +1, hem, check_end_hemistiche)
   # hemistiche is there, we should not have a feminine ending here
   if hem == 1:
     if pos + 1 >= len(align):
@@ -60,9 +61,10 @@ def check_hemistiche(align, pos, hem):
       if not ok:
         # hemistiche ends in feminine
         return ("fem", pos)
-  return check_hemistiche(align, pos+1, hem - align[pos][1])
+  return check_hemistiche(align, pos+1, hem - align[pos][1],
+      check_end_hemistiche)
 
-def check_hemistiches(align, hems):
+def check_hemistiches(align, hems, check_end_hemistiche):
   """From a sorted list of distinct hemistiche positions, return a
   dictionary which maps each position to the status of this
   hemistiche"""
@@ -71,7 +73,7 @@ def check_hemistiches(align, hems):
   pos = 0
   h2 = 0
   for h in hems:
-    r, pos = check_hemistiche(align, pos, h-h2)
+    r, pos = check_hemistiche(align, pos, h-h2, check_end_hemistiche)
     h2 = h
     result[h] = r
   return result
