@@ -47,4 +47,13 @@ To run the web interface on port 5000, run plint_web.py. CherryPy is required
 http://bottlepy.org/docs/dev/tutorial.html#deployment
 
 An undocumented IRC interface for use with irctk is available (plint_irc.py).
+The poem that it produces can be compiled to HTML automatically using something
+along the lines of:
+
+  while true
+  do
+    inotifywait poem_file
+    # www/ should contain style.css
+    poem2html/make_poem.sh poem_file > www/poem.html
+  done
 
