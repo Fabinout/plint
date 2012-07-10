@@ -4,7 +4,7 @@ import re
 import sys
 import rhyme
 import metric
-import template
+from template import Template
 from pprint import pprint
 from common import normalize
 
@@ -87,7 +87,7 @@ if len(sys.argv) != 3:
 f = open(sys.argv[1])
 x = f.read()
 f.close()
-template = template.Template(x)
+template = Template(x)
 
 template.reject_errors = True
 
