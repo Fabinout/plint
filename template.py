@@ -262,6 +262,7 @@ class Template:
     self.old_position = self.position
     self.old_env = copy.deepcopy(self.env)
     self.old_femenv = copy.deepcopy(self.femenv)
+    self.old_occenv = copy.deepcopy(self.occenv)
     if self.position >= len(self.template):
       self.reset_state()
     result = self.template[self.position]
@@ -273,6 +274,7 @@ class Template:
     self.position = self.old_position
     self.env = copy.deepcopy(self.old_env)
     self.femenv = copy.deepcopy(self.old_femenv)
+    self.occenv = copy.deepcopy(self.old_occenv)
 
   def check(self, line, ofile=None):
     """Check line (wrapper)"""
