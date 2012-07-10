@@ -46,6 +46,7 @@ class Template:
     self.template = []
     self.pattern_line_no = 0
     self.forbidden_ok = False
+    self.hiatus_ok = False
     self.normande_ok = True
     self.check_end_hemistiche = True
     self.check_occurrences = True
@@ -66,6 +67,8 @@ class Template:
       self.mergers.append(value)
     elif key == "forbidden_ok":
       self.forbidden_ok = str2bool(value)
+    elif key == "hiatus_ok":
+      self.hiatus_ok = str2bool(value)
     elif key == "normande_ok":
       self.normande_ok = str2bool(value)
     elif key == "diaeresis":
@@ -136,9 +139,12 @@ class Template:
 
     # compute alignments, check hemistiches, sort by score
     possible = parse(line, self.env[pattern.myid].phon, pattern.length + 2,
-        self.forbidden_ok, self.diaeresis)
-    if not possible:
-      errors.append(error.ErrorForbiddenPattern())
+        self.forbidden_ok, self.hiatus_ok, self.diaeresis)
+    if not isinstance(possible, list):
+      if possible[0] == "forbidden":
+        errors.append(error.ErrorForbiddenPattern(possible[1]))
+      elif possible[0] == "hiatus":
+        errors.append(error.ErrorHiatus(possible[1]))
       possible = []
       return errors, pattern
     possible = list(map((lambda p: (p[0], p[1],

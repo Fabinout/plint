@@ -43,12 +43,19 @@ class ErrorBadCharacters(Error):
         % ', '.join(["'" + a + "'" for a in self.characters]), short)
 
 class ErrorForbiddenPattern(Error):
-  def __init__(self):
-    # TODO give more info
-    pass
+  def __init__(self, pattern):
+    self.pattern = pattern
 
   def report(self, short=False):
-    return Error.report(self, "Illegal ambiguous pattern", short)
+    return Error.report(self, "Illegal ambiguous pattern: %s" % self.pattern,
+        short)
+
+class ErrorHiatus(Error):
+  def __init__(self, hiatus):
+    self.hiatus = hiatus
+
+  def report(self, short=False):
+    return Error.report(self, "Illegal hiatus: %s" % self.hiatus, short)
 
 class ErrorBadRhyme(Error):
   def __init__(self, expected, inferred):

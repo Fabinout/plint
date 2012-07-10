@@ -7,6 +7,9 @@ import vowels
 import haspirater
 
 
+no_hiatus = ["oui"]
+
+
 def annotate_aspirated(word):
   """Annotate aspirated 'h'"""
   if word[0] != 'h':
@@ -90,7 +93,7 @@ def feminine(align, verse, phon):
   return possible
 
 
-def parse(text, phon, bound, forbidden_ok, diaeresis):
+def parse(text, phon, bound, forbidden_ok, hiatus_ok, diaeresis):
   """Return possible aligns for text, bound is an upper bound on the align
   length to limit running time, phon is the pronunciation to help for gender,
   forbidden_ok is true if we allow classically forbidden patterns"""
@@ -145,7 +148,8 @@ def parse(text, phon, bound, forbidden_ok, diaeresis):
 
   pattern = re.compile('(['+consonants+'*-]*)', re.UNICODE)
 
-  forbidden = False
+  forbidden = None
+  hiatus = None
 
   # cut each word in chunks of vowels and consonants, with some specific
   # kludges
@@ -175,12 +179,16 @@ def parse(text, phon, bound, forbidden_ok, diaeresis):
             [1 for chunk in words[i-1] if is_vowels(chunk)]) > 1:
           words[i-1].pop(-1)
           words[i-1][-1] = words[i-1][-1]+"`"
+        if (is_vowels(words[i-1][-1]) and not words[i-1][-1][-1] == 'e'
+            and not (''.join(words[i]) in no_hiatus
+                and ''.join(words[i-1]) in no_hiatus)):
+          hiatus = words[i-1][-1] + ' ' + words[i][0]
       else:
         if words[i-1][-1] == 'ée' or words[i-1][-1] == 'ie':
-          forbidden = True
+          forbidden = words[i-1][-1]
       if words[i-1][-1] == 's' and len(words[i-1]):
         if words[i-1][-2] == 'ée' or words[i-1][-2] == 'ie':
-          forbidden = True
+          forbidden = words[i-1][-2]
         # TODO there are arcane rules for "aient"
       # case of "soient"
       # TODO there are a lot of "oient" in boileau and malherme
@@ -191,7 +199,9 @@ def parse(text, phon, bound, forbidden_ok, diaeresis):
       #       forbidden = True
 
   if forbidden and not forbidden_ok:
-    return None
+    return ("forbidden", forbidden)
+  if hiatus and not hiatus_ok:
+    return ("hiatus", hiatus)
 
   # group back words
   for word in words:
