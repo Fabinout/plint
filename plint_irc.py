@@ -78,9 +78,11 @@ def manage(line, silent=False):
     lbuf = []
   return len(errors) == 0
 
-if len(sys.argv) != 3:
-  print("Usage: %s TEMPLATE POEM" % sys.argv[0], file=sys.stderr)
+if len(sys.argv) not in [3, 4]:
+  print("Usage: %s TEMPLATE POEM [OFFSET]" % sys.argv[0], file=sys.stderr)
   print("Check POEM according to TEMPLATE, add valid verse from stdin to POEM",
+      file=sys.stderr)
+  print("Ignore OFFSET lines from POEM",
       file=sys.stderr)
   sys.exit(1)
 
@@ -91,8 +93,17 @@ template = Template(x)
 
 template.reject_errors = True
 
+offset = 0
+if len(sys.argv) == 4:
+  offset = int(sys.argv[3])
+
+pos = 0
+
 f = open(sys.argv[2], 'r')
 for line in f.readlines():
+  pos += 1
+  if pos <= offset:
+    continue # ignore first lines
   print("Read: %s" % line, file=sys.stderr)
   if not manage(line, True):
     print("Existing poem is wrong!", file=sys.stderr)
