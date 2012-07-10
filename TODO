@@ -1,16 +1,24 @@
-- hiatus
+== IRC ==
 
-larger label for radios
+- undo for irc, edit for irc
+- fournir un red (et peut-être de quoi revert) sur irc
+- /me lint
 
-TODO undo for irc, edit for irc
+== Alignment ==
 
 - alignment display is broken for 'qu'
 - improve rhyme error reporting
-- improve "illegal ambiguous pattern" reporting
+
+== Rules ==
 
 - is "[^gq]ue [consonne]" or "[^gq]ues" ok ?
-
 - should we forbid "[^gq]uent", "ient", "éent" ?
+
+== Existing errors ==
 
 - "prix"/"fils"
 
+== Notes ==
+
+hiatus malherbe:
+http://books.google.de/books?id=qpQGAAAAQAAJ&pg=PA40&lpg=PA40&dq=Et+que+pour+retarder+une+heure+seulement+%22Pour+ne+mourir+jamais%22,+meure+%C3%A9ternellement&source=bl&ots=G8VEFnXkmB&sig=qzmHRiloQpIp6Ebb-9aJrYOoIM0&hl=en&sa=X&ei=3oL8T9WiJ6aB4gTK8pWPBw&redir_esc=y#v=onepage&q=Et%20que%20pour%20retarder%20une%20heure%20seulement%20%22Pour%20ne%20mourir%20jamais%22%2C%20meure%20%C3%A9ternellement&f=false
