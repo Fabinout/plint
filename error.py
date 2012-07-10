@@ -44,11 +44,11 @@ class ErrorBadCharacters(Error):
           ', '.join(["'" + a + "'" for a in self.characters])), short)
 
 class ErrorForbiddenPattern(Error):
-  def __init__(self, pattern):
-    self.pattern = pattern
+  def __init__(self, forbidden):
+    self.forbidden = forbidden
 
   def report(self, short=False):
-    return Error.report(self, "Illegal ambiguous pattern: %s" % self.pattern,
+    return Error.report(self, "Illegal ambiguous pattern: %s" % self.forbidden,
         short)
 
 class ErrorHiatus(Error):
