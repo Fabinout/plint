@@ -13,6 +13,7 @@
 
 - is "[^gq]ue [consonne]" or "[^gq]ues" ok ?
 - should we forbid "[^gq]uent", "ient", "éent" ?
+- 3-syllable vowel clusters?
 
 == Existing errors ==
 
