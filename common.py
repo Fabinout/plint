@@ -50,8 +50,7 @@ def rm_punct(text):
   #TODO rather: keep only good chars
   pattern = re.compile("[^'\w -]", re.UNICODE)
   text2 = pattern.sub(' ', text)
-  pattern2 = re.compile("[0-9]", re.UNICODE)
-  return pattern2.sub('', text2)
+  return text2
 
 def is_vowels(chunk, with_h=False, with_y=True):
   """Test if a chunk is vowels

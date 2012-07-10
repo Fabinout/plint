@@ -39,8 +39,9 @@ class ErrorBadCharacters(Error):
     self.characters = characters
 
   def report(self, short=False):
-    return Error.report(self, "Illegal character: %s"
-        % ', '.join(["'" + a + "'" for a in self.characters]), short)
+    return Error.report(self, "Illegal character%s: %s"
+        % ('' if len(self.characters) == 1 else 's',
+          ', '.join(["'" + a + "'" for a in self.characters])), short)
 
 class ErrorForbiddenPattern(Error):
   def __init__(self, pattern):

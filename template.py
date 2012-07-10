@@ -3,7 +3,7 @@ from metric import parse
 from hemistiches import check_hemistiches
 import copy
 import rhyme
-from common import normalize, legal, strip_accents_one
+from common import normalize, legal, strip_accents_one, rm_punct
 from nature import nature_count
 from vowels import possible_weights_ctx, make_query
 
@@ -115,11 +115,20 @@ class Template:
   def match(self, line, ofile=None):
     """Check a line against current pattern, return errors"""
 
-    line_with_case = normalize(line, downcase=False)
-    line = normalize(line)
+    errors = []
     pattern = self.get()
 
-    errors = []
+    # check characters
+    illegal = set()
+    for x in line:
+      if not rm_punct(strip_accents_one(x)[0].lower()) in legal:
+        illegal.add(x)
+    if len(illegal) > 0:
+      errors.append(error.ErrorBadCharacters(illegal))
+      return errors, pattern
+
+    line_with_case = normalize(line, downcase=False)
+    line = normalize(line)
 
     # rhymes
     if pattern.myid not in self.env.keys():
@@ -152,14 +161,6 @@ class Template:
       possible))
     possible = map((lambda x: (self.rate(pattern, x), x)), possible)
     possible = sorted(possible, key=(lambda x: x[0]))
-
-    # check characters
-    illegal = set()
-    for x in line:
-      if not strip_accents_one(x)[0] in legal:
-        illegal.add(x)
-    if len(illegal) > 0:
-      errors.append(error.ErrorBadCharacters(illegal))
 
     # check metric
     if len(possible) == 0 or possible[0][0] != 0:
