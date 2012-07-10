@@ -37,7 +37,7 @@ def manage(line, silent=False):
   if normalize(text.strip()) == '':
     return True # no text
   first = [a for a in l[1:] if a != ''][0]
-  if first == '/me':
+  if first == '/me' and len(l) >= 2 and l[2] == 'plint':
     # always accept actions
     if len(lbuf) > 0:
       lbuf.append(l)

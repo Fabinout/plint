@@ -9,7 +9,7 @@ my %actions;
 
 while (<STDIN>) {
   chop;
-  if (/^<([^>]*)> \/me (.*)$/) {
+  if (/^<([^>]*)> \/me plint (.*)$/) {
     if ($1 ne $actor) {
       $actions{$1} = $2;
     } else {
