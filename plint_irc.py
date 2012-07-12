@@ -49,7 +49,7 @@ def manage(line, silent=False):
     return True
   if first[0] == '/':
     return False # ignore other commands
-  if first.lstrip().startswith("..."):
+  if first.lstrip().startswith("...") or first.lstrip().startswith("…"):
     text = buf+text
     usebuf = True
   if not usebuf:
@@ -58,7 +58,8 @@ def manage(line, silent=False):
     if not leading_cap(text):
       return False
   errors = template.check(text)
-  if len(errors) > 0 and text.rstrip().endswith("..."):
+  if len(errors) > 0 and (text.rstrip().endswith("...") or
+      text.rstrip().endswith("…")):
     # it might be a call
     buf = text
     if usebuf:
