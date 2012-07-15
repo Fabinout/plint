@@ -33,6 +33,10 @@ Generate the occurrences file as follows:
 
   ./lexique_occurrences_retrieve.sh > occurrences
 
+Compile the locales by running:
+
+  make
+
 == 3. Usage ==
 
 To use the program's command-line interface, run:

@@ -1,0 +1,80 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: plint\n"
+"POT-Creation-Date: 2012-07-15 14:07+CEST\n"
+"PO-Revision-Date: 2012-07-15 14:21+0100\n"
+"Last-Translator: Antoine Amarilli <a3nm@a3nm.net>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: error.py:25
+msgid "error: %s"
+msgstr "erreur : %s"
+
+#: error.py:26
+msgid "Line is: %s"
+msgstr "Ligne : %s"
+
+#: error.py:43
+msgid "Illegal character%s: %s"
+msgstr "Mauvais caractère%s : %s"
+
+#: error.py:52
+msgid "Illegal ambiguous pattern: %s"
+msgstr "Motif ambigu interdit : %s"
+
+#: error.py:60
+msgid "Illegal hiatus: %s"
+msgstr "Hiatus interdit : %s"
+
+#: error.py:73
+msgid "Bad rhyme %s for type %s (expected %s, inferred %s)"
+msgstr "Mauvaise %s de rime pour le type %s (attendu : %s, lu : %s)"
+
+#: error.py:79
+msgid " or "
+msgstr " ou "
+
+#: error.py:89
+msgid "genre"
+msgstr "genre"
+
+#: error.py:98
+msgid " (ending: "
+msgstr " (fin : "
+
+#: error.py:104
+msgid "Bad rhyme %s for type %s (expected %s)"
+msgstr "Mauvaise rime %s pour le type %s (attendu : %s)"
+
+#: error.py:109
+msgid "value"
+msgstr "valeur"
+
+#: error.py:179
+msgid "Bad metric (expected %s, inferred %d option%s)"
+msgstr "Mauvaise métrique (attendu : %s, lu : %s option%s)"
+
+#: error.py:185
+msgid "... other options omitted ..."
+msgstr "... autres options tronquées ..."
+
+#: error.py:197
+msgid "%d occurrences of word %s for rhyme %s"
+msgstr "%d occurrences du mot %s pour la rime %s"
+
+#: plint.py:43
+msgid "Usage: %s TEMPLATE [OCONTEXT]"
+msgstr "Usage : %s MODÈLE [OCONTEXTE]"
+
+#: plint.py:44
+msgid "Check stdin according to TEMPLATE, report errors on stdout"
+msgstr "Vérifie l'entrée standard suivant MODÈLE, signale les erreurs sur la sortie standard"
+
