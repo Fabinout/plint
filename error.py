@@ -70,7 +70,7 @@ class ErrorBadRhyme(Error):
     # TODO don't indicate more than the minimal required rhyme (in length and
     # present of a vowel phoneme)
     return Error.report(self,
-        _("Bad rhyme %s for type %s (expected %s, inferred %s)")
+        _("Bad rhyme %s for type %s (expected %s, inferred \"%s\")")
         % (self.kind, self.get_id(), self.fmt(self.expected),
           self.fmt(self.inferred)), short)
 
@@ -94,8 +94,8 @@ class ErrorBadRhymeSound(ErrorBadRhyme):
     ok = []
     if len(pron) > 0:
       ok.append("")
-    return ('/'.join(list(set([common.to_xsampa(x[-4:]) for x in pron]))) +
-        _(" (ending: ") + l.eye + ")")
+    return ("\"" + '/'.join(list(set([common.to_xsampa(x[-4:]) for x in pron])))
+        + "\"" + _(" (ending: \"") + l.eye + "\")")
 
   def get_id(self):
     return self.pattern.myid
@@ -176,13 +176,13 @@ class ErrorBadMetric(Error):
     truncated = num < len(self.possible)
     return Error.report(
         self,
-        (_("Bad metric (expected %s, inferred %d option%s)") %
+        (_("Bad metric (expected %s, inferred %d illegal option%s)") %
         (self.pattern.metric,
           len(self.possible), ('s' if len(self.possible) != 1 else
           ''))),
         short,
         list(map(self.align, self.possible[:num]))
-        + ([_("... other options omitted ...")] if truncated else [])
+        + ([_("... worse options omitted ...")] if truncated else [])
         )
 
 class ErrorMultipleWordOccurrence(Error):
@@ -194,6 +194,6 @@ class ErrorMultipleWordOccurrence(Error):
     return self.pattern.myid
 
   def report(self, short=False):
-    return Error.report(self, _("%d occurrences of word %s for rhyme %s")
-        % (self.occurrences, self.word, self.get_id()), short)
+    return Error.report(self, _("Too many occurrences of word %s for rhyme %s")
+        % (self.word, self.get_id()), short)
 
