@@ -52,7 +52,7 @@ msgstr " (fin : "
 
 #: error.py:104
 msgid "Bad rhyme %s for type %s (expected %s)"
-msgstr "Mauvaise rime %s pour le type %s (attendu : %s)"
+msgstr "Mauvaise %s de rime pour le type %s (attendu : %s)"
 
 #: error.py:109
 msgid "value"
