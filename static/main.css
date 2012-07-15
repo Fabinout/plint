@@ -98,6 +98,7 @@ h2.correct, h2.incorrect {
   font-family: "Bitstream Vera Sans", sans-serif;
   padding: 0.2em;
   text-align: center;
+  overflow: auto;
 }
 
 #dump {
