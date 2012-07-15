@@ -33,7 +33,7 @@ Generate the occurrences file as follows:
 
   ./lexique_occurrences_retrieve.sh > occurrences
 
-Compile the locales by running:
+For locale support, install gettext (Debian package: gettext) and run:
 
   make
 
