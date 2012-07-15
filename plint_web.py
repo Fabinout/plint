@@ -1,6 +1,7 @@
 #!/usr/bin/python3 -O
 #encoding: utf8
 
+import localization
 import re
 import template
 from bottle import run, Bottle, request, static_file
@@ -80,6 +81,7 @@ def q():
       'template': request.forms.get('template'),
       'lang': get_locale(),
     }
+  localization.init_locale(get_locale())
   d['poem'] = re.sub(r'<>&', '', d['poem'])
   poem = check(d['poem'])
   if not poem:

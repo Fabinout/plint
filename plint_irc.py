@@ -1,5 +1,6 @@
 #!/usr/bin/python3 -uO
 
+import localization
 import re
 import sys
 import rhyme
@@ -114,6 +115,7 @@ f.close()
 print("ready", file=sys.stderr)
 
 def run():
+  localization.init_locale()
   global lbuf
   while True:
     line = sys.stdin.readline()
