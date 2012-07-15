@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: plint\n"
-"POT-Creation-Date: 2012-07-15 15:24+CEST\n"
-"PO-Revision-Date: 2012-07-15 15:24+0100\n"
+"POT-Creation-Date: 2012-07-15 15:31+CEST\n"
+"PO-Revision-Date: 2012-07-15 15:32+0100\n"
 "Last-Translator: Antoine Amarilli <a3nm@a3nm.net>\n"
 "Language-Team: \n"
 "Language: \n"
@@ -36,28 +36,28 @@ msgid "Illegal hiatus: %s"
 msgstr "Hiatus interdit : %s"
 
 #: error.py:73
-msgid "Bad rhyme %s for type %s (expected %s, inferred \"%s\")"
-msgstr "Mauvaise %s de rime pour le type %s (attendu : %s, lu : \"%s\")"
+msgid "%s for type %s (expected %s, inferred \"%s\")"
+msgstr "%s pour le type %s (attendu : %s, lu : \"%s\")"
 
 #: error.py:79
 msgid " or "
 msgstr " ou "
 
 #: error.py:89
-msgid "genre"
-msgstr "genre"
+msgid "Bad rhyme genre"
+msgstr "Mauvais genre de rime"
 
 #: error.py:98
 msgid " (ending: \""
 msgstr " (fin : \""
 
 #: error.py:104
-msgid "Bad rhyme %s for type %s (expected %s)"
-msgstr "Mauvaise %s de rime pour le type %s (attendu : %s)"
+msgid "%s for type %s (expected %s)"
+msgstr "%s pour le type %s (attendu : %s)"
 
 #: error.py:109
-msgid "value"
-msgstr "valeur"
+msgid "Bad rhyme"
+msgstr "Mauvaise rime"
 
 #: error.py:179
 msgid "Bad metric (expected %s, inferred %d illegal option%s)"
@@ -79,3 +79,8 @@ msgstr "Usage : %s MODÈLE [OCONTEXTE]"
 msgid "Check stdin according to TEMPLATE, report errors on stdout"
 msgstr "Vérifie l'entrée standard suivant MODÈLE, signale les erreurs sur la sortie standard"
 
+#~ msgid "genre"
+#~ msgstr "genre"
+
+#~ msgid "value"
+#~ msgstr "valeur"

@@ -70,7 +70,7 @@ class ErrorBadRhyme(Error):
     # TODO don't indicate more than the minimal required rhyme (in length and
     # present of a vowel phoneme)
     return Error.report(self,
-        _("Bad rhyme %s for type %s (expected %s, inferred \"%s\")")
+        _("%s for type %s (expected %s, inferred \"%s\")")
         % (self.kind, self.get_id(), self.fmt(self.expected),
           self.fmt(self.inferred)), short)
 
@@ -86,7 +86,7 @@ class ErrorBadRhymeGenre(ErrorBadRhyme):
 
   @property
   def kind(self):
-    return _("genre")
+    return _("Bad rhyme genre")
 
 class ErrorBadRhymeSound(ErrorBadRhyme):
   def fmt(self, l):
@@ -101,12 +101,12 @@ class ErrorBadRhymeSound(ErrorBadRhyme):
     return self.pattern.myid
 
   def report(self, short=False):
-    return Error.report(self, _("Bad rhyme %s for type %s (expected %s)")
+    return Error.report(self, _("%s for type %s (expected %s)")
         % (self.kind, self.pattern.myid, self.fmt(self.expected)), short)
 
   @property
   def kind(self):
-    return _("value")
+    return _("Bad rhyme")
 
 class ErrorBadMetric(Error):
   def __init__(self, possible):
