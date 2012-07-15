@@ -21,7 +21,7 @@ def run():
 if __name__ == '__main__':
   if len(sys.argv) < 2 or len(sys.argv) > 3:
     print("Usage: %s TEMPLATE [OCONTEXT]" % sys.argv[0], file=sys.stderr)
-    print("Check stdin according to template, report errors on stdout",
+    print("Check stdin according to TEMPLATE, report errors on stdout",
         file=sys.stderr)
     sys.exit(1)
 

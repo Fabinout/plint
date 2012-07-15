@@ -23,13 +23,14 @@ class Error:
       l.append(s)
     else:
       l.append(self.say("error: %s" % (s)))
+    msg = "Line is: %s" % (self.line)
     if short:
       if t != []:
-        l.append("Line is: %s" % (self.line))
+        l.append(msg)
         for x in t:
           l.append(x)
     else:
-      l.append(self.say("Line is: %s" % (self.line)))
+      l.append(self.say(msg))
       for x in t:
         l.append(self.say(x))
     return '\n'.join(l)
