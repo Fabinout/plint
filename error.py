@@ -22,8 +22,8 @@ class Error:
     if short:
       l.append(s)
     else:
-      l.append(self.say("error: %s" % (s)))
-    msg = "Line is: %s" % (self.line)
+      l.append(self.say(_("error: %s") % (s)))
+    msg = _("Line is: %s") % (self.line)
     if short:
       if t != []:
         l.append(msg)
@@ -40,7 +40,7 @@ class ErrorBadCharacters(Error):
     self.characters = characters
 
   def report(self, short=False):
-    return Error.report(self, "Illegal character%s: %s"
+    return Error.report(self, _("Illegal character%s: %s")
         % ('' if len(self.characters) == 1 else 's',
           ', '.join(["'" + a + "'" for a in self.characters])), short)
 
@@ -49,7 +49,7 @@ class ErrorForbiddenPattern(Error):
     self.forbidden = forbidden
 
   def report(self, short=False):
-    return Error.report(self, "Illegal ambiguous pattern: %s" % self.forbidden,
+    return Error.report(self, _("Illegal ambiguous pattern: %s") % self.forbidden,
         short)
 
 class ErrorHiatus(Error):
@@ -57,7 +57,7 @@ class ErrorHiatus(Error):
     self.hiatus = hiatus
 
   def report(self, short=False):
-    return Error.report(self, "Illegal hiatus: %s" % self.hiatus, short)
+    return Error.report(self, _("Illegal hiatus: %s") % self.hiatus, short)
 
 class ErrorBadRhyme(Error):
   def __init__(self, expected, inferred):
@@ -70,13 +70,13 @@ class ErrorBadRhyme(Error):
     # TODO don't indicate more than the minimal required rhyme (in length and
     # present of a vowel phoneme)
     return Error.report(self,
-        "Bad rhyme %s for type %s (expected %s, inferred %s)"
+        _("Bad rhyme %s for type %s (expected %s, inferred %s)")
         % (self.kind, self.get_id(), self.fmt(self.expected),
           self.fmt(self.inferred)), short)
 
 class ErrorBadRhymeGenre(ErrorBadRhyme):
   def fmt(self, l):
-    result = ' or '.join(list(l))
+    result = _(' or ').join(list(l))
     if result == '':
       result = "?"
     return result
@@ -86,7 +86,7 @@ class ErrorBadRhymeGenre(ErrorBadRhyme):
 
   @property
   def kind(self):
-    return "genre"
+    return _("genre")
 
 class ErrorBadRhymeSound(ErrorBadRhyme):
   def fmt(self, l):
@@ -95,18 +95,18 @@ class ErrorBadRhymeSound(ErrorBadRhyme):
     if len(pron) > 0:
       ok.append("")
     return ('/'.join(list(set([common.to_xsampa(x[-4:]) for x in pron]))) +
-        " (ending: " + l.eye + ")")
+        _(" (ending: ") + l.eye + ")")
 
   def get_id(self):
     return self.pattern.myid
 
   def report(self, short=False):
-    return Error.report(self, "Bad rhyme %s for type %s (expected %s)"
+    return Error.report(self, _("Bad rhyme %s for type %s (expected %s)")
         % (self.kind, self.pattern.myid, self.fmt(self.expected)), short)
 
   @property
   def kind(self):
-    return "value"
+    return _("value")
 
 class ErrorBadMetric(Error):
   def __init__(self, possible):
@@ -176,13 +176,13 @@ class ErrorBadMetric(Error):
     truncated = num < len(self.possible)
     return Error.report(
         self,
-        ("Bad metric (expected %s, inferred %d option%s)" %
+        (_("Bad metric (expected %s, inferred %d option%s)") %
         (self.pattern.metric,
           len(self.possible), ('s' if len(self.possible) != 1 else
           ''))),
         short,
         list(map(self.align, self.possible[:num]))
-        + (["... other options omitted ..."] if truncated else [])
+        + ([_("... other options omitted ...")] if truncated else [])
         )
 
 class ErrorMultipleWordOccurrence(Error):
@@ -194,6 +194,6 @@ class ErrorMultipleWordOccurrence(Error):
     return self.pattern.myid
 
   def report(self, short=False):
-    return Error.report(self, "%d occurrences of word %s for rhyme %s"
+    return Error.report(self, _("%d occurrences of word %s for rhyme %s")
         % (self.occurrences, self.word, self.get_id()), short)
 
