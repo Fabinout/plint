@@ -63,21 +63,23 @@ class Template:
 
   def read_option(self, x):
     key, value = x.split(':')
-    if key == "merge":
+    if key in ["merge", "fusionner"]:
       self.mergers.append(value)
-    elif key == "forbidden_ok":
+    elif key in ["forbidden_ok", "ambiguous_ok", "ambigu_ok"]:
       self.forbidden_ok = str2bool(value)
-    elif key == "hiatus_ok":
+    elif key in ["hiatus_ok"]:
       self.hiatus_ok = str2bool(value)
-    elif key == "normande_ok":
+    elif key in ["normande_ok"]:
       self.normande_ok = str2bool(value)
-    elif key == "diaeresis":
+    elif key in ["diaeresis", "dierese"]:
+      if value == "classique":
+        value = "classical"
       self.diaeresis = value
       if value not in ["permissive", "classical"]:
         raise ValueError
-    elif key == "check_end_hemistiche":
+    elif key == ["check_end_hemistiche", "verifie_fin_hemistiche"]:
       self.check_end_hemistiche = str2bool(value)
-    elif key == "check_occurrences":
+    elif key == ["check_occurrences", "verifie_occurrences"]:
       self.check_occurrences = str2bool(value)
     else:
       raise ValueError
@@ -243,7 +245,7 @@ class Template:
     if len(idsplit) >= 2:
       constraint = idsplit[-1].split('|')
       if len(constraint) > 0:
-        constraint[0] = False if constraint[0] == "no" else constraint[0]
+        constraint[0] = False if constraint[0] in ["no", "non"] else constraint[0]
       if len(constraint) > 1:
         constraint[1] = int(constraint[1])
     else:
@@ -301,9 +303,9 @@ class Template:
     return errors
 
 def str2bool(x):
-  if x == "yes":
+  if x.lower() in ["yes", "oui", "y", "o"]:
     return True
-  if x == "no":
+  if x.lower() in ["no", "non", "n"]:
     return False
   raise ValueError
 
