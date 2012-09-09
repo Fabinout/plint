@@ -21,15 +21,18 @@ bottle.py is a third-party file, its license is in file LICENSE_bottle.
 plint is a tool to check French poetry. Specifically, it validates metric,
 rhymes and rhyme genres against an unexpressive template language. It features a
 command-line interface, an IRC wrapper (for use with irctk) and a web interface.
-It depends on haspirater and frhyme, and the web interface requires CherryPy.
+It depends on haspirater <https://gitorious.org/haspirater> and frhyme
+<https://gitorious.org/frhyme>, and the web interface requires CherryPy.
 
 The full documentation of plint's features is available in views/about.html.
 
 == 2. Setup ==
 
-Place the haspirater.json and haspirater.py from haspirater in the main
-directory. Place the generated frhyme.json and frhyme.py in the main directory.
-Generate the occurrences file as follows:
+Place haspirater.py and haspirater.json from haspirater in the main directory
+(see haspirater's README for instructions on how to generate haspirater.json).
+Place frhyme.py and frhyme.json from frhyme in the main directory (see frhyme's
+README for instructions on how to generate frhyme.json). Generate the
+occurrences file as follows:
 
   ./lexique_occurrences_retrieve.sh > occurrences
 
