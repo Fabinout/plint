@@ -28,8 +28,7 @@ The full documentation of plint's features is available in views/about.html.
 
 == 2. Setup ==
 
-Place haspirater.py and haspirater.json from haspirater in the main directory
-(see haspirater's README for instructions on how to generate haspirater.json).
+Place haspirater.py and haspirater.json from haspirater in the main directory.
 Place frhyme.py and frhyme.json from frhyme in the main directory (see frhyme's
 README for instructions on how to generate frhyme.json). Generate the
 occurrences file as follows:
