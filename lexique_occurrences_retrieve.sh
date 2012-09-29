@@ -8,7 +8,7 @@ cd "$( dirname "$0" )"
 
 wget $URL
 unzip -qq $ZIP $FILE
-cat $FILE | ./frhyme/lexique/lexique_fix.sh | cut -f1 |
+cat $FILE | ./lexique_fix.sh | cut -f1 |
   rev | cut -d' ' -f1 | rev | sort | uniq -c |
   awk '{print $2, $1}'
 
