@@ -139,7 +139,7 @@ def parse(text, phon, bound, forbidden_ok, hiatus_ok, diaeresis):
         if (x == 'w'):
           new_word.append("doublevé")
         else:
-          new_word.append(x + "a")
+          new_word.append(x + "é")
       words[i] = ''.join(new_word)
 
 
