@@ -146,3 +146,8 @@ li.incorrect {
 .template {
   font-family: DejaVu Sans Mono, Liberation Mono, monospace;
 }
+
+#desc {
+  margin-bottom: 0em;
+}
+

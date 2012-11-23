@@ -2,13 +2,20 @@
 
 {% block body %}
 <form method="POST" action="check" id="bigform">
+  {% if lang == 'fr' %}
+  <p id="desc">plint est un outil pour vérifier la métrique et les rimes de poèmes en
+  langue française. Entrez votre poème ici&nbsp;:</p>
+  {% else %}
+  <p id="desc">plint is a tool to check the metric and rhymes of French verse.
+  Input your poem here:</p>
+  {% endif %}
   <label for="poem">
   </label><br />
   <textarea id="poem" name="poem"
   {% if lang == 'fr' %}
-    placeholder="Entrez votre poème ici."
+    placeholder="Votre poème ici."
   {% else %}
-    placeholder="Input your poem here."
+    placeholder="Your poem here."
   {% endif %}
     ></textarea>
   <br/>
@@ -58,9 +65,9 @@
   <dd>
   <textarea name="custom_template" id="custom_template"
   {% if lang == 'fr' %}
-  placeholder="modèle personnalisé"
+  placeholder="Entrez votre modèle personnalisé ici."
   {% else %}
-  placeholder="custom template"
+  placeholder="Input a custom template here."
   {% endif %}
   ></textarea>
 </dd>
