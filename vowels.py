@@ -55,15 +55,21 @@ def possible_weights_approx(chunk):
     return [1, 2] # TODO unsure about that
   if chunk in ['eüi', 'aoû', 'uë']:
     return [1]
+  if chunk in ['aïe', 'oë', 'ouü']:
+    return [1, 2]
   if contains_trema(chunk):
     return [2]
   chunk = strip_accents(chunk, True)
   if chunk in ['ai', 'ou', 'eu', 'ei', 'eau', 'eoi', 'eui', 'au', 'oi',
       'oie', 'œi', 'œu', 'eaie', 'aie', 'oei', 'oeu', 'ea', 'ae', 'eo',
       'eoie', 'oe', 'eai', 'eue', 'aa', 'oo', 'ee', 'ii', 'aii',
-      'yeu', 'ye']:
+      'yeu', 'ye', 'you']:
     return [1]
-  for x in ['oa', 'ea', 'eua', 'ao', 'euo', 'ua', 'uo', 'yo', 'yau']:
+  if chunk == "oua":
+    return [1, 2] # "pouah"
+  if chunk == "ao":
+    return [1, 2] # "paon"
+  for x in ['oa', 'ea', 'eua', 'euo', 'ua', 'uo', 'yo', 'yau']:
     if x in chunk:
       return [2]
   # beware of "déesse"

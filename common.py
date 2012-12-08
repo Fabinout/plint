@@ -5,7 +5,7 @@ import unicodedata
 import re
 
 vowels = 'aeiouyœæ'
-consonants = "bcçdfghjklmnpqrstvwxz'"
+consonants = "bcçdfghjklmnpqrstvwxzñ'"
 legal = vowels + consonants + ' -'
 
 # a variant of x-sampa such that all french phonemes are one-character
@@ -46,6 +46,7 @@ def rm_punct(text):
   """Remove punctuation from text"""
   text = re.sub("’", "'", text) # no weird apostrophes
   text = re.sub("' ", "'", text) # space after apostrophes
+  text = re.sub("'*$", "", text) # apostrophes at end of line
 
   #TODO rather: keep only good chars
   pattern = re.compile("[^'\w -]", re.UNICODE)
