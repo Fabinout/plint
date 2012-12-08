@@ -71,6 +71,14 @@ def fit(chunks, pos, left, diaeresis):
 def feminine(align, verse, phon):
   for a in sure_end_fem:
     if verse.endswith(a):
+      # check that this isn't a one-syllabe wourd
+      for i in range(4):
+        for j in ' -':
+          try:
+            if j in align[-i-1]:
+              return ['M', 'F']
+          except IndexError:
+            return ['M', 'F']
       return ['F']
   if not verse.endswith('ent'):
     return ['M']
