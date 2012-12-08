@@ -104,8 +104,9 @@ class Rhyme:
     return self.restrict(Rhyme(line, constraint, self.mergers))
 
   def satisfied(self):
-    return (len(self.eye) >= self.constraint.eye
-        and len(self.phon) > 0 or not self.constraint.classical)
+    return (len(self.phon) >= self.constraint.phon
+        and len(self.eye) >= self.constraint.eye
+        and (len(self.eye) > 0 or not self.constraint.classical))
 
   def pprint(self):
     pprint(self.phon)
