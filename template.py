@@ -77,9 +77,9 @@ class Template:
       self.diaeresis = value
       if value not in ["permissive", "classical"]:
         raise ValueError
-    elif key == ["check_end_hemistiche", "verifie_fin_hemistiche"]:
+    elif key in ["check_end_hemistiche", "verifie_fin_hemistiche"]:
       self.check_end_hemistiche = str2bool(value)
-    elif key == ["check_occurrences", "verifie_occurrences"]:
+    elif key in ["check_occurrences", "verifie_occurrences"]:
       self.check_occurrences = str2bool(value)
     else:
       raise ValueError
