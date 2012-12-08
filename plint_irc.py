@@ -101,6 +101,7 @@ if len(sys.argv) == 4:
 
 pos = 0
 
+localization.init_locale()
 f = open(sys.argv[2], 'r')
 for line in f.readlines():
   pos += 1
@@ -115,7 +116,6 @@ f.close()
 print("ready", file=sys.stderr)
 
 def run():
-  localization.init_locale()
   global lbuf
   while True:
     line = sys.stdin.readline()
