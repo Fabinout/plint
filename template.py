@@ -114,7 +114,7 @@ class Template:
     return ((1+len(hemis.keys()))*abs(pattern.length - c)
         + sum([1 for x in hemis.values() if x != "ok"]))
 
-  def match(self, line, ofile=None):
+  def match(self, line, ofile=None, quiet=False):
     """Check a line against current pattern, return errors"""
 
     errors = []
@@ -126,6 +126,8 @@ class Template:
       if not rm_punct(strip_accents_one(x)[0].lower()) in legal:
         illegal.add(x)
     if len(illegal) > 0:
+      if quiet:
+        return [None], pattern
       errors.append(error.ErrorBadCharacters(illegal))
       return errors, pattern
 
@@ -163,6 +165,12 @@ class Template:
       possible))
     possible = map((lambda x: (self.rate(pattern, x), x)), possible)
     possible = sorted(possible, key=(lambda x: x[0]))
+
+    if len(possible) == 0 and quiet:
+        return [None], pattern
+    if (possible[0][0] > (1+len(pattern.hemistiches))*pattern.length/2 
+          and quiet):
+        return [None], pattern
 
     # check metric
     if len(possible) == 0 or possible[0][0] != 0:
@@ -285,7 +293,7 @@ class Template:
     self.femenv = copy.deepcopy(self.old_femenv)
     self.occenv = copy.deepcopy(self.old_occenv)
 
-  def check(self, line, ofile=None):
+  def check(self, line, ofile=None, quiet=False):
     """Check line (wrapper)"""
     self.line_no += 1
     line = line.rstrip()
@@ -293,10 +301,11 @@ class Template:
       return []
     #possible = [compute(p) for p in possible]
     #possible = sorted(possible, key=rate)
-    errors, pattern = self.match(line, ofile)
+    errors, pattern = self.match(line, ofile, quiet=quiet)
     for error in errors:
-      # update errors with line position and pattern
-      error.pos(line, self.line_no, pattern)
+      if error != None:
+        # update errors with line position and pattern
+        error.pos(line, self.line_no, pattern)
     if len(errors) > 0 and self.reject_errors:
       self.back()
       self.line_no -= 1
