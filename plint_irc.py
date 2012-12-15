@@ -58,8 +58,7 @@ def manage(line, silent=False):
       return False
     if not leading_cap(text):
       return False
-  errors = template.check(text, quiet=True)
-  if len(errors) > 0 and (text.rstrip().endswith("...") or
+  if (text.rstrip().endswith("...") or
       text.rstrip().endswith("…")):
     # it might be a call
     buf = text
@@ -68,6 +67,7 @@ def manage(line, silent=False):
     else:
       lbuf = [l]
     return True
+  errors = template.check(text, quiet=False)
   quiet = False
   for error in errors:
     if error == None:
