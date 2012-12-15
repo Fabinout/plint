@@ -58,7 +58,7 @@ def manage(line, silent=False):
       return False
     if not leading_cap(text):
       return False
-  errors = template.check(text)
+  errors = template.check(text, quiet=True)
   if len(errors) > 0 and (text.rstrip().endswith("...") or
       text.rstrip().endswith("…")):
     # it might be a call
@@ -68,8 +68,12 @@ def manage(line, silent=False):
     else:
       lbuf = [l]
     return True
+  quiet = False
   for error in errors:
-    print(error.report())
+    if error == None:
+      quiet = True
+    if not quiet:
+      print(error.report())
   if len(errors) == 0:
     buf = ""
     if not silent:
@@ -87,6 +91,8 @@ if len(sys.argv) not in [3, 4]:
   print("Ignore OFFSET lines from POEM",
       file=sys.stderr)
   sys.exit(1)
+
+localization.init_locale()
 
 f = open(sys.argv[1])
 x = f.read()
