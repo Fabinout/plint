@@ -47,6 +47,7 @@ def rm_punct(text):
   text = re.sub("’", "'", text) # no weird apostrophes
   text = re.sub("' ", "'", text) # space after apostrophes
   text = re.sub("'*$", "", text) # apostrophes at end of line
+  text = re.sub("[‒–—―⁓⸺⸻]", " ", text) # no weird dashes
 
   #TODO rather: keep only good chars
   pattern = re.compile("[^'\w -]", re.UNICODE)
