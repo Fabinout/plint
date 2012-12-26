@@ -16,6 +16,9 @@ this program (see file "COPYING").  If not, see <http://www.gnu.org/licenses/>.
 
 bottle.py is a third-party file, its license is in file LICENSE_bottle.
 
+test/boileau is from Wikisource and test/baudelaire is from Project Gutenberg.
+Both of them are in the public domain.
+
 == 1. Features ==
 
 plint is a tool to check French poetry. Specifically, it validates metric,
@@ -66,8 +69,13 @@ along the lines of:
     poem2html/make_poem.sh poem_file > www/poem.html
   done
 
+To run plint on test files, you can use test.sh. However, because of known bugs,
+some errors will be reported on the test files.
+
 == 4. Related work ==
 
 * http://pentametron.com/
 * http://virga.org/cvf/alexanql.php
+* http://hal.archives-ouvertes.fr/docs/00/37/73/48/PDF/1.Rythme_et_rime_de_l_alexandrin_classique_-_V_Beaudouin_2000.pdf
+* http://www.oulipo.net/docannexe/file/16251/MetreenregleRFLA-Beaudouin200405.pdf
 
