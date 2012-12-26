@@ -23,6 +23,7 @@ clear textarea
 == Existing errors ==
 
 - "prix"/"fils"
+- the rest of test.sh
 
 == Other approaches ==
 
