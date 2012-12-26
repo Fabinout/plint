@@ -1,8 +1,13 @@
+clear textarea
+"joueront" trois syllabes ?
+
 == IRC ==
 
 - undo for irc, edit for irc
 - fournir un red (et peut-être de quoi revert) sur irc
 - /me lint
+- plint en mode serveur, pas de communication entre les participants sauf en
+  alexandrins
 
 == Alignment ==
 
@@ -18,6 +23,11 @@
 == Existing errors ==
 
 - "prix"/"fils"
+
+== Other approaches ==
+
+- learn rhyme and gender agnostically by clustering: prepare an undirected graph
+  of rhyming verses, factor out suffixes, do SCC, prepare a trie
 
 == Notes ==
 
