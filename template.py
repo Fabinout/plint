@@ -166,10 +166,10 @@ class Template:
     possible = map((lambda x: (self.rate(pattern, x), x)), possible)
     possible = sorted(possible, key=(lambda x: x[0]))
 
-    if len(possible) == 0 and quiet:
+    if quiet:
+      if len(possible) == 0:
         return [None], pattern
-    if (possible[0][0] > (1+len(pattern.hemistiches))*pattern.length/2 
-          and quiet):
+      if possible[0][0] > (1+len(pattern.hemistiches))*pattern.length/2:
         return [None], pattern
 
     # check metric
