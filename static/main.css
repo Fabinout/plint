@@ -65,9 +65,8 @@ body {
   overflow: auto;
 }
 
-#bigform dd, #custom_template {
+#bigform li, #custom_template {
   font-size: 80%;
-  width:80%;
   margin-bottom: 0.5em;
 }
 
@@ -141,10 +140,6 @@ li.incorrect {
 
 #firsterror a {
   color: white;
-}
-
-.template {
-  font-family: DejaVu Sans Mono, Liberation Mono, monospace;
 }
 
 #desc {
