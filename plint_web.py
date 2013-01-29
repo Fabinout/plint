@@ -83,6 +83,7 @@ def q():
     }
   localization.init_locale(get_locale())
   d['poem'] = re.sub(r'<>&', '', d['poem'])
+  print(d['poem'])
   poem = check(d['poem'])
   if not poem:
     return env.get_template('error.html').render(**d)
