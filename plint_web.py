@@ -86,7 +86,7 @@ def q():
   poem = check(d['poem'])
   if not poem:
     return env.get_template('error.html').render(**d)
-  if not re.match("^[a-z]+$", d['template']):
+  if not re.match("^[a-z_]+$", d['template']):
     return env.get_template('error.html').render(**d)
   if d['template'] == 'custom':
     x = request.forms.get('custom_template')
