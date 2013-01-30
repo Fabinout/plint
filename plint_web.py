@@ -87,10 +87,18 @@ def q():
   print(d['poem'])
   poem = check(d['poem'])
   if not poem:
-    d['error'] = "Poem is empty, too long, or has too long lines"
+    if get_locale() == 'fr':
+      msg = "Le poème est vide, trop long, ou a des lignes trop longues"
+    else:
+      msg = "Poem is empty, too long, or has too long lines"
+    d['error'] = msg
     return env.get_template('error.html').render(**d)
   if not re.match("^[a-z_]+$", d['template']):
-    d['error'] = "Invalid template name"
+    if get_locale() == 'fr':
+      msg = "Modèle inexistant"
+    else:
+      msg = "No such template"
+    d['error'] = msg
     return env.get_template('error.html').render(**d)
   if d['template'] == 'custom':
     x = request.forms.get('custom_template')
@@ -100,12 +108,20 @@ def q():
       x = f.read()
       f.close()
     except IOError:
-      d['error'] = "No such template"
+      if get_locale() == 'fr':
+        msg = "Modèle inexistant"
+      else:
+        msg = "No such template"
+      d['error'] = msg
       return env.get_template('error.html').render(**d)
   try:
     templ = template.Template(x)
   except error.TemplateLoadError as e:
-    d['error'] = "Error when reading template: " + e.msg
+    if get_locale() == 'fr':
+      msg = "Erreur à la lecture du modèle : " + e.msg
+    else:
+      msg = "Error when reading template: " + e.msg
+    d['error'] = msg
     return env.get_template('error.html').render(**d)
   print(d['template'])
   print(x)

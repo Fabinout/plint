@@ -33,7 +33,7 @@ class Pattern:
     """Parse from a metric description"""
     verse = [int(x) for x in self.metric.split('/')]
     if sum(verse) > 16:
-      raise error.TemplateLoadError("Verse length limit exceeded")
+      raise error.TemplateLoadError(_("Metric length limit exceeded"))
     self.hemistiches = []
     self.length = 0
     for v in verse:
@@ -79,7 +79,7 @@ class Template:
         value = "classical"
       self.diaeresis = value
       if value not in ["permissive", "classical"]:
-        raise error.TemplateLoadError("Bad value for global option %s" % key)
+        raise error.TemplateLoadError(_("Bad value for global option %s") % key)
     elif key in ["check_end_hemistiche", "verifie_fin_hemistiche"]:
       self.check_end_hemistiche = str2bool(value)
     elif key in ["check_occurrences", "verifie_occurrences"]:
@@ -89,7 +89,7 @@ class Template:
     elif key in ["incomplete_ok"]:
       self.incomplete_ok = str2bool(value)
     else:
-      raise error.TemplateLoadError("Unknown global option")
+      raise error.TemplateLoadError(_("Unknown global option"))
 
   def load(self, s):
     """Load from a string"""
@@ -104,7 +104,7 @@ class Template:
         else:
           self.template.append(self.parse_line(line.strip()))
     if len(self.template) == 0:
-      raise error.TemplateLoadError("Template is empty")
+      raise error.TemplateLoadError(_("Template is empty"))
 
   def count(self, align):
     """total weight of an align"""
@@ -342,5 +342,5 @@ def str2bool(x):
     return True
   if x.lower() in ["no", "non", "n"]:
     return False
-  raise error.TemplateLoadError("Bad value in global option.")
+  raise error.TemplateLoadError(_("Bad value in global option"))
 
