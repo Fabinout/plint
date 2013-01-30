@@ -2,11 +2,10 @@
 
 {% block body %}
 {% if lang == 'fr' %}
-<p>Les valeurs fournies sont incorrectes. (Peut-être que votre entrée est trop
-longue.) <a href="/about#help">Besoin
+<p>Une erreur est survenue: {{error}}. <a href="/about#help">Besoin
   d'aide&nbsp;?</a></p>
 {% else %}
-<p>Invalid values supplied. (Maybe your input is too large.) Need some <a
+<p>An error occurred: {{error}}. Need some <a
   href="/about#help">help</a>?</p>
 {% endif %}
 {% endblock %}

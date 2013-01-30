@@ -4,6 +4,7 @@
 import localization
 import re
 import template
+import error
 from bottle import run, Bottle, request, static_file
 from jinja2 import Environment, PackageLoader
 
@@ -85,10 +86,11 @@ def q():
   d['poem'] = re.sub(r'<>&', '', d['poem'])
   print(d['poem'])
   poem = check(d['poem'])
-  poem.append(None)
   if not poem:
+    d['error'] = "Poem is empty, too long, or has too long lines"
     return env.get_template('error.html').render(**d)
   if not re.match("^[a-z_]+$", d['template']):
+    d['error'] = "Invalid template name"
     return env.get_template('error.html').render(**d)
   if d['template'] == 'custom':
     x = request.forms.get('custom_template')
@@ -98,11 +100,16 @@ def q():
       x = f.read()
       f.close()
     except IOError:
+      d['error'] = "No such template"
       return env.get_template('error.html').render(**d)
   try:
     templ = template.Template(x)
-  except ValueError:
+  except error.TemplateLoadError as e:
+    d['error'] = "Error when reading template: " + e.msg
     return env.get_template('error.html').render(**d)
+  print(d['template'])
+  print(x)
+  poem.append(None)
   r = []
   firsterror = None
   nerror = 0

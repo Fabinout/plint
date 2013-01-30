@@ -209,3 +209,7 @@ class ErrorOverflowedTemplate(Error):
     return Error.report(self, _("Verse is beyond end of poem"),
         short)
 
+class TemplateLoadError(BaseException):
+  def __init__(self, msg):
+    self.msg = msg
+
