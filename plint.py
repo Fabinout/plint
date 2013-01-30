@@ -3,6 +3,7 @@
 import localization
 import sys
 import template
+import error
 
 def run():
   ok = True
@@ -31,11 +32,16 @@ if __name__ == '__main__':
         file=sys.stderr)
     sys.exit(1)
 
-  f = open(sys.argv[1])
+  template_name = sys.argv[1]
+  f = open(template_name)
   x = f.read()
   f.close()
 
-  template = template.Template(x)
+  try:
+    template = template.Template(x)
+  except error.TemplateLoadError as e:
+    print("Could not load template %s: %s" % (template_name, e.msg), file=sys.stderr)
+    sys.exit(2)
 
   ok = run()
   sys.exit(0 if ok else 1)
