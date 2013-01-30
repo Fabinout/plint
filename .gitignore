@@ -1,0 +1,17 @@
+__pycache__/*
+frhyme/*
+frhyme.py
+frhyme.json
+haspirater/*
+haspirater.py
+haspirater.json
+occurrences
+old/*
+*.pyc
+test/*
+Lexique371/
+contexts/
+contextsm
+messages.mo
+messages.pot
+res/*.mo
