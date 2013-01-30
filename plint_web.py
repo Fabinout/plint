@@ -85,6 +85,7 @@ def q():
   d['poem'] = re.sub(r'<>&', '', d['poem'])
   print(d['poem'])
   poem = check(d['poem'])
+  poem.append(None)
   if not poem:
     return env.get_template('error.html').render(**d)
   if not re.match("^[a-z_]+$", d['template']):
@@ -108,7 +109,11 @@ def q():
   i = 0
   for line in poem:
     i += 1
-    errors = [error.report(short=True) for error in templ.check(line)]
+    last = False
+    if line == None:
+      line = ""
+      last = True
+    errors = [error.report(short=True) for error in templ.check(line, last=last)]
     if errors != [] and not firsterror:
       firsterror = i
     r.append((line, errors))
