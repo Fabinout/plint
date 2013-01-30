@@ -130,7 +130,7 @@ class Template:
     pattern = self.get()
 
     if last:
-      if was_incomplete and not self.overflowed:
+      if was_incomplete and not self.incomplete_ok and not self.overflowed:
         errors.append(error.ErrorIncompleteTemplate())
       return errors, pattern
 
