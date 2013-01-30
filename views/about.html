@@ -143,6 +143,13 @@ options suivantes sont reconnues&nbsp;:</p>
   approximations plus permissives qui accepteront à peu près n'importe quelle
   diérèse ou synérèse phonétiquement plausible. La valeur par défaut est
   "classical".</dd>
+  <dt>repeat_ok</dt>
+  <dd>Si cette valeur est false, le modèle ne se répétera pas, un poème plus
+  long que le modèle provoquera une erreur. Par défaut, la valeur est true.</dd>
+  <dt>incomplete_ok</dt>
+  <dd>Si cette valeur est false, le poème devrait avoir exactement la longueur
+  du modèle (ou un multiple, si repeat_ok est true), ne pas aller jusqu'à la fin
+  du modèle provoquera une erreur. Par défaut, la valeur est true.</dd>
 </dl>
 
 <p>Désolé si tout cela semble un peu obscur. Vous pouvez regarder les modèles
@@ -301,6 +308,13 @@ form option:value and separated by spaces, with the following possibilities:</p>
   rules of classical verse or "permissive" to enforce a more permissive
   approximations which will allow mostly all phonetically reasonable diérèses
   and synérèses. Default is "classical".</dd>
+  <dt>repeat_ok</dt>
+  <dd>If the value is false, the template will not repeat, and going beyond its
+  end will be an error. Default is true.</dd>
+  <dt>incomplete_ok</dt>
+  <dd>If the value is false, the poem should match the length of the template
+  (or a multiple thereof is repeat_ok was set), and not completing a template
+  run will be an error. Default is true.</dd>
 </dl>
 
 <p>Sorry if all of this is a bit obscure. You can have a look to the predefined

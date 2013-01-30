@@ -48,6 +48,9 @@ class Template:
     self.forbidden_ok = False
     self.hiatus_ok = False
     self.normande_ok = True
+    self.repeat_ok = True
+    self.overflowed = False
+    self.incomplete_ok = True
     self.check_end_hemistiche = True
     self.check_occurrences = True
     self.diaeresis = "classical"
@@ -81,6 +84,10 @@ class Template:
       self.check_end_hemistiche = str2bool(value)
     elif key in ["check_occurrences", "verifie_occurrences"]:
       self.check_occurrences = str2bool(value)
+    elif key in ["repeat_ok"]:
+      self.repeat_ok = str2bool(value)
+    elif key in ["incomplete_ok"]:
+      self.incomplete_ok = str2bool(value)
     else:
       raise ValueError
 
@@ -114,11 +121,22 @@ class Template:
     return ((1+len(hemis.keys()))*abs(pattern.length - c)
         + sum([1 for x in hemis.values() if x != "ok"]))
 
-  def match(self, line, ofile=None, quiet=False):
+  def match(self, line, ofile=None, quiet=False, last=False):
     """Check a line against current pattern, return errors"""
+
+    was_incomplete = last and not self.beyond
 
     errors = []
     pattern = self.get()
+
+    if last:
+      if was_incomplete:
+        errors.append(error.ErrorIncompleteTemplate())
+      return errors, pattern
+
+    if self.overflowed:
+      errors.append(error.ErrorOverflowedTemplate())
+      return errors, pattern
 
     # check characters
     illegal = set()
@@ -213,7 +231,7 @@ class Template:
         errors.append(error.ErrorMultipleWordOccurrence(last_word,
           self.occenv[pattern.myid][last_word]))
 
-    # rhyme genres
+        # rhyme genres
     # inequality constraint
     # TODO this is simplistic and order-dependent
     if pattern.femid.swapcase() in self.femenv.keys():
@@ -274,13 +292,19 @@ class Template:
     self.femenv = self.reset_conditional(self.femenv)
     self.occenv = {} # always reset
 
+  @property
+  def beyond(self):
+    return self.position >= len(self.template)
+
   def get(self):
     """Get next state, resetting if needed"""
     self.old_position = self.position
     self.old_env = copy.deepcopy(self.env)
     self.old_femenv = copy.deepcopy(self.femenv)
     self.old_occenv = copy.deepcopy(self.occenv)
-    if self.position >= len(self.template):
+    if self.beyond:
+      if not self.repeat_ok:
+        self.overflowed = True
       self.reset_state()
     result = self.template[self.position]
     self.position += 1
@@ -293,15 +317,15 @@ class Template:
     self.femenv = copy.deepcopy(self.old_femenv)
     self.occenv = copy.deepcopy(self.old_occenv)
 
-  def check(self, line, ofile=None, quiet=False):
+  def check(self, line, ofile=None, quiet=False, last=False):
     """Check line (wrapper)"""
     self.line_no += 1
     line = line.rstrip()
-    if normalize(line) == '':
+    if normalize(line) == '' and not last:
       return []
     #possible = [compute(p) for p in possible]
     #possible = sorted(possible, key=rate)
-    errors, pattern = self.match(line, ofile, quiet=quiet)
+    errors, pattern = self.match(line, ofile, quiet=quiet, last=last)
     for error in errors:
       if error != None:
         # update errors with line position and pattern

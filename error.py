@@ -26,11 +26,13 @@ class Error:
     msg = _("Line is: %s") % (self.line)
     if short:
       if t != []:
-        l.append(msg)
+        if self.line.strip() != "":
+          l.append(msg)
         for x in t:
           l.append(x)
     else:
-      l.append(self.say(msg))
+      if self.line.strip() != "":
+        l.append(self.say(msg))
       for x in t:
         l.append(self.say(x))
     return '\n'.join(l)
@@ -196,4 +198,14 @@ class ErrorMultipleWordOccurrence(Error):
   def report(self, short=False):
     return Error.report(self, _("Too many occurrences of word %s for rhyme %s")
         % (self.word, self.get_id()), short)
+
+class ErrorIncompleteTemplate(Error):
+  def report(self, short=False):
+    return Error.report(self, _("Poem is not complete"),
+        short)
+
+class ErrorOverflowedTemplate(Error):
+  def report(self, short=False):
+    return Error.report(self, _("Verse is beyond end of poem"),
+        short)
 

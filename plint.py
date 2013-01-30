@@ -9,14 +9,18 @@ def run():
   f2 = None
   if len(sys.argv) == 3:
     f2 = open(sys.argv[2], 'w')
+  should_end = False
   while True:
     line = sys.stdin.readline()
     if not line:
-      break
-    errors = template.check(line, f2)
+      should_end = True
+      line = ""
+    errors = template.check(line, f2, last=should_end)
     for error in errors:
       print(error.report(), file=sys.stderr)
       ok = False
+    if should_end:
+      break
   return ok
 
 if __name__ == '__main__':
