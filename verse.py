@@ -199,33 +199,35 @@ class Verse:
       return vowels.possible_weights_approx(self.chunks[pos]['text'])
 
   def possible_weights_context(self, pos):
-      if ((pos >= len(self.chunks) - 2 and self.chunks[pos]['text'] == 'e')
-          and not (pos <= 0 or self.contains_break(self.chunks[pos-1]))
-          and not (pos <= 1 or self.contains_break(self.chunks[pos-2]))):
-        # special case for verse endings, which can get elided (or not)
-        # but we don't elide lone syllables ("prends-le", etc.)
-        if pos == len(self.chunks) - 1:
-          return [0] # ending 'e' is elided
-        if self.chunks[pos+1]['text'] == 's':
-          return [0] # ending 'es' is elided
-        if self.chunks[pos+1]['text'] == 'nt':
-          # ending 'ent' is sometimes elided
-          # actually, this will have an influence on the rhyme's gender
-          return [0, 1]
-        return self.possible_weights(pos)
-      if (pos == len(self.chunks) - 1 and self.chunks[pos]['text'] == 'e' and
-          pos > 0 and (self.chunks[pos-1]['text'].endswith('-c') or
-            self.chunks[pos-1]['text'].endswith('-j'))):
-        return [0] # -ce and -je are elided
-      if (pos >= len(self.chunks) - 1
-          and self.chunks[pos]['text'] in ['ie', 'ée']):
-        return [1]
-      if (pos >= len(self.chunks) - 2
-          and self.chunks[pos]['text'] in ['ée']):
-        return [1]
-      if 'elidable' in self.chunks[pos]:
-        return [0 if x else 1 for x in self.chunks[pos]['elidable']]
+    if ((pos >= len(self.chunks) - 2 and self.chunks[pos]['text'] == 'e')
+        and not (pos == len(self.chunks) - 2 and
+          is_vowels(self.chunks[pos+1]['text']))
+        and not (pos <= 0 or self.contains_break(self.chunks[pos-1]))
+        and not (pos <= 1 or self.contains_break(self.chunks[pos-2]))):
+      # special case for verse endings, which can get elided (or not)
+      # but we don't elide lone syllables ("prends-le", etc.)
+      if pos == len(self.chunks) - 1:
+        return [0] # ending 'e' is elided
+      if self.chunks[pos+1]['text'] == 's':
+        return [0] # ending 'es' is elided
+      if self.chunks[pos+1]['text'] == 'nt':
+        # ending 'ent' is sometimes elided
+        # actually, this will have an influence on the rhyme's gender
+        return [0, 1]
       return self.possible_weights(pos)
+    if (pos == len(self.chunks) - 1 and self.chunks[pos]['text'] == 'e' and
+        pos > 0 and (self.chunks[pos-1]['text'].endswith('-c') or
+          self.chunks[pos-1]['text'].endswith('-j'))):
+      return [0] # -ce and -je are elided
+    if (pos >= len(self.chunks) - 1
+        and self.chunks[pos]['text'] in ['ie', 'ée']):
+      return [1]
+    if (pos >= len(self.chunks) - 2
+        and self.chunks[pos]['text'] in ['ée']):
+      return [1]
+    if 'elidable' in self.chunks[pos]:
+      return [0 if x else 1 for x in self.chunks[pos]['elidable']]
+    return self.possible_weights(pos)
 
   def feminine(self, align, phon):
     for a in sure_end_fem:
