@@ -86,15 +86,19 @@ class Verse:
     # sigles
     for i, w in enumerate(self.chunks):
       if len(w) == 1 and is_consonants(w[0]['text']):
-        new_word = []
+        new_chunks = []
         for j, x in enumerate(w[0]['text']):
+          if (x == 'w'):
+            nc = "doublevé"
+          else:
+            nc = x + "é"
+          new_chunks += re.split(consonants_regexp, nc)
+        new_word = []
+        for j, x in enumerate(new_chunks):
           lindex = int(j*len(w[0]['original'])/len(w[0]['text']))
           rindex = int((j+1)*len(w[0]['original'])/len(w[0]['text']))
           part = w[0]['original'][lindex:rindex]
-          if (x == 'w'):
-            new_word.append({'original': part, 'text': "doublevé"})
-          else:
-            new_word.append({'original': part, 'text': x + "é"})
+          new_word.append({'original': part, 'text': x})
         self.chunks[i] = new_word
 
     # case of 'y'
@@ -159,7 +163,7 @@ class Verse:
 
   def possible_weights(self, pos):
     if self.diaeresis == "classical":
-      return vowels.possible_weights_ctx([x['text'] for x in self.chunks], pos)
+      return vowels.possible_weights_ctx(self.chunks, pos)
     elif self.diaeresis == "permissive":
       return vowels.possible_weights_approx(self.chunks[pos]['text'])
 

@@ -6,8 +6,8 @@
 from common import strip_accents
 from diaeresis import lookup
 
-def clear(l):
-  return [x[0] if isinstance(x, tuple) else x for x in l]
+def clear(x):
+  return x['text'] + ' ' if 'wordend' in x else x['text']
 
 def intersperse(a, b):
   if (len(a) == 0 or a[0] == ' ') and (len(b) == 0 or b[0] == ' '):
@@ -28,7 +28,7 @@ def contains_trema(chunk):
 threshold = 10
 
 def make_query(chunks, pos):
-  cleared = clear(chunks)
+  cleared = [clear(x) for x in chunks]
   return [cleared[pos]] + intersperse(
       ''.join(cleared[pos+1:]),
       ''.join([x[::-1] for x in cleared[:pos][::-1]]))
