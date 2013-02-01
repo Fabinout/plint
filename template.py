@@ -10,13 +10,8 @@ from vowels import possible_weights_ctx, make_query
 
 def handle(poss):
   l = []
-  #print(poss)
   for i in range(len(poss)):
     if isinstance(poss[i], tuple):
-      #print(cleared[:i][::-1])
-      #print(cleared[i+1:])
-      # print(poss)
-      # print (make_query(poss, i))
       if len(possible_weights_ctx(poss, i)) > 1:
         l.append((poss[i][1], make_query(poss, i)))
   return l
@@ -108,16 +103,17 @@ class Template:
 
   def rate(self, pattern, align):
     """Rate align according to pattern"""
-    align, fem, hemis = align
+    align, fem = align
     c = sum(x.get('weight', 0) for x in align)
     ok = True
-    for h in hemis.values():
+    hemis_chunk = [chunk for chunk in align if 'hemis' in chunk]
+    for h in set([chunk['hemis'] for chunk in hemis_chunk]):
       if h != "ok":
         ok = False
     if ok and c == pattern.length:
       return 0
-    return ((1+len(hemis.keys()))*abs(pattern.length - c)
-        + sum([1 for x in hemis.values() if x != "ok"]))
+    return ((len(hemis_chunk)+1)*abs(pattern.length - c)
+        + sum([1 for x in hemis_chunk if x['hemis'] != "ok"]))
 
   def match(self, line, ofile=None, quiet=False, last=False):
     """Check a line against current pattern, return errors"""
@@ -148,18 +144,18 @@ class Template:
       return errors, pattern
 
     line_with_case = normalize(line, downcase=False)
-    line = normalize(line)
+    line_normalize = normalize(line)
 
     # rhymes
     if pattern.myid not in self.env.keys():
       # initialize the rhyme
-      self.env[pattern.myid] = rhyme.Rhyme(line, pattern.constraint,
+      self.env[pattern.myid] = rhyme.Rhyme(line_normalize, pattern.constraint,
           self.mergers, self.normande_ok)
     else:
       # update the rhyme
       old_p = self.env[pattern.myid].phon
       old_e = self.env[pattern.myid].eye
-      self.env[pattern.myid].feed(line, pattern.constraint)
+      self.env[pattern.myid].feed(line_normalize, pattern.constraint)
       # no more possible rhymes, something went wrong
       if not self.env[pattern.myid].satisfied():
         self.env[pattern.myid].phon = old_p
@@ -181,9 +177,8 @@ class Template:
       possible = []
       return errors, pattern
     possible = v.coffee(self.env[pattern.myid].phon, pattern.length + 2)
-    possible = list(map((lambda p: (p[0], p[1],
-      check_hemistiches(p[0], pattern.hemistiches, self.check_end_hemistiche))),
-      possible))
+    for p in possible:
+      check_hemistiches(p, pattern.hemistiches, self.check_end_hemistiche)
     possible = map((lambda x: (self.rate(pattern, x), x)), possible)
     possible = sorted(possible, key=(lambda x: x[0]))
 
@@ -198,7 +193,7 @@ class Template:
       errors.append(error.ErrorBadMetric(possible))
     if len(possible) == 0:
       return errors, pattern
-    # keep the best alignment as hypotheses
+    # keep the best alignments as hypotheses
     possible = [(score, align) for (score, align) in possible
         if score == possible[0][0]]
     if ofile:
@@ -219,7 +214,6 @@ class Template:
         for w in poss:
           l = handle(w)
           for x in l:
-            # print(x)
             print((str(x[0]) + ' ' + ' '.join(x[1])), file=ofile)
 
     # occurrences
@@ -234,7 +228,7 @@ class Template:
         errors.append(error.ErrorMultipleWordOccurrence(last_word,
           self.occenv[pattern.myid][last_word]))
 
-        # rhyme genres
+    # rhyme genres
     # inequality constraint
     # TODO this is simplistic and order-dependent
     if pattern.femid.swapcase() in self.femenv.keys():

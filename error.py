@@ -1,5 +1,4 @@
 import common
-import hemistiches
 
 class Error:
   def __init__(self):
@@ -17,7 +16,7 @@ class Error:
   def say(self, l):
     return self.prefix + l
 
-  def report(self, s, short=False, t = []):
+  def report(self, s, short=False, t = [], ):
     l = []
     if short:
       l.append(s)
@@ -115,63 +114,18 @@ class ErrorBadMetric(Error):
     Error.__init__(self)
     self.possible = possible
 
-  def restore_elid(self, chunk):
-    if isinstance(chunk, tuple):
-      return [chunk]
-    try:
-      if chunk[-1] != "`":
-        return [chunk]
-    except KeyError:
-      return [chunk]
-    return [chunk[:-1], ("e", 0)]
-
   def align(self, align):
     score, align = align
-    align, feminine, hemis = align
-    align = sum([self.restore_elid(chunk) for chunk in align], [])
-    line = self.line
-    l2 = []
-    count = 0
-    ccount = 0
-    last_he = 0
-    summary = []
-    offset = 0
-    done = False
-    for x in align:
-      if isinstance(x, tuple):
-        orig = ""
-        while len(line) > 0 and common.is_vowels(line[0]):
-          orig += line[0]
-          line = line[1:]
-        add = ('{:^'+str(len(orig))+'}').format(str(x[1]))
-        if offset > 0 and len(add) > 0 and add[-1] == ' ':
-          offset -= 1
-          add = add[:-1]
-        l2 += add
-        if len(add) > len(orig):
-          offset = len(add) - len(orig)
-        count += x[1]
-        ccount += x[1]
-        done = False
-      else:
-        orig = ""
-        while len(line) > 0 and not common.is_vowels(line[0]):
-          orig += line[0]
-          line = line[1:]
-        if count in hemis.keys() and not done and last_he < count:
-          done = True
-          summary.append(str(ccount))
-          ccount = 0
-          summary.append(hemistiches.hemis_types[hemis[count]])
-          l2 += ('{:^'+str(len(orig))+'}'
-              ).format(hemistiches.hemis_types[hemis[count]])
-          last_he = count
-        else:
-          l2 += ' ' * len(orig)
-    summary.append(str(ccount)+':')
-    result = ''.join(l2)
-    summary = ('{:^9}').format(''.join(summary))
-    return summary + result
+    chunks, feminine = align
+    keys = ['original', 'text', 'weight', 'error', 'hemis']
+    lines = {}
+    for key in keys:
+      lines[key] = ""
+    for chunk in chunks:
+      l = max(len(str(chunk.get(key, ""))) for key in keys)
+      for key in keys:
+        lines[key] += ' ' + ('{:^'+str(l)+'}').format(chunk.get(key, ""))
+    return [lines[key] for key in keys if len(lines[key].strip()) > 0]
 
   def report(self, short=False):
     num = min(len(self.possible), 4)
@@ -183,7 +137,7 @@ class ErrorBadMetric(Error):
           len(self.possible), ('s' if len(self.possible) != 1 else
           ''))),
         short,
-        list(map(self.align, self.possible[:num]))
+        sum(map(self.align, self.possible[:num]), [])
         + ([_("... worse options omitted ...")] if truncated else [])
         )
 

@@ -6,29 +6,27 @@ import vowels
 import haspirater
 
 class Verse:
-  def vowel_elision(self, word):
+  def elision(self, word):
     if (word.startswith('y') and not word == 'y' and not word.startswith("yp") and
         not word.startswith("yeu")):
-      return "*"
+      return [False]
     if word in ["oui", "ouis"] or word.startswith("ouistiti"):
       # elision for those words, but beware, no elision for "ouighour"
       # boileau : "Ont l'esprit mieux tourné que n'a l'homme ? Oui sans doute."
       # so elission sometimes
-      return "?"
+      return [True, False]
+    # "un", "une" are non-elided as nouns ("cette une")
     if word in ["un", "une"]:
-      return "?"
+      return [True, False]
+    # "onze" is not elided
     if word == "onze":
-      return "*"
+      return [False]
     if word[0] == 'h':
-      result = haspirater.lookup(word)
-      # TODO actually implement this
-      if result == None:
-        return "?"
-      if result:
-        return "*"
-      else:
-        return ""
-    return ""
+      # TODO change this when haspirater changes
+      return [not haspirater.lookup(word)]
+    if is_vowels(word[0]):
+      return [True]
+    return [False]
 
   def remove_trivial(self, chunks, predicate):
     new_chunks = []
@@ -62,18 +60,22 @@ class Verse:
       if len(w) < 2:
         continue
       for i, x in enumerate(w[:-1]):
-        if len(w[i+1]['text']) < 2 or not w[i+1]['text'].startswith("u"):
+        if not w[i+1]['text'].startswith("u"):
           continue
         if w[i]['text'].endswith('q'):
           w[i+1]['text'] = w[i+1]['text'][1:]
-        if w[i]['text'].endswith('g'):
+          if w[i+1]['text'] == '':
+            w[i]['original'] += w[i+1]['original']
+        if w[i]['text'].endswith('g') and len(w[i+1]['text']) < 2:
           if w[i+1]['text'][1] in "eéèa":
             w[i+1]['text'] = w[i+1]['text'][1:]
+    # remove empty chunks created by simplifications
+    for i, w in enumerate(self.chunks):
+      self.chunks[i] = [x for x in w if len(x['text']) > 0]
 
     # vowel elision problems
     for w in self.chunks:
-      fw = ''.join(x['text'] for x in w)
-      w[0]['text'] = self.vowel_elision(fw) + w[0]['text']
+      w[0]['elision'] = self.elision(''.join(x['text'] for x in w))
 
     # sigles
     for i, w in enumerate(self.chunks):
@@ -119,7 +121,7 @@ class Verse:
         continue
       if sum([1 for chunk in w if is_vowels(chunk['text'])]) <= 1:
         continue
-      w[-1]['text'] = "e_"
+      w[-1]['elidable'] = True
 
     # annotate hiatus and ambiguities
     ambiguous_potential = ["ie", "ée"]
@@ -129,18 +131,22 @@ class Verse:
         if w[-2]['text'] in ambiguous_potential:
           w[-2]['error'] = "ambiguous"
       if w[-1]['text'] in ambiguous_potential:
-        if self.chunks[i+1][0]['text'][0] in consonants + "*":
+        if self.chunks[i+1][0]['text'][0] in consonants:
           w[-1]['error'] = "ambiguous"
-      elif is_vowels(w[-1]['text']) and '_' not in w[-1]['text']:
+      elif is_vowels(w[-1]['text']) and 'elidable' not in w[-1]:
         if is_vowels(self.chunks[i+1][0]['text']):
           if ''.join(x['text'] for x in w) not in no_hiatus:
             if ''.join(x['text'] for x in self.chunks[i+1]) not in no_hiatus:
               w[-1]['error'] = "hiatus"
 
+    # annotate word ends
+    for w in self.chunks[:-1]:
+      w[-1]['wordend'] = True
+
     # collapse words
     self.chunks = sum(self.chunks, [])
 
-    self.text = ''.join(x['original'] for x in self.chunks)
+    self.text = ''.join(x['text'] for x in self.chunks)
 
   def contains_break(self, chunk):
     return '-' in chunk['text']
@@ -165,17 +171,16 @@ class Verse:
           # ending 'ent' is sometimes elided
           # actually, this will have an influence on the rhyme's gender
           return [0, 1]
+      if (pos >= len(self.chunks) - 2
+          and self.chunks[pos]['text'] in ['ie', 'ée']):
+        return [1]
       else:
         if (pos >= len(self.chunks) - 1 and self.chunks[pos] == 'e' and
             pos > 0 and (self.chunks[pos-1]['text'].endswith('-c') or
               self.chunks[pos-1]['text'].endswith('-j'))):
           return [0] # -ce and -je are elided
-        if self.chunks[pos]['text'] == "e_":
-          if self.chunks[pos+1]['text'][0] in consonants + "*":
-            return [1]
-          if self.chunks[pos+1]['text'][0] == "?":
-            return [0, 1]
-          return [0]
+        if 'elidable' in self.chunks[pos]:
+          return [0 if x else 1 for x in self.chunks[pos+1]['elision']]
       return self.possible_weights(pos)
 
   def fit(self, pos, left):
@@ -186,9 +191,8 @@ class Verse:
     if left < 0:
       return [] # no possibilities
     # skip consonants
-    if (not is_vowels(self.chunks[pos]['text'])
-        and '_' not in self.chunks[pos]['text']):
-      return [[self.chunks[pos]] + x for x in self.fit(pos+1, left)]
+    if (not is_vowels(self.chunks[pos]['text'])):
+      return [[dict(self.chunks[pos])] + x for x in self.fit(pos+1, left)]
     else:
       result = []
       for weight in self.possible_weights_context(pos):
@@ -232,8 +236,8 @@ class Verse:
     return possible
 
   def coffee(self, phon, bound):
-    return map((lambda x: (x, self.feminine(x, phon))),
-        self.fits(bound))
+    return list(map((lambda x: (x, self.feminine(x, phon))),
+        self.fits(bound)))
 
   def fits(self, bound):
     return self.fit(0, bound)

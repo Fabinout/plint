@@ -54,7 +54,7 @@ def rm_punct(text):
   text2 = pattern.sub(' ', text)
   return text2
 
-def is_vowels(chunk, with_h=False, with_y=True):
+def is_vowels(chunk, with_h=False, with_y=True, with_crap=False):
   """Test if a chunk is vowels
 
   with_h counts 'h' as vowel, with_y allows 'y'"""
@@ -63,7 +63,8 @@ def is_vowels(chunk, with_h=False, with_y=True):
     return False
   for char in strip_accents(chunk):
     if char not in vowels:
-      if char != 'h' or not with_h:
+      if (char != 'h' or not with_h) and (char not in ['*', '?'] or not
+          with_crap):
         return False
   return True
 
