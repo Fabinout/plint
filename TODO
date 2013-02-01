@@ -1,8 +1,9 @@
-clear textarea
 "joueront" trois syllabes ?
-infer meter
-"tu hélas" : assume that hiatus is ok (tester)
+pas de rappel multiple de ligne dans les erreurs
+belle gestion des erreurs en html
 "paysage", "centurion"
+
+
 handle "' " and "` "
 
 == IRC ==
