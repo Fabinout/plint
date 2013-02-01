@@ -1,8 +1,9 @@
 clear textarea
 "joueront" trois syllabes ?
 infer meter
-"tu hélas" : assume that hiatus is ok
+"tu hélas" : assume that hiatus is ok (tester)
 "paysage", "centurion"
+handle "' " and "` "
 
 == IRC ==
 

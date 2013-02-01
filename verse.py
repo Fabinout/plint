@@ -167,6 +167,14 @@ class Verse:
     # collapse words
     self.chunks = sum(self.chunks, [])
 
+    # annotate weights
+    for i, chunk in enumerate(self.chunks):
+      if (not is_vowels(self.chunks[i]['text'])):
+        continue
+      self.chunks[i]['weights'] = self.possible_weights_context(i)
+
+    # TODO annotate with possibility of hemistiche end at each point
+
     self.text = ''.join(x['text'] for x in self.chunks)
 
   def contains_break(self, chunk):
@@ -204,32 +212,8 @@ class Verse:
           and self.chunks[pos]['text'] in ['ée']):
         return [1]
       if 'elidable' in self.chunks[pos]:
-        if 'elision' not in self.chunks[pos+1]:
-          pprint(self.chunks)
-          raise ValueError #TODO
         return [0 if x else 1 for x in self.chunks[pos+1]['elision']]
       return self.possible_weights(pos)
-
-  # TODO split this in annotation and generation
-  def fit(self, pos, left):
-    """bruteforce exploration of all possible vowel cluster weghting,
-    within a maximum total of left"""
-    if pos >= len(self.chunks):
-      return [[]] # the only possibility is the empty list
-    if left < 0:
-      return [] # no possibilities
-    # skip consonants
-    if (not is_vowels(self.chunks[pos]['text'])):
-      return [[dict(self.chunks[pos])] + x for x in self.fit(pos+1, left)]
-    else:
-      result = []
-      for weight in self.possible_weights_context(pos):
-        # combine all possibilities
-        thispos = dict(self.chunks[pos])
-        thispos['weight'] = weight
-        for x in self.fit(pos+1, left - weight):
-          result.append([thispos] + x)
-      return result
 
   def feminine(self, align, phon):
     for a in sure_end_fem:
@@ -261,6 +245,21 @@ class Verse:
           # imparfait and conditionnel are masculine...
           possible.append('M')
     return possible
+
+  def fit(self, pos, left):
+    if pos == len(self.chunks):
+      return [[]] # empty list is the only possibility
+    if left < 0:
+      return [] # no possibilites
+    result = []
+    for weight in self.chunks[pos].get('weights', [0]):
+      current = dict(self.chunks[pos])
+      if 'weights' in current:
+        current['weight'] = weight
+      for x in self.fit(pos+1, left - weight):
+        result.append([current] + x)
+    return result
+
 
   def coffee(self, phon, bound):
     return list(map((lambda x: (x, self.feminine(x, phon))),

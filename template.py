@@ -6,6 +6,7 @@ from verse import Verse
 from common import normalize, legal, strip_accents_one, rm_punct
 from nature import nature_count
 from vowels import possible_weights_ctx, make_query
+from pprint import pprint
 
 
 def handle(poss):
