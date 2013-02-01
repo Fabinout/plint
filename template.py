@@ -102,21 +102,6 @@ class Template:
     if len(self.template) == 0:
       raise error.TemplateLoadError(_("Template is empty"))
 
-  # TODO obsoleted
-  def rate(self, pattern, align):
-    """Rate align according to pattern"""
-    align, fem = align
-    c = sum(x.get('weight', 0) for x in align)
-    ok = True
-    hemis_chunk = [chunk for chunk in align if 'hemis' in chunk]
-    for h in set([chunk['hemis'] for chunk in hemis_chunk]):
-      if h != "ok":
-        ok = False
-    if ok and c == pattern.length:
-      return 0
-    return ((len(hemis_chunk)+1)*abs(pattern.length - c)
-        + sum([1 for x in hemis_chunk if x['hemis'] != "ok"]))
-
   def match(self, line, ofile=None, quiet=False, last=False):
     """Check a line against current pattern, return errors"""
 
@@ -132,18 +117,6 @@ class Template:
 
     if self.overflowed:
       errors.append(error.ErrorOverflowedTemplate())
-      return errors, pattern
-
-    # check characters
-    # TODO move this to verse
-    illegal = set()
-    for x in line:
-      if not rm_punct(strip_accents_one(x)[0].lower()) in legal:
-        illegal.add(x)
-    if len(illegal) > 0:
-      if quiet:
-        return [None], pattern
-      errors.append(error.ErrorBadCharacters(illegal))
       return errors, pattern
 
     line_with_case = normalize(line, downcase=False)
@@ -177,25 +150,6 @@ class Template:
       errors.append(error.ErrorBadVerse(v))
       return errors, pattern
 
-    #for p in possible:
-    #  check_hemistiches(p, pattern.hemistiches, self.check_end_hemistiche)
-    #possible = map((lambda x: (self.rate(pattern, x), x)), possible)
-    #possible = sorted(possible, key=(lambda x: x[0]))
-
-    #if quiet:
-    #  if len(possible) == 0:
-    #    return [None], pattern
-    #  if possible[0][0] > (1+len(pattern.hemistiches))*pattern.length/2:
-    #    return [None], pattern
-
-    ## check metric
-    #if len(possible) == 0 or possible[0][0] != 0:
-    #  errors.append(error.ErrorBadMetric(possible))
-    #if len(possible) == 0:
-    #  return errors, pattern
-    ## keep the best alignments as hypotheses
-    #possible = [(score, align) for (score, align) in possible
-    #    if score == possible[0][0]]
     if ofile:
       if len(possible) == 1 and possible[0][0] == 0:
         l = [(x[1][0]) for x in possible]

@@ -33,6 +33,25 @@ class Eliminate(unittest.TestCase):
     c = ''.join([x['text'] for x in v.chunks])
     self.assertFalse("gue" in c)
 
+class BadChars(unittest.TestCase):
+  def testBadAlone(self):
+    v = verse.Verse("42", None)
+    self.assertFalse(v.valid(True, True))
+
+  def testBadAndGood(self):
+    v = verse.Verse("bla h42 blah ", None)
+    self.assertFalse(v.valid(True, True))
+
+
+  def getWeight(self, align):
+    return sum(x.get('weight', 0) for x in align)
+
+  def achievesPossibility(self, aligns, target):
+    for align in aligns:
+      if self.getWeight(align) == target:
+        return True
+    return False
+
 class Counts(unittest.TestCase):
   def runCount(self, text, limit=12, diaeresis="permissive"):
     v = verse.Verse(text, diaeresis)

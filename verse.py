@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
-from common import consonants, normalize, is_consonants, is_vowels, sure_end_fem
+import common
+from common import consonants, normalize, is_consonants, is_vowels, sure_end_fem, strip_accents_one
 import re
 import vowels
 import haspirater
@@ -60,6 +61,13 @@ class Verse:
       len(normalize(w, rm_all=True)) == 0)) for x in pre_chunks]
     self.chunks = [[{'original': y, 'text': normalize(y, rm_apostrophe=True)}
       for y in x] for x in pre_chunks]
+
+    # check forbidden characters
+    for w in self.chunks:
+      for y in w:
+        for x in y['text']:
+          if not common.rm_punct(strip_accents_one(x)[0].lower()) in common.legal:
+            y['error'] = "illegal"
 
     # gu- and qu- simplifications
     for w in self.chunks:
@@ -312,7 +320,9 @@ class Verse:
       if 'error' in c:
         if c['error'] == "ambiguous" and not forbidden_ok:
           return False
-        elif c['error'] == "hiatus" and not hiatus_ok:
+        if c['error'] == "hiatus" and not hiatus_ok:
+          return False
+        if c['error'] == "illegal":
           return False
     return True
 
