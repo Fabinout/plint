@@ -44,7 +44,8 @@ class Verse:
         accu = ""
     return new_chunks
 
-  def __init__(self, line):
+  def __init__(self, line, diaeresis):
+    self.diaeresis = diaeresis
     whitespace_regexp = re.compile("(\s*)")
     ys_regexp = re.compile("(\s*)")
     all_consonants = consonants + consonants.upper()
@@ -63,9 +64,9 @@ class Verse:
       for i, x in enumerate(w[:-1]):
         if len(w[i+1]['text']) < 2 or not w[i+1]['text'].startswith("u"):
           continue
-        if w[i]['text'] == 'q':
+        if w[i]['text'].endswith('q'):
           w[i+1]['text'] = w[i+1]['text'][1:]
-        if w[i]['text'] == 'g':
+        if w[i]['text'].endswith('g'):
           if w[i+1]['text'][1] in "eéèa":
             w[i+1]['text'] = w[i+1]['text'][1:]
 
@@ -113,7 +114,7 @@ class Verse:
       self.chunks[i] = new_word
 
     # annotate final mute 'e'
-    for w in self.chunks:
+    for w in self.chunks[:-1]:
       if w[-1]['text'] != "e":
         continue
       if sum([1 for chunk in w if is_vowels(chunk['text'])]) <= 1:
@@ -144,13 +145,40 @@ class Verse:
   def contains_break(self, chunk):
     return '-' in chunk['text']
 
-  def possible_weights(self, pos, diaeresis):
-    if diaeresis == "classical":
+  def possible_weights(self, pos):
+    if self.diaeresis == "classical":
       return vowels.possible_weights_ctx([x['text'] for x in self.chunks], pos)
-    elif diaeresis == "permissive":
+    elif self.diaeresis == "permissive":
       return vowels.possible_weights_approx(self.chunks[pos]['text'])
 
-  def fit(self, pos, left, diaeresis):
+  def possible_weights_context(self, pos):
+      if ((pos >= len(self.chunks) - 2 and self.chunks[pos]['text'] == 'e')
+          and not (pos <= 0 or self.contains_break(self.chunks[pos-1]))
+          and not (pos <= 1 or self.contains_break(self.chunks[pos-2]))):
+        # special case for verse endings, which can get elided (or not)
+        # but we don't elide lone syllables ("prends-le", etc.)
+        if pos == len(self.chunks) - 1:
+          return [0] # ending 'e' is elided
+        if self.chunks[pos+1]['text'] == 's':
+          return [0] # ending 'es' is elided
+        if self.chunks[pos+1]['text'] == 'nt':
+          # ending 'ent' is sometimes elided
+          # actually, this will have an influence on the rhyme's gender
+          return [0, 1]
+      else:
+        if (pos >= len(self.chunks) - 1 and self.chunks[pos] == 'e' and
+            pos > 0 and (self.chunks[pos-1]['text'].endswith('-c') or
+              self.chunks[pos-1]['text'].endswith('-j'))):
+          return [0] # -ce and -je are elided
+        if self.chunks[pos]['text'] == "e_":
+          if self.chunks[pos+1]['text'][0] in consonants + "*":
+            return [1]
+          if self.chunks[pos+1]['text'][0] == "?":
+            return [0, 1]
+          return [0]
+      return self.possible_weights(pos)
+
+  def fit(self, pos, left):
     """bruteforce exploration of all possible vowel cluster weghting,
     within a maximum total of left"""
     if pos >= len(self.chunks):
@@ -158,44 +186,16 @@ class Verse:
     if left < 0:
       return [] # no possibilities
     # skip consonants
-    if (not is_vowels(self.chunks[pos]['text'])):
-      return [[self.chunks[pos]] + x for x in self.fit(pos+1, left, diaeresis)]
+    if (not is_vowels(self.chunks[pos]['text'])
+        and '_' not in self.chunks[pos]['text']):
+      return [[self.chunks[pos]] + x for x in self.fit(pos+1, left)]
     else:
-      if ((pos >= len(self.chunks) - 2 and self.chunks[pos]['text'] == 'e') and not (
-          pos <= 0 or self.contains_break(self.chunks[pos-1])) and not (
-          pos <= 1 or self.contains_break(self.chunks[pos-2]))):
-        # special case for verse endings, which can get elided (or not)
-        # but we don't elide lone syllables ("prends-le", etc.)
-        if pos == len(self.chunks) - 1:
-          weights = [0] # ending 'e' is elided
-        elif self.chunks[pos+1]['text'] == 's':
-          weights = [0] # ending 'es' is elided
-        elif self.chunks[pos+1]['text'] == 'nt':
-          # ending 'ent' is sometimes elided
-          # actually, this will have an influence on the rhyme's gender
-          weights = [0, 1]
-        else:
-          weights = self.possible_weights(pos, diaeresis)
-      else:
-        if (pos >= len(self.chunks) - 1 and self.chunks[pos] == 'e' and
-            pos > 0 and (self.chunks[pos-1]['text'].endswith('-c') or
-              self.chunks[pos-1]['text'].endswith('-j'))):
-          weights = [0] # -ce and -je are elided
-        else:
-          if self.chunks[pos]['text'] == "e_":
-            if self.chunks[pos+1]['text'][0] in consonants + "*":
-              weights = [1]
-            elif self.chunks[pos+1]['text'][0] == "?":
-              weights = [0, 1]
-            else:
-              weights = [1]
-          weights = self.possible_weights(pos, diaeresis)
       result = []
-      for weight in weights:
+      for weight in self.possible_weights_context(pos):
         # combine all possibilities
         thispos = dict(self.chunks[pos])
         thispos['weight'] = weight
-        for x in self.fit(pos+1, left - weight, diaeresis):
+        for x in self.fit(pos+1, left - weight):
           result.append([thispos] + x)
       return result
 
@@ -231,9 +231,9 @@ class Verse:
           possible.append('M')
     return possible
 
-  def coffee(self, phon, bound, diaeresis):
-    return list(map((lambda x: (x, self.feminine(x, phon))),
-        self.fit(0, bound, diaeresis)))
+  def coffee(self, phon, bound):
+    return map((lambda x: (x, self.feminine(x, phon))),
+        self.fits(bound))
 
-  def fits(self, bound, diaeresis):
-    return self.fit(0, bound, diaeresis)
+  def fits(self, bound):
+    return self.fit(0, bound)

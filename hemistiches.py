@@ -15,7 +15,7 @@ forbidden_hemistiche = [
     ]
 
 def align2str(align):
-  return ''.join([x[0] if isinstance(x, tuple) else x for x in align])
+  return ''.join([x['text'] for x in align])
 
 def check_spaces(align, pos):
   if pos >= len(align):
@@ -51,7 +51,7 @@ def check_hemistiche(align, pos, hem, check_end_hemistiche):
     if pos + 1 >= len(align):
       # not enough syllabes for hemistiche
       return ("bad", pos)
-    if ((align[pos][0] + align[pos+1]).rstrip() in sure_end_fem):
+    if ((align[pos]['text'] + align[pos+1]['text']).rstrip() in sure_end_fem):
       # check that this isn't a one-syllabe wourd (which is allowed)
       ok = False
       for i in range(2):
@@ -61,14 +61,14 @@ def check_hemistiche(align, pos, hem, check_end_hemistiche):
       if not ok:
         # hemistiche ends in feminine
         return ("fem", pos)
-  return check_hemistiche(align, pos+1, hem - align[pos][1],
+  return check_hemistiche(align, pos+1, hem - align[pos]['count'],
       check_end_hemistiche)
 
 def check_hemistiches(align, hems, check_end_hemistiche):
   """From a sorted list of distinct hemistiche positions, return a
   dictionary which maps each position to the status of this
   hemistiche"""
-  
+
   result = {}
   pos = 0
   h2 = 0

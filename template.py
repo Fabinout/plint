@@ -1,8 +1,8 @@
 import error
-from metric import parse
 from hemistiches import check_hemistiches
 import copy
 import rhyme
+from verse import Verse
 from common import normalize, legal, strip_accents_one, rm_punct
 from nature import nature_count
 from vowels import possible_weights_ctx, make_query
@@ -106,14 +106,10 @@ class Template:
     if len(self.template) == 0:
       raise error.TemplateLoadError(_("Template is empty"))
 
-  def count(self, align):
-    """total weight of an align"""
-    return sum([x[1] for x in align if isinstance(x, tuple)])
-
   def rate(self, pattern, align):
     """Rate align according to pattern"""
     align, fem, hemis = align
-    c = self.count(align)
+    c = sum(x.get('weight', 0) for x in align)
     ok = True
     for h in hemis.values():
       if h != "ok":
@@ -171,15 +167,20 @@ class Template:
         errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid], None))
 
     # compute alignments, check hemistiches, sort by score
-    possible = parse(line, self.env[pattern.myid].phon, pattern.length + 2,
-        self.forbidden_ok, self.hiatus_ok, self.diaeresis)
-    if not isinstance(possible, list):
-      if possible[0] == "forbidden":
-        errors.append(error.ErrorForbiddenPattern(possible[1]))
-      elif possible[0] == "hiatus":
-        errors.append(error.ErrorHiatus(possible[1]))
+    v = Verse(line, self.diaeresis)
+    error_found = False
+    for c in v.chunks:
+      if 'error' in c:
+        if c['error'] == "ambiguous" and not self.forbidden_ok:
+          error_found = True
+          errors.append(error.ErrorForbiddenPattern(c['original']))
+        elif c['error'] == "hiatus" and not self.hiatus_ok:
+          error_found = True
+          errors.append(error.ErrorHiatus(c['hiatus']))
+    if error_found:
       possible = []
       return errors, pattern
+    possible = v.coffee(self.env[pattern.myid].phon, pattern.length + 2)
     possible = list(map((lambda p: (p[0], p[1],
       check_hemistiches(p[0], pattern.hemistiches, self.check_end_hemistiche))),
       possible))
