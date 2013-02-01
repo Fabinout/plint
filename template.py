@@ -18,7 +18,7 @@ def handle(poss):
   return l
 
 class Pattern:
-  def __init__(self, metric, myid, femid, constraint):
+  def __init__(self, metric, myid="", femid="", constraint=None):
     self.metric = metric
     self.parse_metric()
     self.myid = myid
@@ -38,7 +38,7 @@ class Pattern:
     self.length = self.hemistiches.pop()
 
 class Template:
-  def __init__(self, string):
+  def __init__(self, string=None):
     self.template = []
     self.pattern_line_no = 0
     self.forbidden_ok = False
@@ -51,7 +51,8 @@ class Template:
     self.check_occurrences = True
     self.diaeresis = "classical"
     self.mergers = []
-    self.load(string)
+    if string:
+      self.load(string)
     self.line_no = 0
     self.position = 0
     self.prev = None
@@ -112,15 +113,16 @@ class Template:
 
     if last:
       if was_incomplete and not self.incomplete_ok and not self.overflowed:
-        errors.append(error.ErrorIncompleteTemplate())
-      return errors, pattern
+        return [error.ErrorIncompleteTemplate()], pattern
+      return [], pattern
 
     if self.overflowed:
-      errors.append(error.ErrorOverflowedTemplate())
-      return errors, pattern
+      return [error.ErrorOverflowedTemplate()], pattern
 
     line_with_case = normalize(line, downcase=False)
     line_normalize = normalize(line)
+
+    v = Verse(line, self, pattern)
 
     # rhymes
     if pattern.myid not in self.env.keys():
@@ -138,21 +140,12 @@ class Template:
         self.env[pattern.myid].eye = old_e
         errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid], None))
 
-    # compute alignments, check hemistiches, sort by score
-    v = Verse(line, self.diaeresis)
-    if not v.valid(self.forbidden_ok, self.hiatus_ok):
-      errors.append(error.ErrorBadVerse(v))
-      return errors, pattern
-
-    possible = v.coffee(self.env[pattern.myid].phon, pattern.length,
-        pattern.hemistiches, self.check_end_hemistiche)
-    if len(possible) == 0:
-      errors.append(error.ErrorBadVerse(v))
-      return errors, pattern
+    errors += v.problems()
 
     if ofile:
-      if len(possible) == 1 and possible[0][0] == 0:
-        l = [(x[1][0]) for x in possible]
+      possible = v.possible
+      if len(possible) == 1:
+        l = list(possible[0])
         poss = []
         for p in l:
           c = []
@@ -168,6 +161,7 @@ class Template:
         for w in poss:
           l = handle(w)
           for x in l:
+            # TODO update this code
             print((str(x[0]) + ' ' + ' '.join(x[1])), file=ofile)
 
     # occurrences
@@ -199,7 +193,7 @@ class Template:
       self.femenv[pattern.femid] = x
     else:
       old = list(self.femenv[pattern.femid])
-      new = list(set(sum([x[1] for x in possible], [])))
+      new = v.genders(self.env[pattern.myid].phon)
       self.femenv[pattern.femid] &= set(new)
       if len(self.femenv[pattern.femid]) == 0:
         errors.append(error.ErrorBadRhymeGenre(old, new))

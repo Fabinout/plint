@@ -5,6 +5,7 @@ from common import consonants, normalize, is_consonants, is_vowels, sure_end_fem
 import re
 import vowels
 import haspirater
+import error
 from pprint import pprint
 
 class Verse:
@@ -47,12 +48,15 @@ class Verse:
   def line(self):
     return ''.join(x['original'] for x in self.chunks)
 
-  def __init__(self, line, diaeresis):
-    self.diaeresis = diaeresis
+  def __init__(self, line, template, pattern):
+    self.template = template
+    self.pattern = pattern
+
     whitespace_regexp = re.compile("(\s*)")
     ys_regexp = re.compile("(\s*)")
     all_consonants = consonants + consonants.upper()
     consonants_regexp = re.compile('([^'+all_consonants+'*-]*)', re.UNICODE)
+
     words = re.split(whitespace_regexp, line)
     words = self.remove_trivial(words, (lambda w: re.match("^\s*$", w) or
       len(normalize(w, rm_all=True)) == 0))
@@ -182,15 +186,16 @@ class Verse:
       self.chunks[i]['weights'] = self.possible_weights_context(i)
       self.chunks[i]['hemis'] = self.hemistiche(i)
 
+    self.possible = self.fit(0, 0, self.pattern.hemistiches)
     self.text = self.align2str(self.chunks)
 
   def contains_break(self, chunk):
     return '-' in chunk['text'] or 'wordend' in chunk
 
   def possible_weights(self, pos):
-    if self.diaeresis == "classical":
+    if self.template.diaeresis == "classical":
       return vowels.possible_weights_ctx(self.chunks, pos)
-    elif self.diaeresis == "permissive":
+    elif self.template.diaeresis == "permissive":
       return vowels.possible_weights_approx(self.chunks[pos]['text'])
 
   def possible_weights_context(self, pos):
@@ -253,27 +258,29 @@ class Verse:
           possible.append('M')
     return possible
 
-  def fit(self, pos, count, limit, hemistiches, check_end_hemistiche):
-    if pos == len(self.chunks):
-      return [[]] # empty list is the only possibility
-    chunk = self.chunks[pos]
-    if count > limit:
+  def fit(self, pos, count, hemistiches):
+    if count > self.pattern.length:
       return [] # no possibilites
     if len(hemistiches) > 0 and hemistiches[0] < count:
       return [] # missed a hemistiche
+    if pos == len(self.chunks):
+      if count == self.pattern.length:
+        return [[]] # empty list is the only possibility
+      else:
+        return []
+    chunk = self.chunks[pos]
     result = []
     for weight in chunk.get('weights', [0]):
       next_hemistiches = hemistiches
       if (len(hemistiches) > 0 and count + weight == hemistiches[0] and
           is_vowels(chunk['text']) and (chunk['hemis'] == "ok" or not
-          check_end_hemistiche and chunk['hemis'] != "cut")):
+          self.template.check_end_hemistiche and chunk['hemis'] != "cut")):
         # we hemistiche here
         next_hemistiches = next_hemistiches[1:]
       current = dict(self.chunks[pos])
       if 'weights' in current:
         current['weight'] = weight
-      for x in self.fit(pos+1, count + weight, limit, next_hemistiches,
-          check_end_hemistiche):
+      for x in self.fit(pos+1, count + weight, next_hemistiches):
         result.append([current] + x)
     return result
 
@@ -281,22 +288,12 @@ class Verse:
     'ok': '/', # correct
     'cut': '?', # falls at the middle of a word
     'fem': '\\', # preceding word ends by a mute e
-    'bad': '#', # last word of hemistiche cannot occur at end of hemistiche
     }
-
-  # these words are forbidden at hemistiche
-  forbidden_hemistiche = [
-      "le",
-      "la",
-      ]
 
   def align2str(self, align):
     return ''.join([x['text'] for x in align])
 
   def hemistiche(self, pos):
-    if (pos > 0 and self.chunks[pos-1]['text'] + self.chunks[pos]['text'] in
-        self.forbidden_hemistiche and 'wordend' in self.chunks[pos]):
-      return "bad"
     ending = self.chunks[pos]['text']
     if not 'wordend' in self.chunks[pos] and pos < len(self.chunks) - 1:
       if not 'wordend' in self.chunks[pos+1]:
@@ -307,29 +304,38 @@ class Verse:
         return "ok" # elidable final -e
       # check that this isn't a one-syllabe wourd (which is allowed)
       ok = False
-      for i in range(2):
-        if '-' in self.chunks[pos-i-1]['text'] or 'wordend' in self.chunks[pos-i-1]:
-          ok = True
+      try:
+        for i in range(2):
+          if '-' in self.chunks[pos-i-1]['text'] or 'wordend' in self.chunks[pos-i-1]:
+            ok = True
+      except IndexError:
+        pass
       if not ok:
         # hemistiche ends in feminine
         return "fem"
     return "ok"
 
-  def valid(self, forbidden_ok, hiatus_ok):
+  def problems(self):
+    result = []
     for c in self.chunks:
       if 'error' in c:
-        if c['error'] == "ambiguous" and not forbidden_ok:
-          return False
-        if c['error'] == "hiatus" and not hiatus_ok:
-          return False
+        if c['error'] == "ambiguous" and not self.template.forbidden_ok:
+          result.append(error.ErrorForbiddenPattern(c['text']))
+        if c['error'] == "hiatus" and not self.template.hiatus_ok:
+          result.append(error.ErrorHiatus(c['text']))
         if c['error'] == "illegal":
-          return False
-    return True
+          result.append(error.ErrorBadCharacters(c['text']))
+    if len(self.possible) == 0:
+      result.append(error.ErrorBadVerse(self))
+    return result
 
-  def coffee(self, phon, bound, hemistiche, check_end_hemistiche):
-    return list(map((lambda x: (x, self.feminine(x, phon))),
-        self.fits(bound, hemistiche, check_end_hemistiche)))
+  def valid(self):
+    return len(self.problems()) == 0
 
-  def fits(self, bound, hemistiche, check_end_hemistiche):
-    return self.fit(0, 0, bound, hemistiche, check_end_hemistiche)
+  def genders(self, phon):
+    result = set()
+    for p in self.possible:
+      result.update(set(self.feminine(p, phon)))
+    return result
+
 

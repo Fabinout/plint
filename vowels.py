@@ -7,7 +7,7 @@ from common import strip_accents
 from diaeresis import lookup
 
 def clear(x):
-  return x['text'] + ' ' if 'wordend' in x else x['text']
+  return (x['text'] + ' ') if 'wordend' in x else x['text']
 
 def intersperse(a, b):
   if (len(a) == 0 or a[0] == ' ') and (len(b) == 0 or b[0] == ' '):
@@ -29,6 +29,13 @@ threshold = 10
 
 def make_query(chunks, pos):
   cleared = [clear(x) for x in chunks]
+  if cleared[pos].endswith(' '):
+    cleared[pos] = cleared[pos].rstrip()
+    if pos + 1 <= len(cleared):
+      cleared[pos+1] = " " + cleared[pos+1]
+    else:
+      cleared.append(' ')
+
   return [cleared[pos]] + intersperse(
       ''.join(cleared[pos+1:]),
       ''.join([x[::-1] for x in cleared[:pos][::-1]]))
@@ -39,7 +46,6 @@ def possible_weights_ctx(chunks, pos):
   #print (q)
   v = lookup(q)
   #print (v)
-  #print (possible_weights(chunk))
   if len(v.keys()) == 1 and v[list(v.keys())[0]] > threshold:
     return [int(list(v.keys())[0])]
   else:
