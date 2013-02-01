@@ -36,7 +36,7 @@ class Eliminate(unittest.TestCase):
 class Counts(unittest.TestCase):
   def runCount(self, text, limit=12, diaeresis="permissive"):
     v = verse.Verse(text, diaeresis)
-    return v.fits(limit)
+    return v.fits(limit, [], False)
 
   def getWeight(self, align):
     return sum(x.get('weight', 0) for x in align)

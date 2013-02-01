@@ -137,12 +137,12 @@ class Verse:
       self.chunks[i] = new_word
 
     # annotate final mute 'e'
-    for w in self.chunks[:-1]:
+    for i, w in enumerate(self.chunks[:-1]):
       if w[-1]['text'] != "e":
         continue
       if sum([1 for chunk in w if is_vowels(chunk['text'])]) <= 1:
         continue
-      w[-1]['elidable'] = True
+      w[-1]['elidable'] = self.chunks[i+1][0]['elision']
 
     # annotate hiatus and ambiguities
     ambiguous_potential = ["ie", "ée"]
@@ -172,10 +172,9 @@ class Verse:
       if (not is_vowels(self.chunks[i]['text'])):
         continue
       self.chunks[i]['weights'] = self.possible_weights_context(i)
+      self.chunks[i]['hemis'] = self.hemistiche(i)
 
-    # TODO annotate with possibility of hemistiche end at each point
-
-    self.text = ''.join(x['text'] for x in self.chunks)
+    self.text = self.align2str(self.chunks)
 
   def contains_break(self, chunk):
     return '-' in chunk['text'] or 'wordend' in chunk
@@ -212,7 +211,7 @@ class Verse:
           and self.chunks[pos]['text'] in ['ée']):
         return [1]
       if 'elidable' in self.chunks[pos]:
-        return [0 if x else 1 for x in self.chunks[pos+1]['elision']]
+        return [0 if x else 1 for x in self.chunks[pos]['elidable']]
       return self.possible_weights(pos)
 
   def feminine(self, align, phon):
@@ -246,24 +245,81 @@ class Verse:
           possible.append('M')
     return possible
 
-  def fit(self, pos, left):
+  def fit(self, pos, count, limit, hemistiches, check_end_hemistiche):
     if pos == len(self.chunks):
       return [[]] # empty list is the only possibility
-    if left < 0:
+    chunk = self.chunks[pos]
+    if count > limit:
       return [] # no possibilites
+    if len(hemistiches) > 0 and hemistiches[0] < count:
+      return [] # missed a hemistiche
     result = []
-    for weight in self.chunks[pos].get('weights', [0]):
+    for weight in chunk.get('weights', [0]):
+      next_hemistiches = hemistiches
+      if (len(hemistiches) > 0 and count + weight == hemistiches[0] and
+          is_vowels(chunk['text']) and (chunk['hemis'] == "ok" or not
+          check_end_hemistiche and chunk['hemis'] != "cut")):
+        # we hemistiche here
+        next_hemistiches = next_hemistiches[1:]
       current = dict(self.chunks[pos])
       if 'weights' in current:
         current['weight'] = weight
-      for x in self.fit(pos+1, left - weight):
+      for x in self.fit(pos+1, count + weight, limit, next_hemistiches,
+          check_end_hemistiche):
         result.append([current] + x)
     return result
 
+  hemis_types = {
+    'ok': '/', # correct
+    'cut': '?', # falls at the middle of a word
+    'fem': '\\', # preceding word ends by a mute e
+    'bad': '#', # last word of hemistiche cannot occur at end of hemistiche
+    }
 
-  def coffee(self, phon, bound):
+  # these words are forbidden at hemistiche
+  forbidden_hemistiche = [
+      "le",
+      "la",
+      ]
+
+  def align2str(self, align):
+    return ''.join([x['text'] for x in align])
+
+  def hemistiche(self, pos):
+    if (pos > 0 and self.chunks[pos-1]['text'] + self.chunks[pos]['text'] in
+        self.forbidden_hemistiche and 'wordend' in self.chunks[pos]):
+      return "bad"
+    ending = self.chunks[pos]['text']
+    if not 'wordend' in self.chunks[pos] and pos < len(self.chunks) - 1:
+      if not 'wordend' in self.chunks[pos+1]:
+        return "cut"
+      ending += self.chunks[pos+1]['text']
+    if (ending in sure_end_fem):
+      if True in self.chunks[pos].get('elidable', [False]):
+        return "ok" # elidable final -e
+      # check that this isn't a one-syllabe wourd (which is allowed)
+      ok = False
+      for i in range(2):
+        if '-' in self.chunks[pos-i-1]['text'] or 'wordend' in self.chunks[pos-i-1]:
+          ok = True
+      if not ok:
+        # hemistiche ends in feminine
+        return "fem"
+    return "ok"
+
+  def valid(self, forbidden_ok, hiatus_ok):
+    for c in self.chunks:
+      if 'error' in c:
+        if c['error'] == "ambiguous" and not forbidden_ok:
+          return False
+        elif c['error'] == "hiatus" and not hiatus_ok:
+          return False
+    return True
+
+  def coffee(self, phon, bound, hemistiche, check_end_hemistiche):
     return list(map((lambda x: (x, self.feminine(x, phon))),
-        self.fits(bound)))
+        self.fits(bound, hemistiche, check_end_hemistiche)))
 
-  def fits(self, bound):
-    return self.fit(0, bound)
+  def fits(self, bound, hemistiche, check_end_hemistiche):
+    return self.fit(0, 0, bound, hemistiche, check_end_hemistiche)
+

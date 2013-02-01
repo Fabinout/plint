@@ -102,6 +102,7 @@ class Template:
     if len(self.template) == 0:
       raise error.TemplateLoadError(_("Template is empty"))
 
+  # TODO obsoleted
   def rate(self, pattern, align):
     """Rate align according to pattern"""
     align, fem = align
@@ -134,6 +135,7 @@ class Template:
       return errors, pattern
 
     # check characters
+    # TODO move this to verse
     illegal = set()
     for x in line:
       if not rm_punct(strip_accents_one(x)[0].lower()) in legal:
@@ -165,38 +167,35 @@ class Template:
 
     # compute alignments, check hemistiches, sort by score
     v = Verse(line, self.diaeresis)
-    error_found = False
-    for c in v.chunks:
-      if 'error' in c:
-        if c['error'] == "ambiguous" and not self.forbidden_ok:
-          error_found = True
-          errors.append(error.ErrorForbiddenPattern(c['original']))
-        elif c['error'] == "hiatus" and not self.hiatus_ok:
-          error_found = True
-          errors.append(error.ErrorHiatus(c['original']))
-    if error_found:
-      possible = []
+    if not v.valid(self.forbidden_ok, self.hiatus_ok):
+      errors.append(error.ErrorBadVerse(v))
       return errors, pattern
-    possible = v.coffee(self.env[pattern.myid].phon, pattern.length + 2)
-    for p in possible:
-      check_hemistiches(p, pattern.hemistiches, self.check_end_hemistiche)
-    possible = map((lambda x: (self.rate(pattern, x), x)), possible)
-    possible = sorted(possible, key=(lambda x: x[0]))
 
-    if quiet:
-      if len(possible) == 0:
-        return [None], pattern
-      if possible[0][0] > (1+len(pattern.hemistiches))*pattern.length/2:
-        return [None], pattern
-
-    # check metric
-    if len(possible) == 0 or possible[0][0] != 0:
-      errors.append(error.ErrorBadMetric(possible))
+    possible = v.coffee(self.env[pattern.myid].phon, pattern.length,
+        pattern.hemistiches, self.check_end_hemistiche)
     if len(possible) == 0:
+      errors.append(error.ErrorBadVerse(v))
       return errors, pattern
-    # keep the best alignments as hypotheses
-    possible = [(score, align) for (score, align) in possible
-        if score == possible[0][0]]
+
+    #for p in possible:
+    #  check_hemistiches(p, pattern.hemistiches, self.check_end_hemistiche)
+    #possible = map((lambda x: (self.rate(pattern, x), x)), possible)
+    #possible = sorted(possible, key=(lambda x: x[0]))
+
+    #if quiet:
+    #  if len(possible) == 0:
+    #    return [None], pattern
+    #  if possible[0][0] > (1+len(pattern.hemistiches))*pattern.length/2:
+    #    return [None], pattern
+
+    ## check metric
+    #if len(possible) == 0 or possible[0][0] != 0:
+    #  errors.append(error.ErrorBadMetric(possible))
+    #if len(possible) == 0:
+    #  return errors, pattern
+    ## keep the best alignments as hypotheses
+    #possible = [(score, align) for (score, align) in possible
+    #    if score == possible[0][0]]
     if ofile:
       if len(possible) == 1 and possible[0][0] == 0:
         l = [(x[1][0]) for x in possible]
@@ -246,7 +245,7 @@ class Template:
       self.femenv[pattern.femid] = x
     else:
       old = list(self.femenv[pattern.femid])
-      new = list(set(sum([x[1] for (score, x) in possible], [])))
+      new = list(set(sum([x[1] for x in possible], [])))
       self.femenv[pattern.femid] &= set(new)
       if len(self.femenv[pattern.femid]) == 0:
         errors.append(error.ErrorBadRhymeGenre(old, new))

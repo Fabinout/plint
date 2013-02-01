@@ -109,15 +109,14 @@ class ErrorBadRhymeSound(ErrorBadRhyme):
   def kind(self):
     return _("Bad rhyme")
 
-class ErrorBadMetric(Error):
-  def __init__(self, possible):
+class ErrorBadVerse(Error):
+  def __init__(self, verse):
     Error.__init__(self)
-    self.possible = possible
+    self.verse = verse
 
-  def align(self, align):
-    score, align = align
-    chunks, feminine = align
-    keys = ['original', 'text', 'weight', 'error', 'hemis']
+  def align(self):
+    chunks = self.verse.chunks
+    keys = ['original', 'text', 'weights', 'error', 'hemis']
     lines = {}
     for key in keys:
       lines[key] = ""
@@ -126,6 +125,19 @@ class ErrorBadMetric(Error):
       for key in keys:
         lines[key] += ' ' + ('{:^'+str(l)+'}').format(chunk.get(key, ""))
     return [lines[key] for key in keys if len(lines[key].strip()) > 0]
+
+  def report(self, short=False):
+    return Error.report(
+        self,
+        _("Bad verse:"),
+        short,
+        self.align()
+        )
+
+class ErrorBadMetric(ErrorBadVerse):
+  def __init__(self, possible):
+    Error.__init__(self)
+    self.possible = possible
 
   def report(self, short=False):
     num = min(len(self.possible), 4)
