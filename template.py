@@ -1,5 +1,4 @@
 import error
-from hemistiches import check_hemistiches
 import copy
 import rhyme
 from verse import Verse
