@@ -62,9 +62,8 @@ def check_hemistiche(align, pos, hem, check_end_hemistiche):
       # check that this isn't a one-syllabe wourd (which is allowed)
       ok = False
       for i in range(2):
-        for j in ' -':
-          if j in align[pos-i-1]:
-            ok = True
+        if '-' in align[pos-i-1]['text'] or 'wordend' in align[pos-i-1]:
+          ok = True
       if not ok:
         # hemistiche ends in feminine
         align[pos]['hemis'] = 'fem'

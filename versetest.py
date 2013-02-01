@@ -2,6 +2,7 @@
 
 import verse
 import unittest
+from pprint import pprint
 
 class SanityCheck(unittest.TestCase):
   def testSimple(self):
@@ -46,6 +47,22 @@ class Counts(unittest.TestCase):
         return True
     return False
 
+class SigleCounts(Counts):
+  def testW(self):
+    f = self.runCount("W")
+    self.assertEqual(1, len(f))
+    self.assertEqual(self.getWeight(f[0]), 3)
+
+  def testB(self):
+    f = self.runCount("b")
+    self.assertEqual(1, len(f))
+    self.assertEqual(self.getWeight(f[0]), 1)
+
+  def testMulti(self):
+    f = self.runCount("SNCF WWW", limit=14)
+    self.assertEqual(1, len(f))
+    self.assertEqual(self.getWeight(f[0]), 13)
+
 class SimpleCounts(Counts):
   def testTrivialMonovoc(self):
     f = self.runCount("Ba")
@@ -56,6 +73,12 @@ class SimpleCounts(Counts):
     f = self.runCount("Babababa")
     self.assertEqual(1, len(f))
     self.assertEqual(self.getWeight(f[0]), 4)
+
+class AspiratedCounts(Counts):
+  def testBaudelaire1half(self):
+    possible = self.runCount("funeste hélas")
+    self.assertTrue(self.achievesPossibility(possible, 4))
+    self.assertTrue(self.achievesPossibility(possible, 5))
 
 class RealCounts(Counts):
   half1 = "Je veux, pour composer"
@@ -77,8 +100,16 @@ class RealCounts(Counts):
 
 class PoemCounts(Counts):
   v1 = "Qui berce longuement notre esprit enchanté"
+  v2 = "Qu'avez-vous ? Je n'ai rien. Mais... Je n'ai rien, vous dis-je,"
+  v3 = "Princes, toute h mer est de vaisseaux couverte,"
   def testV1(self):
     possible = self.runCount(self.v1)
+    self.assertTrue(self.achievesPossibility(possible, 12))
+  def testV2(self):
+    possible = self.runCount(self.v2)
+    self.assertTrue(self.achievesPossibility(possible, 12))
+  def testV3(self):
+    possible = self.runCount(self.v3)
     self.assertTrue(self.achievesPossibility(possible, 12))
 
 if __name__ == "__main__":

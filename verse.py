@@ -4,6 +4,7 @@ from common import consonants, normalize, is_consonants, is_vowels, sure_end_fem
 import re
 import vowels
 import haspirater
+from pprint import pprint
 
 class Verse:
   def elision(self, word):
@@ -22,8 +23,7 @@ class Verse:
     if word == "onze":
       return [False]
     if word[0] == 'h':
-      # TODO change this when haspirater changes
-      return [not haspirater.lookup(word)]
+      return list(map((lambda s: not s), haspirater.lookup(word)))
     if is_vowels(word[0]):
       return [True]
     return [False]
@@ -54,10 +54,10 @@ class Verse:
     consonants_regexp = re.compile('([^'+all_consonants+'*-]*)', re.UNICODE)
     words = re.split(whitespace_regexp, line)
     words = self.remove_trivial(words, (lambda w: re.match("^\s*$", w) or
-      len(normalize(w, rm_apostrophe=True)) == 0))
+      len(normalize(w, rm_all=True)) == 0))
     pre_chunks = [re.split(consonants_regexp, word) for word in words]
     pre_chunks = [self.remove_trivial(x, (lambda w: re.match("^\s*$", w) or
-      len(normalize(w, rm_apostrophe=True)) == 0)) for x in pre_chunks]
+      len(normalize(w, rm_all=True)) == 0)) for x in pre_chunks]
     self.chunks = [[{'original': y, 'text': normalize(y, rm_apostrophe=True)}
       for y in x] for x in pre_chunks]
 
@@ -78,10 +78,13 @@ class Verse:
     # remove empty chunks created by simplifications
     for i, w in enumerate(self.chunks):
       self.chunks[i] = [x for x in w if len(x['text']) > 0]
-
-    # vowel elision problems
+    # remove leading and trailing crap
     for w in self.chunks:
-      w[0]['elision'] = self.elision(''.join(x['text'] for x in w))
+      for p in [0, -1]:
+        while len(w[p]['text']) > 0 and w[p]['text'][0] in ' -':
+          w[p]['text'] = w[p]['text'][1:]
+        while len(w[p]['text']) > 0 and w[p]['text'][-1] in ' -':
+          w[p]['text'] = w[p]['text'][:-1]
 
     # sigles
     for i, w in enumerate(self.chunks):
@@ -91,8 +94,9 @@ class Verse:
           if (x == 'w'):
             nc = "doublevé"
           else:
-            nc = x + "é"
+            nc = x + "a"
           new_chunks += re.split(consonants_regexp, nc)
+        new_chunks = [x for x in new_chunks if len(x) > 0]
         new_word = []
         for j, x in enumerate(new_chunks):
           lindex = int(j*len(w[0]['original'])/len(w[0]['text']))
@@ -100,6 +104,10 @@ class Verse:
           part = w[0]['original'][lindex:rindex]
           new_word.append({'original': part, 'text': x})
         self.chunks[i] = new_word
+
+    # vowel elision problems
+    for w in self.chunks:
+      w[0]['elision'] = self.elision(''.join(x['text'] for x in w))
 
     # case of 'y'
     ys_regexp = re.compile("(y*)")
@@ -121,8 +129,11 @@ class Verse:
           lindex = int(j*len(chunk['original'])/len(subchunks))
           rindex = int((j+1)*len(chunk['original'])/len(subchunks))
           part = chunk['original'][lindex:rindex]
-          new_subchunk = 'Y' if 'y' in subchunk else subchunk
-          new_word.append({'original': part, 'text': new_subchunk})
+          new_subchunk_text = 'Y' if 'y' in subchunk else subchunk
+          new_subchunk = dict(chunk)
+          new_subchunk['original'] = part
+          new_subchunk['text'] = new_subchunk_text
+          new_word.append(new_subchunk)
       self.chunks[i] = new_word
 
     # annotate final mute 'e'
@@ -181,18 +192,25 @@ class Verse:
           # ending 'ent' is sometimes elided
           # actually, this will have an influence on the rhyme's gender
           return [0, 1]
-      if (pos >= len(self.chunks) - 2
+        return self.possible_weights(pos)
+      if (pos == len(self.chunks) - 1 and self.chunks[pos]['text'] == 'e' and
+          pos > 0 and (self.chunks[pos-1]['text'].endswith('-c') or
+            self.chunks[pos-1]['text'].endswith('-j'))):
+        return [0] # -ce and -je are elided
+      if (pos >= len(self.chunks) - 1
           and self.chunks[pos]['text'] in ['ie', 'ée']):
         return [1]
-      else:
-        if (pos >= len(self.chunks) - 1 and self.chunks[pos] == 'e' and
-            pos > 0 and (self.chunks[pos-1]['text'].endswith('-c') or
-              self.chunks[pos-1]['text'].endswith('-j'))):
-          return [0] # -ce and -je are elided
-        if 'elidable' in self.chunks[pos]:
-          return [0 if x else 1 for x in self.chunks[pos+1]['elision']]
+      if (pos >= len(self.chunks) - 2
+          and self.chunks[pos]['text'] in ['ée']):
+        return [1]
+      if 'elidable' in self.chunks[pos]:
+        if 'elision' not in self.chunks[pos+1]:
+          pprint(self.chunks)
+          raise ValueError #TODO
+        return [0 if x else 1 for x in self.chunks[pos+1]['elision']]
       return self.possible_weights(pos)
 
+  # TODO split this in annotation and generation
   def fit(self, pos, left):
     """bruteforce exploration of all possible vowel cluster weghting,
     within a maximum total of left"""
