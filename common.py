@@ -42,11 +42,13 @@ def norm_spaces(text):
   """Remove multiple consecutive whitespace"""
   return re.sub("\s+-*\s*", ' ', text)
 
-def rm_punct(text):
+def rm_punct(text, rm_apostrophe=False):
   """Remove punctuation from text"""
   text = re.sub("’", "'", text) # no weird apostrophes
   text = re.sub("' ", "'", text) # space after apostrophes
   text = re.sub("'*$", "", text) # apostrophes at end of line
+  if rm_apostrophe:
+    text = re.sub("'", "", text) # remove apostrophes
   text = re.sub("[‒–—―⁓⸺⸻]", " ", text) # no weird dashes
 
   #TODO rather: keep only good chars
@@ -76,9 +78,10 @@ def is_consonants(chunk):
       return False
   return True
 
-def normalize(text, downcase=True):
+def normalize(text, downcase=True, rm_apostrophe=False):
   """Normalize text, ie. lowercase, no useless punctuation or whitespace"""
-  return norm_spaces(rm_punct(text.lower() if downcase else text)).rstrip().lstrip()
+  return norm_spaces(rm_punct(text.lower() if downcase else text,
+    rm_apostrophe=rm_apostrophe)).rstrip().lstrip()
 
 def subst(string, subs):
   if len(subs) == 0:

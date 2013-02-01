@@ -172,7 +172,7 @@ class Template:
           errors.append(error.ErrorForbiddenPattern(c['original']))
         elif c['error'] == "hiatus" and not self.hiatus_ok:
           error_found = True
-          errors.append(error.ErrorHiatus(c['hiatus']))
+          errors.append(error.ErrorHiatus(c['original']))
     if error_found:
       possible = []
       return errors, pattern

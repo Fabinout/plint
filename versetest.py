@@ -7,21 +7,27 @@ class SanityCheck(unittest.TestCase):
   def testSimple(self):
     text = "Hello World!!  This is a test"
     v = verse.Verse(text, None)
-    self.assertEqual(text, v.text)
+    self.assertEqual(text, v.line)
 
   def testComplex(self):
     text = "Aye AYAYE   aye  gue que geque AYAYAY a prt   sncf bbbéé"
     v = verse.Verse(text, None)
-    self.assertEqual(text, v.text)
+    self.assertEqual(text, v.line)
 
   def testLeadingSpace(self):
     text = " a"
     v = verse.Verse(text, None)
-    self.assertEqual(text, v.text)
+    self.assertEqual(text, v.line)
 
 class Eliminate(unittest.TestCase):
+  def testEliminateOneGue(self):
+    text = "gue"
+    v = verse.Verse(text, None)
+    c = ''.join([x['text'] for x in v.chunks])
+    self.assertFalse("gue" in c)
+
   def testEliminateGue(self):
-    text = "gue gue GUE ogues longuement"
+    text = "gue gue GUE ogues longuement la guerre"
     v = verse.Verse(text, None)
     c = ''.join([x['text'] for x in v.chunks])
     self.assertFalse("gue" in c)

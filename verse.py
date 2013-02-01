@@ -42,31 +42,37 @@ class Verse:
         accu = ""
     return new_chunks
 
+  @property
+  def line(self):
+    return ''.join(x['original'] for x in self.chunks)
+
   def __init__(self, line, diaeresis):
     self.diaeresis = diaeresis
     whitespace_regexp = re.compile("(\s*)")
     ys_regexp = re.compile("(\s*)")
     all_consonants = consonants + consonants.upper()
-    consonants_regexp = re.compile('(['+all_consonants+'*-]*)', re.UNICODE)
+    consonants_regexp = re.compile('([^'+all_consonants+'*-]*)', re.UNICODE)
     words = re.split(whitespace_regexp, line)
-    words = self.remove_trivial(words, (lambda w: re.match("^\s*$", w)))
+    words = self.remove_trivial(words, (lambda w: re.match("^\s*$", w) or
+      len(normalize(w, rm_apostrophe=True)) == 0))
     pre_chunks = [re.split(consonants_regexp, word) for word in words]
     pre_chunks = [self.remove_trivial(x, (lambda w: re.match("^\s*$", w) or
-      len(normalize(w)) == 0)) for x in pre_chunks]
-    self.chunks = [[{'original': y, 'text': normalize(y)} for y in x] for x in pre_chunks]
+      len(normalize(w, rm_apostrophe=True)) == 0)) for x in pre_chunks]
+    self.chunks = [[{'original': y, 'text': normalize(y, rm_apostrophe=True)}
+      for y in x] for x in pre_chunks]
 
     # gu- and qu- simplifications
     for w in self.chunks:
       if len(w) < 2:
         continue
       for i, x in enumerate(w[:-1]):
-        if not w[i+1]['text'].startswith("u"):
+        if not w[i+1]['text'].startswith('u'):
           continue
         if w[i]['text'].endswith('q'):
           w[i+1]['text'] = w[i+1]['text'][1:]
           if w[i+1]['text'] == '':
             w[i]['original'] += w[i+1]['original']
-        if w[i]['text'].endswith('g') and len(w[i+1]['text']) < 2:
+        if w[i]['text'].endswith('g') and len(w[i+1]['text']) >= 2:
           if w[i+1]['text'][1] in "eéèa":
             w[i+1]['text'] = w[i+1]['text'][1:]
     # remove empty chunks created by simplifications
@@ -133,7 +139,7 @@ class Verse:
       if w[-1]['text'] in ambiguous_potential:
         if self.chunks[i+1][0]['text'][0] in consonants:
           w[-1]['error'] = "ambiguous"
-      elif is_vowels(w[-1]['text']) and 'elidable' not in w[-1]:
+      elif is_vowels(w[-1]['text']) and not w[-1]['text'].endswith('e'):
         if is_vowels(self.chunks[i+1][0]['text']):
           if ''.join(x['text'] for x in w) not in no_hiatus:
             if ''.join(x['text'] for x in self.chunks[i+1]) not in no_hiatus:
@@ -149,7 +155,7 @@ class Verse:
     self.text = ''.join(x['text'] for x in self.chunks)
 
   def contains_break(self, chunk):
-    return '-' in chunk['text']
+    return '-' in chunk['text'] or 'wordend' in chunk
 
   def possible_weights(self, pos):
     if self.diaeresis == "classical":
@@ -208,12 +214,11 @@ class Verse:
       if self.text.endswith(a):
         # check that this isn't a one-syllabe wourd
         for i in range(4):
-          for j in ' -':
-            try:
-              if j in align[-i-1]:
-                return ['M', 'F']
-            except IndexError:
+          try:
+            if '-' in align[-i-1]['text'] or 'wordend' in align[-i-1]:
               return ['M', 'F']
+          except IndexError:
+            return ['M', 'F']
         return ['F']
     if not self.text.endswith('ent'):
       return ['M']
