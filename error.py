@@ -79,7 +79,7 @@ class ErrorBadRhyme:
     # TODO indicate eye rhyme since this is also important
     # TODO don't indicate more than the minimal required rhyme (in length and
     # present of a vowel phoneme)
-    return (_("%s for type %s (expected %s, inferred \"%s\")")
+    return (_("%s for type %s (expected \"%s\", inferred \"%s\")")
         % (self.kind, self.get_id(pattern), self.fmt(self.expected),
           self.fmt(self.inferred)))
 

@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: plint\n"
-"POT-Creation-Date: 2013-02-15 00:03+CET\n"
-"PO-Revision-Date: 2013-02-15 00:04+0100\n"
+"POT-Creation-Date: 2013-02-15 00:05+CET\n"
+"PO-Revision-Date: 2013-02-15 00:06+0100\n"
 "Last-Translator: Antoine Amarilli <a3nm@a3nm.net>\n"
 "Language-Team: \n"
 "Language: \n"
@@ -32,8 +32,8 @@ msgid "Illegal hiatus"
 msgstr "Hiatus interdit"
 
 #: error.py:82
-msgid "%s for type %s (expected %s, inferred \"%s\")"
-msgstr "%s pour le type %s (attendu : %s, lu : \"%s\")"
+msgid "%s for type %s (expected \"%s\", inferred \"%s\")"
+msgstr "%s pour le type %s (attendu : \"%s\", lu : \"%s\")"
 
 #: error.py:89
 msgid "Bad rhyme genre"
