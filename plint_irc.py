@@ -22,7 +22,7 @@ def write(l, descriptor=None):
 
 def output(l, descriptor):
   print(' '.join(l), file=descriptor)
-  write(l)
+  write(l, descriptor if descriptor != sys.stdout else None)
 
 def leading_cap(text):
   for c in text:
