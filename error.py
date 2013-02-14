@@ -49,19 +49,25 @@ class ErrorCollection:
 
 class ErrorBadElement:
   def report(self, pattern):
-    return (_("Illegal ") + _(self.message)
-        + _(" (see '%s' above)" % ErrorCollection.keys[self.key]))
+    return (self.message
+        + _(" (see '%s' above)") % ErrorCollection.keys[self.key])
 
 class ErrorBadCharacters(ErrorBadElement):
-  message = "characters"
+  @property
+  def message(self):
+    return _("Illegal characters")
   key = "illegal"
 
 class ErrorForbiddenPattern(ErrorBadElement):
-  message = "ambiguous pattern"
+  @property
+  def message(self):
+    return _("Illegal ambiguous pattern")
   key = "ambiguous"
 
 class ErrorHiatus(ErrorBadElement):
-  message = "hiatus"
+  @property
+  def message(self):
+    return _("Illegal hiatus")
   key = "hiatus"
 
 class ErrorBadRhyme:
@@ -74,11 +80,13 @@ class ErrorBadRhyme:
     # TODO don't indicate more than the minimal required rhyme (in length and
     # present of a vowel phoneme)
     return (_("%s for type %s (expected %s, inferred \"%s\")")
-        % (_(self.kind), self.get_id(pattern), self.fmt(self.expected),
+        % (self.kind, self.get_id(pattern), self.fmt(self.expected),
           self.fmt(self.inferred)))
 
 class ErrorBadRhymeGenre(ErrorBadRhyme):
-  kind = "Bad rhyme genre"
+  @property
+  def kind(self):
+    return _("Bad rhyme genre")
 
   def fmt(self, l):
     result = _(' or ').join(list(l))
@@ -90,7 +98,9 @@ class ErrorBadRhymeGenre(ErrorBadRhyme):
     return pattern.femid
 
 class ErrorBadRhymeSound(ErrorBadRhyme):
-  kind = "Bad rhyme"
+  @property
+  def kind(self):
+    return _("Bad rhyme")
 
   def fmt(self, l):
     pron = l.phon
@@ -105,14 +115,14 @@ class ErrorBadRhymeSound(ErrorBadRhyme):
 
   def report(self, pattern):
     return (_("%s for type %s (expected %s)")
-        % (_(self.kind), pattern.myid, self.fmt(self.expected)))
+        % (self.kind, pattern.myid, self.fmt(self.expected)))
 
 class ErrorBadMetric:
   def report(self, pattern):
-    return _("Illegal metric: expected %d syllable%s%s" %
+    return (_("Illegal metric: expected %d syllable%s%s") %
         (pattern.length, '' if pattern.length == 1 else 's',
           '' if len(pattern.hemistiches) == 0
-            else _(" with hemistiche%s at " %
+            else (_(" with hemistiche%s at ") %
             '' if len(pattern.hemistiches) == 1 else 's')
             + ','.join(str(a) for a in pattern.hemistiches)))
 
