@@ -110,18 +110,18 @@ class Template:
     errors = []
     pattern = self.get()
 
-    if last:
-      if was_incomplete and not self.incomplete_ok and not self.overflowed:
-        return [error.ErrorIncompleteTemplate()], pattern
-      return [], pattern
-
-    if self.overflowed:
-      return [error.ErrorOverflowedTemplate()], pattern
-
     line_with_case = normalize(line, downcase=False)
     line_normalize = normalize(line)
 
     v = Verse(line, self, pattern)
+
+    if last:
+      if was_incomplete and not self.incomplete_ok and not self.overflowed:
+        return [error.ErrorIncompleteTemplate()], pattern, verse
+      return [], pattern, v
+
+    if self.overflowed:
+      return [error.ErrorOverflowedTemplate()], pattern, verse
 
     # rhymes
     if pattern.myid not in self.env.keys():
@@ -197,7 +197,7 @@ class Template:
       if len(self.femenv[pattern.femid]) == 0:
         errors.append(error.ErrorBadRhymeGenre(old, new))
 
-    return errors, pattern
+    return errors, pattern, v
 
   def parse_line(self, line):
     """Parse template line from a line"""
@@ -266,18 +266,16 @@ class Template:
     self.line_no += 1
     line = line.rstrip()
     if normalize(line) == '' and not last:
-      return []
+      return None
     #possible = [compute(p) for p in possible]
     #possible = sorted(possible, key=rate)
-    errors, pattern = self.match(line, ofile, quiet=quiet, last=last)
-    for error in errors:
-      if error != None:
-        # update errors with line position and pattern
-        error.pos(line, self.line_no, pattern)
-    if len(errors) > 0 and self.reject_errors:
-      self.back()
-      self.line_no -= 1
-    return errors
+    errors, pattern, verse = self.match(line, ofile, quiet=quiet, last=last)
+    if len(errors) > 0:
+      if self.reject_errors:
+        self.back()
+        self.line_no -= 1
+      return error.ErrorCollection(self.line_no, line, pattern, verse, errors)
+    return None
 
 def str2bool(x):
   if x.lower() in ["yes", "oui", "y", "o"]:

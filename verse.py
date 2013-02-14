@@ -163,14 +163,17 @@ class Verse:
       if w[-1]['text'] == "s":
         if w[-2]['text'] in ambiguous_potential:
           w[-2]['error'] = "ambiguous"
+          w[-1]['error'] = "ambiguous"
       if w[-1]['text'] in ambiguous_potential:
         if self.chunks[i+1][0]['text'][0] in consonants:
           w[-1]['error'] = "ambiguous"
+          self.chunks[i+1][0]['error'] = "ambiguous"
       elif is_vowels(w[-1]['text']) and not w[-1]['text'].endswith('e'):
         if is_vowels(self.chunks[i+1][0]['text']):
           if ''.join(x['text'] for x in w) not in no_hiatus:
             if ''.join(x['text'] for x in self.chunks[i+1]) not in no_hiatus:
               w[-1]['error'] = "hiatus"
+              self.chunks[i+1][0]['error'] = "hiatus"
 
     # annotate word ends
     for w in self.chunks[:-1]:
@@ -319,16 +322,19 @@ class Verse:
 
   def problems(self):
     result = []
+    errors = set()
     for c in self.chunks:
       if 'error' in c:
         if c['error'] == "ambiguous" and not self.template.forbidden_ok:
-          result.append(error.ErrorForbiddenPattern(c['text']))
+          errors.add(error.ErrorForbiddenPattern)
         if c['error'] == "hiatus" and not self.template.hiatus_ok:
-          result.append(error.ErrorHiatus(c['text']))
+          errors.add(error.ErrorHiatus)
         if c['error'] == "illegal":
-          result.append(error.ErrorBadCharacters(c['text']))
+          errors.add(error.ErrorBadCharacters)
+    for k in errors:
+      result.append(k())
     if len(self.possible) == 0:
-      result.append(error.ErrorBadVerse(self))
+      result.append(error.ErrorBadMetric())
     return result
 
   def valid(self):

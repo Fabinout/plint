@@ -17,8 +17,8 @@ def run():
       should_end = True
       line = ""
     errors = template.check(line, f2, last=should_end)
-    for error in errors:
-      print(error.report(), file=sys.stderr)
+    if errors:
+      print(errors.report(), file=sys.stderr)
       ok = False
     if should_end:
       break

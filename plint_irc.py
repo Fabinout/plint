@@ -69,12 +69,11 @@ def manage(line, silent=False):
     return True
   errors = template.check(text, quiet=False)
   quiet = False
-  for error in errors:
-    if error == None:
-      quiet = True
-    if not quiet:
-      print(error.report())
-  if len(errors) == 0:
+  # TODO: there was an "if error == None" here that I didn't understand, so
+  # it'll break
+  if errors:
+    print(error.report())
+  if not errors:
     buf = ""
     if not silent:
       if usebuf:
@@ -82,7 +81,7 @@ def manage(line, silent=False):
           output(bl)
       output(l)
     lbuf = []
-  return len(errors) == 0
+  return not errors
 
 if len(sys.argv) not in [3, 4]:
   print("Usage: %s TEMPLATE POEM [OFFSET]" % sys.argv[0], file=sys.stderr)

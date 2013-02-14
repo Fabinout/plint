@@ -136,11 +136,11 @@ def q():
     if line == None:
       line = ""
       last = True
-    errors = [error.report(short=True) for error in templ.check(line, last=last)]
-    if errors != [] and not firsterror:
+    errors = templ.check(line, last=last)
+    if errors and not firsterror:
       firsterror = i
-    r.append((line, errors))
-    nerror += len(errors)
+    r.append((line, [err.report(short=True) for err in errors]))
+    nerror += len(errors.errors)
   d['result'] = r
   d['firsterror'] = firsterror
   d['nerror'] = nerror
