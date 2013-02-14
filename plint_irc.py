@@ -4,7 +4,6 @@ import localization
 import re
 import sys
 import rhyme
-import metric
 from template import Template
 from pprint import pprint
 from common import normalize
@@ -12,11 +11,18 @@ from common import normalize
 buf = ""
 lbuf = []
 
-def output(l):
-  print(' '.join(l))
-  f = open(sys.argv[2], 'a')
+def write(l, descriptor=None):
+  if descriptor:
+    f = descriptor
+  else:
+    f = open(sys.argv[2], 'a')
   print(' '.join(l), file=f)
-  f.close()
+  if not descriptor:
+    f.close()
+
+def output(l, descriptor):
+  print(' '.join(l), file=descriptor)
+  write(l, descriptor)
 
 def leading_cap(text):
   for c in text:
@@ -28,7 +34,7 @@ def leading_cap(text):
       return False
   return False
 
-def manage(line, silent=False):
+def manage(line, descriptor=sys.stdout):
   """manage one line, indicate if an error occurred"""
   global buf
   global lbuf
@@ -43,10 +49,7 @@ def manage(line, silent=False):
     if len(lbuf) > 0:
       lbuf.append(l)
     else:
-      if not silent:
-        f = open(sys.argv[2], 'a')
-        print(' '.join(l), file=f)
-        f.close()
+      write(l, descriptor)
     return True
   if first[0] == '/':
     return False # ignore other commands
@@ -69,17 +72,14 @@ def manage(line, silent=False):
     return True
   errors = template.check(text, quiet=False)
   quiet = False
-  # TODO: there was an "if error == None" here that I didn't understand, so
-  # it'll break
   if errors:
-    print(error.report())
+    print(errors.report())
   if not errors:
     buf = ""
-    if not silent:
-      if usebuf:
-        for bl in lbuf:
-          output(bl)
-      output(l)
+    if usebuf:
+      for bl in lbuf:
+        output(bl, descriptor)
+    output(l, descriptor)
     lbuf = []
   return not errors
 
@@ -112,8 +112,8 @@ for line in f.readlines():
   pos += 1
   if pos <= offset:
     continue # ignore first lines
-  print("Read: %s" % line, file=sys.stderr)
-  if not manage(line, True):
+  print("%s (read)" % line.rstrip(), file=sys.stderr)
+  if not manage(line, sys.stderr):
     print("Existing poem is wrong!", file=sys.stderr)
     sys.exit(2)
 f.close()
