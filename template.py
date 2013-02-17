@@ -117,7 +117,7 @@ class Template:
 
     if last:
       if was_incomplete and not self.incomplete_ok and not self.overflowed:
-        return [error.ErrorIncompleteTemplate()], pattern, verse
+        return [error.ErrorIncompleteTemplate()], pattern, v
       return [], pattern, v
 
     if self.overflowed:

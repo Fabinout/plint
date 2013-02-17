@@ -189,9 +189,8 @@ class Verse:
       if (not is_vowels(self.chunks[i]['text'])):
         continue
       # for the case of "pays" and related words
-      if 'weights' in self.chunks[i].keys():
-        continue
-      self.chunks[i]['weights'] = self.possible_weights_context(i)
+      if 'weights' not in self.chunks[i].keys():
+        self.chunks[i]['weights'] = self.possible_weights_context(i)
       self.chunks[i]['hemis'] = self.hemistiche(i)
 
     self.possible = self.fit(0, 0, self.pattern.hemistiches)
