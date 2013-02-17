@@ -238,7 +238,7 @@ class Verse:
         # check that this isn't a one-syllabe wourd
         for i in range(4):
           try:
-            if '-' in align[-i-1]['text'] or 'wordend' in align[-i-1]:
+            if '-' in self.chunks[-i-1]['text'] or 'wordend' in self.chunks[-i-1]:
               return ['M', 'F']
           except IndexError:
             return ['M', 'F']
@@ -246,9 +246,9 @@ class Verse:
     if not self.text.endswith('ent'):
       return ['M']
     # verse ends with 'ent'
-    if align[-2]['weight'] == 0:
+    if align and align[-2]['weight'] == 0:
       return ['F'] # mute -ent
-    if align[-2]['weight'] > 0 and align[-2]['text'] == 'e':
+    if align and align[-2]['weight'] > 0 and align[-2]['text'] == 'e':
       return ['M'] # non-mute "-ent" by the choice of metric
     possible = []
     # now, we must check pronunciation?
@@ -344,6 +344,9 @@ class Verse:
     result = set()
     for p in self.possible:
       result.update(set(self.feminine(p, phon)))
+    if len(self.possible) == 0:
+      # try to infer gender even when metric is wrong
+      result.update(set(self.feminine(None, phon)))
     return result
 
 
