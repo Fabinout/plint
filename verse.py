@@ -134,6 +134,8 @@ class Verse:
         if (chunk['text'] == "ay" and j > 0 and j < len(w) - 1 and
             w[j-1]['text'].endswith("p") and w[j+1]['text'].startswith("s")):
           new_word.append(chunk)
+          # force weight
+          chunk['weights'] = [2]
           continue
         subchunks = re.split(ys_regexp, chunk['text'])
         subchunks = [x for x in subchunks if len(x) > 0]
@@ -185,6 +187,9 @@ class Verse:
     # annotate weights
     for i, chunk in enumerate(self.chunks):
       if (not is_vowels(self.chunks[i]['text'])):
+        continue
+      # for the case of "pays" and related words
+      if 'weights' in self.chunks[i].keys():
         continue
       self.chunks[i]['weights'] = self.possible_weights_context(i)
       self.chunks[i]['hemis'] = self.hemistiche(i)
