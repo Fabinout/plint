@@ -39,13 +39,15 @@ class ErrorCollection:
         lines[key] += ('{:^'+str(l)+'}').format(render(chunk, key))
     return ["> " + lines[key] for key in keys if len(lines[key].strip()) > 0]
 
-  def report(self, short=False):
+  def lines(self, short=False):
     l = []
-    for x in self.align():
-      l.append(self.say(x, short))
+    l.append([self.say(x, short) for x in self.align()])
     for e in self.errors:
-      l.append(self.say(e.report(self.pattern), short))
-    return '\n'.join(l)
+      l.append([self.say(e.report(self.pattern), short)])
+    return l
+
+  def report(self, short=False):
+    return '\n'.join(sum(self.lines(short), []))
 
 class ErrorBadElement:
   def report(self, pattern):

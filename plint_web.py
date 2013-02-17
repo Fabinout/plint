@@ -139,8 +139,8 @@ def q():
     errors = templ.check(line, last=last)
     if errors and not firsterror:
       firsterror = i
-    r.append((line, [err.report(short=True) for err in errors]))
-    nerror += len(errors.errors)
+    r.append((line, '\n'.join(sum(errors.lines(short=True), [])) if errors else []))
+    nerror += len(errors.errors) if errors else 0
   d['result'] = r
   d['firsterror'] = firsterror
   d['nerror'] = nerror

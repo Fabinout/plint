@@ -33,11 +33,7 @@
         <li class="correct" id="l{{loop.index}}">{{line}}
       {% else %}
         <li class="incorrect" id="l{{loop.index}}">{{line}}
-        <ul>
-          {% for error in errors %}
-            <li><pre>{{error}}</pre></li>
-          {% endfor %}
-        </ul>
+        <pre>{{errors}}</pre>
       {% endif %}
       </li>
     {% endfor %}
