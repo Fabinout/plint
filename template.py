@@ -169,12 +169,11 @@ class Template:
       else:
         x = set(['M', 'F'])
       self.femenv[pattern.femid] = x
-    else:
-      old = list(self.femenv[pattern.femid])
-      new = v.genders(self.env[pattern.myid].phon)
-      self.femenv[pattern.femid] &= set(new)
-      if len(self.femenv[pattern.femid]) == 0:
-        errors.append(error.ErrorBadRhymeGenre(old, new))
+    old = list(self.femenv[pattern.femid])
+    new = v.genders(self.env[pattern.myid].phon)
+    self.femenv[pattern.femid] &= set(new)
+    if len(self.femenv[pattern.femid]) == 0:
+      errors.append(error.ErrorBadRhymeGenre(old, new))
 
     return errors, pattern, v
 
