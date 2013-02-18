@@ -8,18 +8,23 @@
 {% else %}
     <meta name="description" content="plint French poetry checker" />
 {% endif %}
-    <link rel="stylesheet" href="static/main.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="/static/main.css" type="text/css" media="screen" />
   </head>
   <body>
     <header>
     <h1><a href="/">plint</a></h1>
-    <sup><a id="about" href="/about">
+    <sup><a id="about" href="about">
         {% if lang == 'fr' %}
         aide
         {% else %}
         help
         {% endif %}
     </a></sup>
+    {% if nolocale != True %}
+    <div id="lang">
+      <a href="/fr/{{path}}">fr</a>&nbsp;&bull;&nbsp;<a href="/en/{{path}}">en</a>
+    </div>
+    {% endif %}
     </header>
 
     <div id="body">

@@ -5,6 +5,7 @@ frhyme.json
 haspirater/*
 haspirater.py
 haspirater.json
+irc/*
 occurrences
 old/*
 *.pyc

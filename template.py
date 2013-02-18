@@ -1,28 +1,15 @@
 import error
-from metric import parse
-from hemistiches import check_hemistiches
 import copy
 import rhyme
+from verse import Verse
 from common import normalize, legal, strip_accents_one, rm_punct
 from nature import nature_count
 from vowels import possible_weights_ctx, make_query
+from pprint import pprint
 
-
-def handle(poss):
-  l = []
-  #print(poss)
-  for i in range(len(poss)):
-    if isinstance(poss[i], tuple):
-      #print(cleared[:i][::-1])
-      #print(cleared[i+1:])
-      # print(poss)
-      # print (make_query(poss, i))
-      if len(possible_weights_ctx(poss, i)) > 1:
-        l.append((poss[i][1], make_query(poss, i)))
-  return l
 
 class Pattern:
-  def __init__(self, metric, myid, femid, constraint):
+  def __init__(self, metric, myid="", femid="", constraint=None):
     self.metric = metric
     self.parse_metric()
     self.myid = myid
@@ -42,7 +29,7 @@ class Pattern:
     self.length = self.hemistiches.pop()
 
 class Template:
-  def __init__(self, string):
+  def __init__(self, string=None):
     self.template = []
     self.pattern_line_no = 0
     self.forbidden_ok = False
@@ -55,7 +42,8 @@ class Template:
     self.check_occurrences = True
     self.diaeresis = "classical"
     self.mergers = []
-    self.load(string)
+    if string:
+      self.load(string)
     self.line_no = 0
     self.position = 0
     self.prev = None
@@ -106,23 +94,6 @@ class Template:
     if len(self.template) == 0:
       raise error.TemplateLoadError(_("Template is empty"))
 
-  def count(self, align):
-    """total weight of an align"""
-    return sum([x[1] for x in align if isinstance(x, tuple)])
-
-  def rate(self, pattern, align):
-    """Rate align according to pattern"""
-    align, fem, hemis = align
-    c = self.count(align)
-    ok = True
-    for h in hemis.values():
-      if h != "ok":
-        ok = False
-    if ok and c == pattern.length:
-      return 0
-    return ((1+len(hemis.keys()))*abs(pattern.length - c)
-        + sum([1 for x in hemis.values() if x != "ok"]))
-
   def match(self, line, ofile=None, quiet=False, last=False):
     """Check a line against current pattern, return errors"""
 
@@ -131,95 +102,44 @@ class Template:
     errors = []
     pattern = self.get()
 
+    line_with_case = normalize(line, downcase=False)
+    line_normalize = normalize(line)
+
+    v = Verse(line, self, pattern)
+
     if last:
       if was_incomplete and not self.incomplete_ok and not self.overflowed:
-        errors.append(error.ErrorIncompleteTemplate())
-      return errors, pattern
+        return [error.ErrorIncompleteTemplate()], pattern, v
+      return [], pattern, v
 
     if self.overflowed:
-      errors.append(error.ErrorOverflowedTemplate())
-      return errors, pattern
-
-    # check characters
-    illegal = set()
-    for x in line:
-      if not rm_punct(strip_accents_one(x)[0].lower()) in legal:
-        illegal.add(x)
-    if len(illegal) > 0:
-      if quiet:
-        return [None], pattern
-      errors.append(error.ErrorBadCharacters(illegal))
-      return errors, pattern
-
-    line_with_case = normalize(line, downcase=False)
-    line = normalize(line)
+      return [error.ErrorOverflowedTemplate()], pattern, verse
 
     # rhymes
     if pattern.myid not in self.env.keys():
       # initialize the rhyme
-      self.env[pattern.myid] = rhyme.Rhyme(line, pattern.constraint,
+      self.env[pattern.myid] = rhyme.Rhyme(line_normalize, pattern.constraint,
           self.mergers, self.normande_ok)
     else:
       # update the rhyme
       old_p = self.env[pattern.myid].phon
       old_e = self.env[pattern.myid].eye
-      self.env[pattern.myid].feed(line, pattern.constraint)
+      self.env[pattern.myid].feed(line_normalize, pattern.constraint)
       # no more possible rhymes, something went wrong
       if not self.env[pattern.myid].satisfied():
         self.env[pattern.myid].phon = old_p
         self.env[pattern.myid].eye = old_e
         errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid], None))
 
-    # compute alignments, check hemistiches, sort by score
-    possible = parse(line, self.env[pattern.myid].phon, pattern.length + 2,
-        self.forbidden_ok, self.hiatus_ok, self.diaeresis)
-    if not isinstance(possible, list):
-      if possible[0] == "forbidden":
-        errors.append(error.ErrorForbiddenPattern(possible[1]))
-      elif possible[0] == "hiatus":
-        errors.append(error.ErrorHiatus(possible[1]))
-      possible = []
-      return errors, pattern
-    possible = list(map((lambda p: (p[0], p[1],
-      check_hemistiches(p[0], pattern.hemistiches, self.check_end_hemistiche))),
-      possible))
-    possible = map((lambda x: (self.rate(pattern, x), x)), possible)
-    possible = sorted(possible, key=(lambda x: x[0]))
+    errors += v.problems()
 
-    if quiet:
-      if len(possible) == 0:
-        return [None], pattern
-      if possible[0][0] > (1+len(pattern.hemistiches))*pattern.length/2:
-        return [None], pattern
-
-    # check metric
-    if len(possible) == 0 or possible[0][0] != 0:
-      errors.append(error.ErrorBadMetric(possible))
-    if len(possible) == 0:
-      return errors, pattern
-    # keep the best alignment as hypotheses
-    possible = [(score, align) for (score, align) in possible
-        if score == possible[0][0]]
     if ofile:
-      if len(possible) == 1 and possible[0][0] == 0:
-        l = [(x[1][0]) for x in possible]
-        poss = []
-        for p in l:
-          c = []
-          while len(p) > 0:
-            x = p.pop()
-            if x == ' ':
-              poss.append(c[::-1])
-              c = []
-            else:
-              c.append(x)
-          if len(c) > 0:
-            poss.append(c[::-1])
-        for w in poss:
-          l = handle(w)
-          for x in l:
-            # print(x)
-            print((str(x[0]) + ' ' + ' '.join(x[1])), file=ofile)
+      possible = v.possible
+      if len(possible) == 1:
+        for i, p in enumerate(possible[0]):
+          if 'weight' in p.keys() and len(p['weights']) > 1:
+            print(str(p['weight']) + ' '
+                + ' '.join(make_query(possible[0], i)), file=ofile)
 
     # occurrences
     if self.check_occurrences:
@@ -233,7 +153,7 @@ class Template:
         errors.append(error.ErrorMultipleWordOccurrence(last_word,
           self.occenv[pattern.myid][last_word]))
 
-        # rhyme genres
+    # rhyme genres
     # inequality constraint
     # TODO this is simplistic and order-dependent
     if pattern.femid.swapcase() in self.femenv.keys():
@@ -250,12 +170,12 @@ class Template:
       self.femenv[pattern.femid] = x
     else:
       old = list(self.femenv[pattern.femid])
-      new = list(set(sum([x[1] for (score, x) in possible], [])))
+      new = v.genders(self.env[pattern.myid].phon)
       self.femenv[pattern.femid] &= set(new)
       if len(self.femenv[pattern.femid]) == 0:
         errors.append(error.ErrorBadRhymeGenre(old, new))
 
-    return errors, pattern
+    return errors, pattern, v
 
   def parse_line(self, line):
     """Parse template line from a line"""
@@ -324,18 +244,16 @@ class Template:
     self.line_no += 1
     line = line.rstrip()
     if normalize(line) == '' and not last:
-      return []
+      return None
     #possible = [compute(p) for p in possible]
     #possible = sorted(possible, key=rate)
-    errors, pattern = self.match(line, ofile, quiet=quiet, last=last)
-    for error in errors:
-      if error != None:
-        # update errors with line position and pattern
-        error.pos(line, self.line_no, pattern)
-    if len(errors) > 0 and self.reject_errors:
-      self.back()
-      self.line_no -= 1
-    return errors
+    errors, pattern, verse = self.match(line, ofile, quiet=quiet, last=last)
+    if len(errors) > 0:
+      if self.reject_errors:
+        self.back()
+        self.line_no -= 1
+      return error.ErrorCollection(self.line_no, line, pattern, verse, errors)
+    return None
 
 def str2bool(x):
   if x.lower() in ["yes", "oui", "y", "o"]:

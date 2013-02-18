@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: plint\n"
-"POT-Creation-Date: 2013-01-30 23:19+CET\n"
-"PO-Revision-Date: 2013-01-30 23:20+0100\n"
+"POT-Creation-Date: 2013-02-15 00:05+CET\n"
+"PO-Revision-Date: 2013-02-15 00:06+0100\n"
 "Last-Translator: Antoine Amarilli <a3nm@a3nm.net>\n"
 "Language-Team: \n"
 "Language: \n"
@@ -15,67 +15,63 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
-#: error.py:25
-msgid "error: %s"
-msgstr "erreur : %s"
+#: error.py:53
+msgid " (see '%s' above)"
+msgstr " (voir '%s' ci-dessus)"
 
-#: error.py:26
-msgid "Line is: %s"
-msgstr "Ligne : %s"
+#: error.py:58
+msgid "Illegal characters"
+msgstr "Caractères interdits"
 
-#: error.py:45
-msgid "Illegal character%s: %s"
-msgstr "Mauvais caractère%s : %s"
+#: error.py:64
+msgid "Illegal ambiguous pattern"
+msgstr "Motif ambigu interdit"
 
-#: error.py:54
-msgid "Illegal ambiguous pattern: %s"
-msgstr "Motif ambigu interdit : %s"
+#: error.py:70
+msgid "Illegal hiatus"
+msgstr "Hiatus interdit"
 
-#: error.py:62
-msgid "Illegal hiatus: %s"
-msgstr "Hiatus interdit : %s"
+#: error.py:82
+msgid "%s for type %s (expected \"%s\", inferred \"%s\")"
+msgstr "%s pour le type %s (attendu : \"%s\", lu : \"%s\")"
 
-#: error.py:75
-msgid "%s for type %s (expected %s, inferred \"%s\")"
-msgstr "%s pour le type %s (attendu : %s, lu : \"%s\")"
-
-#: error.py:81
-msgid " or "
-msgstr " ou "
-
-#: error.py:91
+#: error.py:89
 msgid "Bad rhyme genre"
 msgstr "Mauvais genre de rime"
 
-#: error.py:100
-msgid " (ending: \""
-msgstr " (fin : \""
+#: error.py:92
+msgid " or "
+msgstr " ou "
 
-#: error.py:106
-msgid "%s for type %s (expected %s)"
-msgstr "%s pour le type %s (attendu : %s)"
-
-#: error.py:111
+#: error.py:103
 msgid "Bad rhyme"
 msgstr "Mauvaise rime"
 
-#: error.py:181
-msgid "Bad metric (expected %s, inferred %d illegal option%s)"
-msgstr "Mauvaise métrique (attendu : %s, lu %d choix interdit%s)"
+#: error.py:111
+msgid ", ending: \""
+msgstr ", fin: \""
 
-#: error.py:187
-msgid "... worse options omitted ..."
-msgstr "... et d'autres choix non affichés ..."
+#: error.py:117
+msgid "%s for type %s (expected %s)"
+msgstr "%s pour le type %s (attendu : %s)"
 
-#: error.py:199
+#: error.py:122
+msgid "Illegal metric: expected %d syllable%s%s"
+msgstr "Métrique illégale: attendu : %d syllabe%s%s"
+
+#: error.py:125
+msgid " with hemistiche%s at "
+msgstr " avec hémistiche%s en "
+
+#: error.py:138
 msgid "Too many occurrences of word %s for rhyme %s"
 msgstr "Trop d'occurrences du mot %s pour la rime %s"
 
-#: error.py:204
+#: error.py:143
 msgid "Poem is not complete"
 msgstr "Poème incomplet"
 
-#: error.py:209
+#: error.py:147
 msgid "Verse is beyond end of poem"
 msgstr "Vers au-delà de la fin du poème"
 
@@ -87,25 +83,40 @@ msgstr "Usage : %s MODÈLE [OCONTEXTE]"
 msgid "Check stdin according to TEMPLATE, report errors on stdout"
 msgstr "Vérifie l'entrée standard suivant MODÈLE, signale les erreurs sur la sortie standard"
 
-#: template.py:36
+#: template.py:31
 msgid "Metric length limit exceeded"
 msgstr "La longueur de la métrique est trop grande"
 
-#: template.py:82
+#: template.py:78
 msgid "Bad value for global option %s"
 msgstr "Mauvaise valeur pour l'option globale %s"
 
-#: template.py:92
+#: template.py:88
 msgid "Unknown global option"
 msgstr "Option globale inconnue"
 
-#: template.py:107
+#: template.py:103
 msgid "Template is empty"
 msgstr "Modèle vide"
 
-#: template.py:345
+#: template.py:285
 msgid "Bad value in global option"
 msgstr "Mauvaise valeur pour l'option globale %s"
+
+#~ msgid "hiatus"
+#~ msgstr "hiatus"
+
+#~ msgid "error: %s"
+#~ msgstr "erreur : %s"
+
+#~ msgid "Line is: %s"
+#~ msgstr "Ligne : %s"
+
+#~ msgid "Bad metric (expected %s, inferred %d illegal option%s)"
+#~ msgstr "Mauvaise métrique (attendu : %s, lu %d choix interdit%s)"
+
+#~ msgid "... worse options omitted ..."
+#~ msgstr "... et d'autres choix non affichés ..."
 
 #~ msgid "genre"
 #~ msgstr "genre"
