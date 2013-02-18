@@ -137,7 +137,8 @@ class Template:
       possible = v.possible
       if len(possible) == 1:
         for i, p in enumerate(possible[0]):
-          if 'weight' in p.keys() and len(p['weights']) > 1:
+          if ('weight' in p.keys() and len(p['weights']) > 1
+              and p['weights'][0] > 0):
             print(str(p['weight']) + ' '
                 + ' '.join(make_query(possible[0], i)), file=ofile)
 

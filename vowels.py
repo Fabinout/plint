@@ -95,7 +95,7 @@ def possible_weights_approx(chunk):
 
 def possible_weights_seed(chunk):
   """Return the possible number of syllabes taken by a vowel chunk"""
-  if len(chunk) == 1:
+  if len(chunk['text']) == 1:
     return [1]
   #if chunk in ['ai', 'ou', 'eu', 'ei', 'eau', 'au', 'oi']:
   #  return [1]
