@@ -2,6 +2,7 @@
 pas de rappel multiple de ligne dans les erreurs
 belle gestion des erreurs en html
 "paysage", "centurion"
+force language: plint.a3nm.net/french/about.html
 
 
 handle "' " and "` "
