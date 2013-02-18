@@ -5,7 +5,7 @@ import localization
 import re
 import template
 import error
-from bottle import run, Bottle, request, static_file
+from bottle import run, Bottle, request, static_file, redirect
 from jinja2 import Environment, PackageLoader
 
 env = Environment(loader=PackageLoader('plint_web', 'views'))
@@ -41,8 +41,8 @@ def get_locale():
   except AttributeError:
     return 'en'
 
-def get_title():
-  if get_locale() == 'fr':
+def get_title(lang):
+  if lang == 'fr':
     return "plint -- vérification formelle de poèmes"
   else:
     return "plint -- French poetry checker"
@@ -57,13 +57,23 @@ def server_static(filename):
 
 @app.route('/')
 def root():
-  return env.get_template('index.html').render(title=get_title(),
-      lang=get_locale())
+  redirect('/' + get_locale() + '/')
 
-@app.route('/about')
-def about():
-  return env.get_template('about.html').render(title=get_title(),
-      lang=get_locale())
+@app.route('/<page>')
+def paged(page):
+  redirect('/' + get_locale() + '/' + page)
+
+@app.route('/<lang>/')
+def root(lang):
+  if lang not in ['fr', 'en']:
+    return paged(lang)
+  return env.get_template('index.html').render(title=get_title(lang),
+      lang=lang, path="")
+
+@app.route('/<lang>/about')
+def about(lang):
+  return env.get_template('about.html').render(title=get_title(lang),
+      lang=lang, path="about")
 
 def check(poem):
   if len(poem) > 8192:
@@ -75,26 +85,27 @@ def check(poem):
     s[x].strip()
   return s
 
-@app.route('/check', method='POST')
-def q():
+@app.route('/<lang>/check', method='POST')
+def q(lang):
   d = {
       'poem': request.forms.get('poem'),
       'template': request.forms.get('template'),
-      'lang': get_locale(),
+      'lang': lang,
+      'nolocale': True,
     }
-  localization.init_locale(get_locale())
+  localization.init_locale(lang)
   d['poem'] = re.sub(r'<>&', '', d['poem'])
   print(d['poem'])
   poem = check(d['poem'])
   if not poem:
-    if get_locale() == 'fr':
+    if lang == 'fr':
       msg = "Le poème est vide, trop long, ou a des lignes trop longues"
     else:
       msg = "Poem is empty, too long, or has too long lines"
     d['error'] = msg
     return env.get_template('error.html').render(**d)
   if not re.match("^[a-z_]+$", d['template']):
-    if get_locale() == 'fr':
+    if lang == 'fr':
       msg = "Modèle inexistant"
     else:
       msg = "No such template"
@@ -108,7 +119,7 @@ def q():
       x = f.read()
       f.close()
     except IOError:
-      if get_locale() == 'fr':
+      if lang == 'fr':
         msg = "Modèle inexistant"
       else:
         msg = "No such template"
@@ -117,7 +128,7 @@ def q():
   try:
     templ = template.Template(x)
   except error.TemplateLoadError as e:
-    if get_locale() == 'fr':
+    if lang == 'fr':
       msg = "Erreur à la lecture du modèle : " + e.msg
     else:
       msg = "Error when reading template: " + e.msg
@@ -145,9 +156,9 @@ def q():
   d['firsterror'] = firsterror
   d['nerror'] = nerror
   if nerror == 0:
-    d['title'] = "[Valid] " + get_title()
+    d['title'] = "[Valid] " + get_title(lang)
   else:
-    d['title'] = "[Invalid] " + get_title()
+    d['title'] = "[Invalid] " + get_title(lang)
   return env.get_template('results.html').render(**d)
 
 if __name__ == '__main__':
