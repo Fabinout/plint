@@ -8,14 +8,6 @@ from vowels import possible_weights_ctx, make_query
 from pprint import pprint
 
 
-def handle(poss):
-  l = []
-  for i in range(len(poss)):
-    if isinstance(poss[i], tuple):
-      if len(possible_weights_ctx(poss, i)) > 1:
-        l.append((poss[i][1], make_query(poss, i)))
-  return l
-
 class Pattern:
   def __init__(self, metric, myid="", femid="", constraint=None):
     self.metric = metric
@@ -144,24 +136,10 @@ class Template:
     if ofile:
       possible = v.possible
       if len(possible) == 1:
-        l = list(possible[0])
-        poss = []
-        for p in l:
-          c = []
-          while len(p) > 0:
-            x = p.pop()
-            if x == ' ':
-              poss.append(c[::-1])
-              c = []
-            else:
-              c.append(x)
-          if len(c) > 0:
-            poss.append(c[::-1])
-        for w in poss:
-          l = handle(w)
-          for x in l:
-            # TODO update this code
-            print((str(x[0]) + ' ' + ' '.join(x[1])), file=ofile)
+        for i, p in enumerate(possible[0]):
+          if 'weight' in p.keys() and len(p['weights']) > 1:
+            print(str(p['weight']) + ' '
+                + ' '.join(make_query(possible[0], i)), file=ofile)
 
     # occurrences
     if self.check_occurrences:
