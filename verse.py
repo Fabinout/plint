@@ -130,9 +130,13 @@ class Verse:
             chunk['text'].startswith("y")):
           new_word.append(chunk)
           continue
-        # special case of "pays"
-        if (chunk['text'] == "ay" and j > 0 and j < len(w) - 1 and
-            w[j-1]['text'].endswith("p") and w[j+1]['text'].startswith("s")):
+        # special cases of "pays" and "alcoyle"
+        if (j > 0 and j < len(w) - 1 and
+            ((chunk['text'] == "ay" and w[j-1]['text'].endswith("p")
+              and w[j+1]['text'].startswith("s"))
+            or
+             (chunk['text'] == "oy" and w[j-1]['text'].endswith("lc")
+              and w[j+1]['text'].startswith("l")))):
           new_word.append(chunk)
           # force weight
           chunk['weights'] = [2]
