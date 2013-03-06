@@ -113,7 +113,7 @@ class Template:
       return [], pattern, v
 
     if self.overflowed:
-      return [error.ErrorOverflowedTemplate()], pattern, verse
+      return [error.ErrorOverflowedTemplate()], pattern, v
 
     # rhymes
     if pattern.myid not in self.env.keys():
