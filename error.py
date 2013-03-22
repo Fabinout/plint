@@ -25,7 +25,7 @@ class ErrorCollection:
       keys.append('weights')
       if len(self.pattern.hemistiches) > 0:
         keys.append('hemis')
-    formatters = {'weights': lambda x, y: '/'.join([str(a) for a in x]),
+    formatters = {'weights': lambda x, y: '-'.join([str(a) for a in x]),
         'error': lambda x, y: ErrorCollection.keys.get(x, '') *
         len(chunk['original'])}
     def render(chunk, key):
