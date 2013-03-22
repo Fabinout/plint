@@ -1,8 +1,5 @@
-"joueront" trois syllabes ?
-pas de rappel multiple de ligne dans les erreurs
 belle gestion des erreurs en html
 other examples of "mentions", "notions" ? ...
-
 
 handle "' " and "` "
 
@@ -16,7 +13,6 @@ handle "' " and "` "
 
 == Alignment ==
 
-- alignment display is broken for 'qu'
 - improve rhyme error reporting
 
 == Rules ==
