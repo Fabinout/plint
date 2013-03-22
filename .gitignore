@@ -12,7 +12,9 @@ old/*
 test/*
 Lexique371/
 contexts/
+contexts_old/
 contextsm
 messages.mo
 messages.pot
 res/*.mo
+diaeresis*.json
