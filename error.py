@@ -37,6 +37,18 @@ class ErrorCollection:
       l = max(len(render(chunk, key)) for key in keys)
       for key in keys:
         lines[key] += ('{:^'+str(l)+'}').format(render(chunk, key))
+    if 'weights' in keys:
+      bounds = [0, 0]
+      for chunk in self.verse.chunks:
+        weights = chunk.get("weights", [0, 0])
+        bounds[0] += weights[0]
+        if len(weights) == 2:
+          bounds[1] += weights[1]
+        else:
+          bounds[1] += weights[0]
+      bounds = [str(x) for x in bounds]
+      lines['weights'] += " (total: " + ('-'.join(bounds)
+          if bounds[1] > bounds[0] else bounds[0]) + ")"
     return ["> " + lines[key] for key in keys if len(lines[key].strip()) > 0]
 
   def lines(self, short=False):
