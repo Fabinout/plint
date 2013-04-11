@@ -42,7 +42,7 @@ class Template:
     self.check_occurrences = True
     self.diaeresis = "classical"
     self.mergers = []
-    if string:
+    if string != None:
       self.load(string)
     self.line_no = 0
     self.position = 0
