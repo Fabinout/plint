@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: plint\n"
-"POT-Creation-Date: 2013-02-15 00:05+CET\n"
-"PO-Revision-Date: 2013-02-15 00:06+0100\n"
+"POT-Creation-Date: 2013-04-11 09:50+CEST\n"
+"PO-Revision-Date: 2013-04-11 09:50+0100\n"
 "Last-Translator: Antoine Amarilli <a3nm@a3nm.net>\n"
 "Language-Team: \n"
 "Language: \n"
@@ -15,63 +15,63 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 
-#: error.py:53
+#: error.py:67
 msgid " (see '%s' above)"
 msgstr " (voir '%s' ci-dessus)"
 
-#: error.py:58
+#: error.py:72
 msgid "Illegal characters"
 msgstr "Caractères interdits"
 
-#: error.py:64
+#: error.py:78
 msgid "Illegal ambiguous pattern"
 msgstr "Motif ambigu interdit"
 
-#: error.py:70
+#: error.py:84
 msgid "Illegal hiatus"
 msgstr "Hiatus interdit"
 
-#: error.py:82
+#: error.py:96
 msgid "%s for type %s (expected \"%s\", inferred \"%s\")"
 msgstr "%s pour le type %s (attendu : \"%s\", lu : \"%s\")"
 
-#: error.py:89
+#: error.py:103
 msgid "Bad rhyme genre"
 msgstr "Mauvais genre de rime"
 
-#: error.py:92
+#: error.py:106
 msgid " or "
 msgstr " ou "
 
-#: error.py:103
+#: error.py:117
 msgid "Bad rhyme"
 msgstr "Mauvaise rime"
 
-#: error.py:111
+#: error.py:125
 msgid ", ending: \""
 msgstr ", fin: \""
 
-#: error.py:117
+#: error.py:131
 msgid "%s for type %s (expected %s)"
 msgstr "%s pour le type %s (attendu : %s)"
 
-#: error.py:122
+#: error.py:136
 msgid "Illegal metric: expected %d syllable%s%s"
 msgstr "Métrique illégale: attendu : %d syllabe%s%s"
 
-#: error.py:125
+#: error.py:139
 msgid " with hemistiche%s at "
 msgstr " avec hémistiche%s en "
 
-#: error.py:138
+#: error.py:152
 msgid "Too many occurrences of word %s for rhyme %s"
 msgstr "Trop d'occurrences du mot %s pour la rime %s"
 
-#: error.py:143
+#: error.py:157
 msgid "Poem is not complete"
 msgstr "Poème incomplet"
 
-#: error.py:147
+#: error.py:161
 msgid "Verse is beyond end of poem"
 msgstr "Vers au-delà de la fin du poème"
 
@@ -83,23 +83,27 @@ msgstr "Usage : %s MODÈLE [OCONTEXTE]"
 msgid "Check stdin according to TEMPLATE, report errors on stdout"
 msgstr "Vérifie l'entrée standard suivant MODÈLE, signale les erreurs sur la sortie standard"
 
-#: template.py:31
+#: template.py:28
+msgid "Metric description should only contain positive integers"
+msgstr "La métrique ne doit contenir que des entiers strictement positifs"
+
+#: template.py:30
 msgid "Metric length limit exceeded"
 msgstr "La longueur de la métrique est trop grande"
 
-#: template.py:78
+#: template.py:77
 msgid "Bad value for global option %s"
 msgstr "Mauvaise valeur pour l'option globale %s"
 
-#: template.py:88
+#: template.py:87
 msgid "Unknown global option"
 msgstr "Option globale inconnue"
 
-#: template.py:103
+#: template.py:102
 msgid "Template is empty"
 msgstr "Modèle vide"
 
-#: template.py:285
+#: template.py:270
 msgid "Bad value in global option"
 msgstr "Mauvaise valeur pour l'option globale %s"
 

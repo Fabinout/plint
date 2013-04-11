@@ -18,7 +18,14 @@ class Pattern:
 
   def parse_metric(self):
     """Parse from a metric description"""
-    verse = [int(x) for x in self.metric.split('/')]
+    try:
+      verse = [int(x) for x in self.metric.split('/')]
+      for i in verse:
+        if i < 1:
+          raise ValueError
+    except ValueError:
+      raise error.TemplateLoadError(
+          _("Metric description should only contain positive integers"))
     if sum(verse) > 16:
       raise error.TemplateLoadError(_("Metric length limit exceeded"))
     self.hemistiches = []
