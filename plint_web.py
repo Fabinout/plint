@@ -52,15 +52,15 @@ def server_static(filename):
   return static_file(filename, root="./static/tpl", mimetype="text/plain")
 
 @app.route('/<lang>/static/tpl/<filename>')
-def server_static(filename):
+def server_static(filename, lang=None):
   return static_file(filename, root="./static/tpl", mimetype="text/plain")
-
-@app.route('/<lang>/static/<filename>')
-def server_static(filename):
-  return static_file(filename, root="./static")
 
 @app.route('/static/<filename>')
 def server_static(filename):
+  return static_file(filename, root="./static")
+
+@app.route('/<lang>/static/<filename>')
+def server_static(filename, lang=None):
   return static_file(filename, root="./static")
 
 @app.route('/')
