@@ -146,7 +146,7 @@ class ErrorMultipleWordOccurrence:
     self.occurrences = occurrences
 
   def report(self, pattern):
-    return (_("Too many occurrences of word %s for rhyme %s")
+    return (_("Too many occurrences of word \"%s\" for rhyme %s")
         % (self.word, pattern.myid))
 
 class ErrorIncompleteTemplate:
