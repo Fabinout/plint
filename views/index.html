@@ -19,7 +19,7 @@
   {% endif %}
     ></textarea>
   <br/>
-  <label for="template" id="templatel">
+  <label id="templatel">
   {% if lang == 'fr' %}
     Choisissez un modèle de poème&nbsp;:
   {% else %}
@@ -28,7 +28,7 @@
 </label><br />
 <ul id="template">
   <li><input type="radio" name="template" value="classical"
-  id="classical" checked="yes" />
+  id="classical" checked="checked" />
   <label for="classical">
   {% if lang == 'fr' %}
   Alexandrins classiques avec césure à l'hémistiche, rimes plates, genres
