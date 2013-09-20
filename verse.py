@@ -233,8 +233,11 @@ class Verse:
     if (pos >= len(self.chunks) - 1
         and self.chunks[pos]['text'] in ['ie', 'ée']):
       return [1]
+    # elide "-ée" and "-ées", but be specific (beware of e.g. "réel")
     if (pos >= len(self.chunks) - 2
-        and self.chunks[pos]['text'] in ['ée']):
+        and self.chunks[pos]['text'] == 'ée'
+        and (pos == len(self.chunks) - 1
+        or self.chunks[len(self.chunks)-1]['text'] == 's')):
       return [1]
     if 'elidable' in self.chunks[pos]:
       return [0 if x else 1 for x in self.chunks[pos]['elidable']]
