@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import common
-from common import consonants, normalize, is_consonants, is_vowels, sure_end_fem, strip_accents_one
+from common import apostrophes, consonants, normalize, is_consonants, is_vowels, sure_end_fem, strip_accents_one
 import re
 import vowels
 import haspirater
@@ -65,6 +65,19 @@ class Verse:
       len(normalize(w, rm_all=True)) == 0)) for x in pre_chunks]
     self.chunks = [[{'original': y, 'text': normalize(y, rm_apostrophe=True)}
       for y in x] for x in pre_chunks]
+
+    # collapse apostrophes
+    self.chunks2 = []
+    acc = []
+    for w in self.chunks:
+      if re.search("[" + apostrophes + "]\s*$", w[-1]['original']):
+        acc += w
+      else:
+        self.chunks2.append(acc + w)
+        acc = []
+    if len(acc) > 0:
+      self.chunks2.append(acc)
+    self.chunks = self.chunks2
 
     # check forbidden characters
     for w in self.chunks:

@@ -6,6 +6,7 @@ import re
 
 vowels = 'aeiouyœæ'
 consonants = "bcçdfghjklmnpqrstvwxzñ'"
+apostrophes = "'’"
 legal = vowels + consonants + ' -'
 
 # a variant of x-sampa such that all french phonemes are one-character
@@ -44,8 +45,8 @@ def norm_spaces(text):
 
 def rm_punct(text, rm_all=False, rm_apostrophe=False):
   """Remove punctuation from text"""
-  text = re.sub("’", "'", text) # no weird apostrophes
-  text = re.sub("' ", "'", text) # space after apostrophes
+  text = re.sub("[" + apostrophes + "]", "'", text) # no weird apostrophes
+  text = re.sub("' *", "'", text) # space after apostrophes
   if rm_apostrophe:
     text = re.sub("'", "", text)
   text = re.sub("'*$", "", text) # apostrophes at end of line
