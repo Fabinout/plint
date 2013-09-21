@@ -1,5 +1,6 @@
 import error
 import copy
+import re
 import rhyme
 from verse import Verse
 from common import normalize, legal, strip_accents_one, rm_punct
@@ -153,7 +154,7 @@ class Template:
     if self.check_occurrences:
       if pattern.myid not in self.occenv.keys():
         self.occenv[pattern.myid] = {}
-      last_word = line_with_case.split(' ')[-1]
+      last_word = re.split(r'[- ]', line_with_case)[-1]
       if last_word not in self.occenv[pattern.myid].keys():
         self.occenv[pattern.myid][last_word] = 0
       self.occenv[pattern.myid][last_word] += 1
