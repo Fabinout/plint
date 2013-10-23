@@ -5,7 +5,7 @@ import unicodedata
 import re
 
 vowels = 'aeiouyœæ'
-consonants = "bcçdfghjklmnpqrstvwxzñ'"
+consonants = "bcçdfghjklmnpqrstvwxzñĝ'"
 apostrophes = "'’"
 legal = vowels + consonants + ' -'
 
