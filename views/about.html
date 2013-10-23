@@ -137,15 +137,17 @@ options suivantes sont reconnues&nbsp;:</p>
   <dt>hiatus_ok</dt>
   <dd>La valeur doit être true ou false pour accepter ou refuser les hiatus (au
   sens classique). Par défaut, ils sont refusés.</dd>
-  <dt>forbidden_ok</dt>
-  <dd>La valeur doit être true ou false pour accepter ou refuser les motifs
-  ambigus comme "ées", "ies". Par défaut, ils sont refusés.</dd>
   <dt>diaeresis</dt>
   <dd>La valeur doit être soit "classical" pour imposer les règles de la
   métrique classique (approximées au mieux) ou "permissive" pour des
   approximations plus permissives qui accepteront à peu près n'importe quelle
   diérèse ou synérèse phonétiquement plausible. La valeur par défaut est
   "classical".</dd>
+  <dt>forbidden_ok</dt>
+  <dd>La valeur doit être true ou false pour accepter ou refuser les motifs
+  ambigus comme "ées", "ies". Par défaut, ils sont refusés. Si vous acceptez ces
+  motifs, vous devriez mettre "diaeresis" à "classical" pour qu'ils aient une
+  longueur calculée de façon raisonnable.</dd>
   <dt>repeat_ok</dt>
   <dd>Si cette valeur est false, le modèle ne se répétera pas, un poème plus
   long que le modèle provoquera une erreur. Par défaut, la valeur est true.</dd>
@@ -312,14 +314,16 @@ form option:value and separated by spaces, with the following possibilities:</p>
   <dt>hiatus_ok</dt>
   <dd>The value should be true or false to allow or refuse hiatus (in the sense
   of classical poetry). Default is false.</dd>
-  <dt>forbidden_ok</dt>
-  <dd>The value should be true or false to allow or refuse patterns such as
-  "ées", "ies". Default is false.</dd>
   <dt>diaeresis</dt>
   <dd>The value should be either "classical" to enforce an approximation of the
   rules of classical verse or "permissive" to enforce a more permissive
   approximations which will allow mostly all phonetically reasonable diérèses
   and synérèses. Default is "classical".</dd>
+  <dt>forbidden_ok</dt>
+  <dd>The value should be true or false to allow or refuse patterns such as
+  "ées", "ies". Default is false. If you set this, it may be preferable to set
+  "diaeresis" to "permissive" so that the ambiguous patterns are counted
+  reasonably.</dd>
   <dt>repeat_ok</dt>
   <dd>If the value is false, the template will not repeat, and going beyond its
   end will be an error. Default is true.</dd>
