@@ -65,14 +65,16 @@ class Rhyme:
       return x + liaison[x[-1]]
     return x
 
-  def __init__(self, line, constraint, mergers=[], normande_ok=True):
+  def __init__(self, line, constraint, mergers=[], normande_ok=True, phon=None):
     self.constraint = constraint
     self.mergers = {}
     self.normande_ok = normande_ok
     for phon_set in mergers:
       for phon in phon_set[1:]:
         self.mergers[phon] = phon_set[0]
-    self.phon = set([self.apply_mergers(x) for x in self.lookup(line)])
+    if not phon:
+      phon = self.lookup(line)
+    self.phon = set([self.apply_mergers(x) for x in phon])
     self.eye = self.supposed_liaison(consonant_suffix(line))
 
   def match(self, phon, eye):
@@ -111,11 +113,8 @@ class Rhyme:
   def pprint(self):
     pprint(self.phon)
 
-  def lookup(self, s):
-    """lookup the pronunciation of s, adding rime normande kludges and liaisons"""
-    result = raw_lookup(s)
-    if self.normande_ok and (s.endswith('er') or s.endswith('ers')):
-      result.add("ER")
+  def adjust(self, result):
+    """add liason kludges"""
     # TODO better here
     result2 = copy.deepcopy(result)
     # the case 'ent' would lead to trouble for gender
@@ -127,6 +126,13 @@ class Rhyme:
             result.add(r + 's')
     return result
 
+
+  def lookup(self, s):
+    """lookup the pronunciation of s, adding rime normande kludges"""
+    result = raw_lookup(s)
+    if self.normande_ok and (s.endswith('er') or s.endswith('ers')):
+      result.add("ER")
+    return self.adjust(result)
 
 def suffix(x, y):
   """length of the longest common suffix of x and y"""
