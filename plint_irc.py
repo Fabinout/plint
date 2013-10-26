@@ -61,6 +61,10 @@ def manage(line, descriptor=sys.stdout):
       return False
     if not leading_cap(text):
       return False
+    if (not (text.rstrip().endswith("...") or text.rstrip().endswith("…")
+        or text.lstrip().endswith("...") or text.lstrip().endswith("…")) and
+        len(text) < 13):
+      return False # too short
   if (text.rstrip().endswith("...") or
       text.rstrip().endswith("…")):
     # it might be a call
