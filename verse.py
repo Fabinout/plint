@@ -71,7 +71,7 @@ class Verse:
 
   @property
   def normalized(self):
-    return ''.join(normalize(x['original'])
+    return ''.join(normalize(x['original'], strip=False)
             if 'text_pron' not in x.keys() else x['text']
             for x in self.chunks)
 
