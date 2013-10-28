@@ -8,6 +8,27 @@ import haspirater
 import error
 from pprint import pprint
 
+# the writing is designed to make frhyme succeed
+# end vowels will be elided
+# missing letters have a default case
+letters = {
+    'f': 'effe',
+    'h': 'ache',
+    'j': 'gi',
+    'k': 'ka',
+    'l': 'elle',
+    'm': 'aime',
+    'n': 'aine',
+    'q': 'cu',
+    'r': 'ère',
+    's': 'esse',
+    'w': 'doublevé',
+    'x': 'ixe',
+    'z': 'zaide'
+}
+
+
+
 class Verse:
   def elision(self, word):
     if (word.startswith('y') and not word == 'y' and not word.startswith("yp") and
@@ -47,6 +68,13 @@ class Verse:
   @property
   def line(self):
     return ''.join(x['original'] for x in self.chunks)
+
+  @property
+  def normalized(self):
+    return ''.join(normalize(x['original'])
+            if 'text_pron' not in x.keys() else x['text']
+            for x in self.chunks)
+
 
   def __init__(self, line, template, pattern):
     self.template = template
@@ -116,10 +144,10 @@ class Verse:
       if len(w) == 1 and is_consonants(w[0]['text']):
         new_chunks = []
         for j, x in enumerate(w[0]['text']):
-          if (x == 'w'):
-            nc = "doublevé"
-          else:
-            nc = x + "a"
+          try:
+            nc = letters[x]
+          except KeyError:
+            nc = x + 'é'
           new_chunks += re.split(consonants_regexp, nc)
         new_chunks = [x for x in new_chunks if len(x) > 0]
         new_word = []
@@ -127,12 +155,17 @@ class Verse:
           lindex = int(j*len(w[0]['original'])/len(w[0]['text']))
           rindex = int((j+1)*len(w[0]['original'])/len(w[0]['text']))
           part = w[0]['original'][lindex:rindex]
-          new_word.append({'original': part, 'text': x})
+          # set elision to True because of possible ending vowels
+          # forbid hiatus and instruct that we must use text for the
+          # pronunciation
+          new_word.append({'original': part, 'text': x,
+            'elision': [True], 'no_hiatus': True, 'text_pron': True})
         self.chunks[i] = new_word
 
     # vowel elision problems
     for w in self.chunks:
-      w[0]['elision'] = self.elision(''.join(x['text'] for x in w))
+      if 'elision' not in w[0].keys():
+        w[0]['elision'] = self.elision(''.join(x['text'] for x in w))
 
     # case of 'y'
     ys_regexp = re.compile("(y*)")
@@ -191,8 +224,9 @@ class Verse:
         if is_vowels(self.chunks[i+1][0]['text']):
           if ''.join(x['text'] for x in w) not in no_hiatus:
             if ''.join(x['text'] for x in self.chunks[i+1]) not in no_hiatus:
-              w[-1]['error'] = "hiatus"
-              self.chunks[i+1][0]['error'] = "hiatus"
+              if 'no_hiatus' not in w[-1].keys():
+                w[-1]['error'] = "hiatus"
+                self.chunks[i+1][0]['error'] = "hiatus"
 
     # annotate word ends
     for w in self.chunks[:-1]:

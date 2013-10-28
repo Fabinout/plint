@@ -113,7 +113,7 @@ class Rhyme:
   def pprint(self):
     pprint(self.phon)
 
-  def adjust(self, result):
+  def adjust(self, result, s):
     """add liason kludges"""
     # TODO better here
     result2 = copy.deepcopy(result)
@@ -126,13 +126,12 @@ class Rhyme:
             result.add(r + 's')
     return result
 
-
   def lookup(self, s):
     """lookup the pronunciation of s, adding rime normande kludges"""
     result = raw_lookup(s)
     if self.normande_ok and (s.endswith('er') or s.endswith('ers')):
       result.add("ER")
-    return self.adjust(result)
+    return self.adjust(result, s)
 
 def suffix(x, y):
   """length of the longest common suffix of x and y"""

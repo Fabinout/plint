@@ -111,7 +111,6 @@ class Template:
     pattern = self.get()
 
     line_with_case = normalize(line, downcase=False)
-    line_normalize = normalize(line)
 
     v = Verse(line, self, pattern)
 
@@ -126,15 +125,15 @@ class Template:
     # rhymes
     if pattern.myid not in self.env.keys():
       # initialize the rhyme
-      self.env[pattern.myid] = rhyme.Rhyme(line_normalize, pattern.constraint,
+      self.env[pattern.myid] = rhyme.Rhyme(v.normalized, pattern.constraint,
           self.mergers, self.normande_ok)
     else:
       # update the rhyme
       old_p = self.env[pattern.myid].phon
       old_e = self.env[pattern.myid].eye
-      self.env[pattern.myid].feed(line_normalize, pattern.constraint)
-      # no more possible rhymes, something went wrong
+      self.env[pattern.myid].feed(v.normalized, pattern.constraint)
       if not self.env[pattern.myid].satisfied():
+        # no more possible rhymes, something went wrong
         self.env[pattern.myid].phon = old_p
         self.env[pattern.myid].eye = old_e
         errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid], None))
