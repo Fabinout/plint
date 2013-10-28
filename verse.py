@@ -109,9 +109,15 @@ class Verse:
     # check forbidden characters
     for w in self.chunks:
       for y in w:
+        es = ""
         for x in y['text']:
           if not common.rm_punct(strip_accents_one(x)[0].lower()) in common.legal:
+            es += 'I'
             y['error'] = "illegal"
+          else:
+            es += ' '
+        if 'error' in y.keys() and y['error'] == "illegal":
+          y['illegal_str'] = es
 
     # gu- and qu- simplifications
     for w in self.chunks:

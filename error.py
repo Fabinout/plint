@@ -29,6 +29,8 @@ class ErrorCollection:
         'error': lambda x, y: ErrorCollection.keys.get(x, '') *
         len(chunk['original'])}
     def render(chunk, key):
+      if key == 'error' and chunk.get('error', '') == 'illegal':
+        return chunk['illegal_str']
       return (formatters.get(key, lambda x, y: str(x)))(chunk.get(key, ""), chunk)
     lines = {}
     for key in keys:
