@@ -70,8 +70,8 @@ class Rhyme:
     self.mergers = {}
     self.normande_ok = normande_ok
     for phon_set in mergers:
-      for phon in phon_set[1:]:
-        self.mergers[phon] = phon_set[0]
+      for pho in phon_set[1:]:
+        self.mergers[pho] = phon_set[0]
     if not phon:
       phon = self.lookup(line)
     self.phon = set([self.apply_mergers(x) for x in phon])
