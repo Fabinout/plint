@@ -142,19 +142,6 @@ class Template:
           errors.append(error.ErrorBadRhymeEye(self.env[pattern.myid],
             self.env[pattern.myid].new_rhyme))
 
-    v.phon = self.env[pattern.myid].phon
-    v.parse()
-    errors += v.problems()
-
-    if ofile:
-      possible = v.possible
-      if len(possible) == 1:
-        for i, p in enumerate(possible[0]):
-          if ('weight' in p.keys() and len(p['weights']) > 1
-              and p['weight'] > 0):
-            print(str(p['weight']) + ' '
-                + ' '.join(make_query(possible[0], i)), file=ofile)
-
     # occurrences
     if self.check_occurrences:
       if pattern.myid not in self.occenv.keys():
@@ -164,8 +151,21 @@ class Template:
         self.occenv[pattern.myid][last_word] = 0
       self.occenv[pattern.myid][last_word] += 1
       if self.occenv[pattern.myid][last_word] > nature_count(last_word):
-        errors.append(error.ErrorMultipleWordOccurrence(last_word,
+        errors.insert(0, error.ErrorMultipleWordOccurrence(last_word,
           self.occenv[pattern.myid][last_word]))
+
+    v.phon = self.env[pattern.myid].phon
+    v.parse()
+    errors = v.problems() + errors
+
+    if ofile:
+      possible = v.possible
+      if len(possible) == 1:
+        for i, p in enumerate(possible[0]):
+          if ('weight' in p.keys() and len(p['weights']) > 1
+              and p['weight'] > 0):
+            print(str(p['weight']) + ' '
+                + ' '.join(make_query(possible[0], i)), file=ofile)
 
     # rhyme genres
     # inequality constraint

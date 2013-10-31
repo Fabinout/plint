@@ -400,6 +400,8 @@ class Verse:
   def problems(self):
     result = []
     errors = set()
+    if len(self.possible) == 0:
+      result.append(error.ErrorBadMetric())
     for c in self.chunks:
       if 'error' in c:
         if c['error'] == "ambiguous" and not self.template.forbidden_ok:
@@ -410,8 +412,6 @@ class Verse:
           errors.add(error.ErrorBadCharacters)
     for k in errors:
       result.append(k())
-    if len(self.possible) == 0:
-      result.append(error.ErrorBadMetric())
     return result
 
   def valid(self):
