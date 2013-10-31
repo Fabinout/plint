@@ -138,6 +138,8 @@ class Template:
         self.env[pattern.myid].eye = old_e
         errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid], None))
 
+    v.phon = self.env[pattern.myid].phon
+    v.parse()
     errors += v.problems()
 
     if ofile:
@@ -177,7 +179,7 @@ class Template:
         x = set(['M', 'F'])
       self.femenv[pattern.femid] = x
     old = list(self.femenv[pattern.femid])
-    new = v.genders(self.env[pattern.myid].phon)
+    new = v.genders()
     self.femenv[pattern.femid] &= set(new)
     if len(self.femenv[pattern.femid]) == 0:
       errors.append(error.ErrorBadRhymeGenre(old, new))

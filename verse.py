@@ -78,6 +78,8 @@ class Verse:
   def __init__(self, line, template, pattern):
     self.template = template
     self.pattern = pattern
+    # will be updated later, used in parse and feminine
+    self.phon = None
 
     whitespace_regexp = re.compile("(\s*)")
     ys_regexp = re.compile("(\s*)")
@@ -240,6 +242,7 @@ class Verse:
     # collapse words
     self.chunks = sum(self.chunks, [])
 
+  def parse(self):
     # annotate weights
     for i, chunk in enumerate(self.chunks):
       if (not is_vowels(self.chunks[i]['text'])):
@@ -269,14 +272,25 @@ class Verse:
         and not (pos <= 1 or self.contains_break(self.chunks[pos-2]))):
       # special case for verse endings, which can get elided (or not)
       # but we don't elide lone syllables ("prends-le", etc.)
+
+
       if pos == len(self.chunks) - 1:
         return [0] # ending 'e' is elided
       if self.chunks[pos+1]['text'] == 's':
         return [0] # ending 'es' is elided
       if self.chunks[pos+1]['text'] == 'nt':
-        # ending 'ent' is sometimes elided
+        # ending 'ent' is sometimes elided, try to use pronunciation
         # actually, this will have an influence on the rhyme's gender
-        return [0, 1]
+        # see feminine
+        possible = []
+        if len(self.phon) == 0:
+          return [0, 1] # do something reasonable without pron
+        for possible_phon in self.phon:
+          if possible_phon.endswith(')') or possible_phon.endswith('#'):
+            possible.append(1)
+          else:
+            possible.append(0)
+        return possible
       return self.possible_weights(pos)
     if (pos == len(self.chunks) - 1 and self.chunks[pos]['text'] == 'e' and
         pos > 0 and (self.chunks[pos-1]['text'].endswith('-c') or
@@ -295,7 +309,7 @@ class Verse:
       return [0 if x else 1 for x in self.chunks[pos]['elidable']]
     return self.possible_weights(pos)
 
-  def feminine(self, align, phon):
+  def feminine(self, align):
     for a in sure_end_fem:
       if self.text.endswith(a):
         # check that this isn't a one-syllabe wourd
@@ -316,7 +330,7 @@ class Verse:
     possible = []
     # now, we must check pronunciation?
     # "tient" vs. "lient" for instance, "excellent"...
-    for possible_phon in phon:
+    for possible_phon in self.phon:
       if possible_phon.endswith(')') or possible_phon.endswith('#'):
         possible.append('M')
       else:
@@ -403,13 +417,13 @@ class Verse:
   def valid(self):
     return len(self.problems()) == 0
 
-  def genders(self, phon):
+  def genders(self):
     result = set()
     for p in self.possible:
-      result.update(set(self.feminine(p, phon)))
+      result.update(set(self.feminine(p)))
     if len(self.possible) == 0:
       # try to infer gender even when metric is wrong
-      result.update(set(self.feminine(None, phon)))
+      result.update(set(self.feminine(None)))
     return result
 
 
