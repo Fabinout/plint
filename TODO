@@ -1,5 +1,6 @@
 - on web frontend, selecting a radio puts relevant template in the textarea
 - highlight possible hemistiche positions where an hemistiche could have been placed
+- report eye distinguishing liaison
 - belle gestion des erreurs en html
 
 == IRC ==

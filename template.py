@@ -129,14 +129,18 @@ class Template:
           self.mergers, self.normande_ok)
     else:
       # update the rhyme
-      old_p = self.env[pattern.myid].phon
-      old_e = self.env[pattern.myid].eye
       self.env[pattern.myid].feed(v.normalized, pattern.constraint)
       if not self.env[pattern.myid].satisfied():
         # no more possible rhymes, something went wrong
-        self.env[pattern.myid].phon = old_p
-        self.env[pattern.myid].eye = old_e
-        errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid], None))
+        phon_ok = self.env[pattern.myid].satisfied_phon()
+        eye_ok = self.env[pattern.myid].satisfied_eye()
+        self.env[pattern.myid].rollback()
+        if not phon_ok:
+          errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid],
+            self.env[pattern.myid].new_rhyme))
+        if not eye_ok:
+          errors.append(error.ErrorBadRhymeEye(self.env[pattern.myid],
+            self.env[pattern.myid].new_rhyme))
 
     v.phon = self.env[pattern.myid].phon
     v.parse()

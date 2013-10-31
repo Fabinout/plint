@@ -1,59 +1,57 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR ORGANIZATION
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# plint localization to French
+# Copyright (C) 2013 Antoine Amarilli
+# Antoine Amarilli <a3nm AT a3nm DOT net>, 2013.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: plint\n"
-"POT-Creation-Date: 2013-05-09 01:25+CEST\n"
-"PO-Revision-Date: 2013-05-09 01:26+0100\n"
+"POT-Creation-Date: 2013-10-31 23:32+CET\n"
+"PO-Revision-Date: 2013-10-31 23:35+0100\n"
 "Last-Translator: Antoine Amarilli <a3nm@a3nm.net>\n"
 "Language-Team: \n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 "X-Generator: Poedit 1.5.4\n"
 
-#: error.py:67
+#: error.py:69
 msgid " (see '%s' above)"
 msgstr " (voir '%s' ci-dessus)"
 
-#: error.py:72
+#: error.py:74
 msgid "Illegal characters"
 msgstr "Caractères interdits"
 
-#: error.py:78
+#: error.py:80
 msgid "Illegal ambiguous pattern"
 msgstr "Motif ambigu interdit"
 
-#: error.py:84
+#: error.py:86
 msgid "Illegal hiatus"
 msgstr "Hiatus interdit"
 
-#: error.py:96
-msgid "%s for type %s (expected \"%s\", inferred \"%s\")"
-msgstr "%s pour le type %s (attendu : \"%s\", lu : \"%s\")"
+#: error.py:95
+msgid "%s for type %s (expected %s, inferred %s)"
+msgstr "%s pour le type %s (attendu : %s, lu : %s)"
 
-#: error.py:103
+#: error.py:102
 msgid "Bad rhyme genre"
 msgstr "Mauvais genre de rime"
 
-#: error.py:106
+#: error.py:105
 msgid " or "
 msgstr " ou "
 
-#: error.py:117
-msgid "Bad rhyme"
+#: error.py:120
+#, fuzzy
+msgid "Bad rhyme sound"
 msgstr "Mauvaise rime"
 
-#: error.py:125
-msgid ", ending: \""
-msgstr ", fin: \""
-
-#: error.py:131
-msgid "%s for type %s (expected %s)"
-msgstr "%s pour le type %s (attendu : %s)"
+#: error.py:129
+msgid "Bad rhyme ending"
+msgstr "Mauvaise rime pour l'œil"
 
 #: error.py:136
 msgid "Illegal metric: expected %d syllable%s%s"
@@ -85,29 +83,35 @@ msgstr ""
 "Vérifie l'entrée standard suivant MODÈLE, signale les erreurs sur la sortie "
 "standard"
 
-#: template.py:28
+#: template.py:29
 msgid "Metric description should only contain positive integers"
 msgstr "La métrique ne doit contenir que des entiers strictement positifs"
 
-#: template.py:30
+#: template.py:31
 msgid "Metric length limit exceeded"
 msgstr "La longueur de la métrique est trop grande"
 
-#: template.py:77
+#: template.py:78
 msgid "Bad value for global option %s"
 msgstr "Mauvaise valeur pour l'option globale %s"
 
-#: template.py:87
+#: template.py:88
 msgid "Unknown global option"
 msgstr "Option globale inconnue"
 
-#: template.py:102
+#: template.py:103
 msgid "Template is empty"
 msgstr "Modèle vide"
 
-#: template.py:270
+#: template.py:276
 msgid "Bad value in global option"
 msgstr "Mauvaise valeur pour l'option globale %s"
+
+#~ msgid ", ending: \""
+#~ msgstr ", fin: \""
+
+#~ msgid "%s for type %s (expected %s)"
+#~ msgstr "%s pour le type %s (attendu : %s)"
 
 #~ msgid "hiatus"
 #~ msgstr "hiatus"

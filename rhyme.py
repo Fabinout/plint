@@ -14,6 +14,7 @@ NBEST = 5
 # phonetic vowels
 vowel = list("Eeaio592O#@y%u()$")
 
+# use for supposed liaison both in phon and eye
 liaison = {
     'c': 'k',
     'd': 't',
@@ -53,7 +54,7 @@ class Constraint:
     if not c:
       return
     self.phon = self.mmax(self.phon, c.phon)
-    self.eye = self.classical or c.classical
+    self.classical = self.classical or c.classical
 
 class Rhyme:
   def apply_mergers(self, phon):
@@ -61,6 +62,7 @@ class Rhyme:
         else x) for x in phon])
 
   def supposed_liaison(self, x):
+    # TODO option to disable this
     if x[-1] in liaison.keys():
       return x + liaison[x[-1]]
     return x
@@ -76,6 +78,29 @@ class Rhyme:
       phon = self.lookup(line)
     self.phon = set([self.apply_mergers(x) for x in phon])
     self.eye = self.supposed_liaison(consonant_suffix(line))
+    self.old_phon = None
+    self.old_eye = None
+    self.new_rhyme = None
+
+  def rollback(self):
+    self.phon = self.old_phon
+    self.eye = self.old_eye
+
+  def sufficient_phon(self):
+    # return the shortest accepted rhymes among old_phon
+    ok = set()
+    for p in self.phon:
+      slen = len(p)
+      for i in range(len(p)):
+        if p[-(i+1)] in vowel:
+          slen = i+1
+          break
+      slen = max(slen, self.constraint.phon)
+      ok.add(p[-slen:])
+    return ok
+
+  def sufficient_eye(self):
+    return self.eye[-1] # TODO improve to distinguish original and tweaks
 
   def match(self, phon, eye):
     """limit our phon and eye to those which match phon and eye and which
@@ -86,7 +111,6 @@ class Rhyme:
         val = phon_rhyme(x, y)
         if val >= self.constraint.phon and self.constraint.phon >= 0:
           new_phon.add(x[-val:])
-        val = assonance_rhyme(x, y)
     self.phon = new_phon
     if self.eye:
       val = eye_rhyme(self.eye, eye)
@@ -97,7 +121,11 @@ class Rhyme:
 
   def restrict(self, r):
     """take the intersection between us and rhyme object r"""
+    if self.satisfied():
+      self.old_phon = self.phon
+      self.old_eye = self.eye
     self.constraint.restrict(r.constraint)
+    self.new_rhyme = r
     self.match(set([self.apply_mergers(x) for x in r.phon]),
         self.supposed_liaison(consonant_suffix(r.eye)))
 
@@ -105,10 +133,14 @@ class Rhyme:
     """extend us with a line and a constraint"""
     return self.restrict(Rhyme(line, constraint, self.mergers))
 
+  def satisfied_phon(self):
+    return len(self.phon) >= self.constraint.phon
+
+  def satisfied_eye(self):
+    return (len(self.eye) > 0 or not self.constraint.classical)
+
   def satisfied(self):
-    return (len(self.phon) >= self.constraint.phon
-        and len(self.eye) >= self.constraint.eye
-        and (len(self.eye) > 0 or not self.constraint.classical))
+    return self.satisfied_phon() and self.satisfied_eye()
 
   def pprint(self):
     pprint(self.phon)
@@ -117,8 +149,11 @@ class Rhyme:
     """add liason kludges"""
     # TODO better here
     result2 = copy.deepcopy(result)
-    # the case 'ent' would lead to trouble for gender
+    # adjust for tolerance with classical rhymes
+    # e.g. "vautours"/"ours", "estomac"/"Sidrac"
+    # TODO add an option to disable this
     if self.constraint.classical:
+      # the case 'ent' would lead to trouble for gender
       if s[-1] in liaison.keys() and not s.endswith('ent'):
         for r in result2:
           result.add(r + liaison[s[-1]])
@@ -153,12 +188,12 @@ def phon_rhyme(x, y):
       return nphon
   return 0
 
-def strip_consonants(x):
-  return str([a for a in x if a in vowel or a == 'j'])
-
-def assonance_rhyme(x, y):
-  return phon_rhyme(strip_consonants(x), strip_consonants(y))
-
+# def strip_consonants(x):
+#   return str([a for a in x if a in vowel or a == 'j'])
+# 
+# def assonance_rhyme(x, y):
+#   return phon_rhyme(strip_consonants(x), strip_consonants(y))
+# 
 def eye_rhyme(x, y):
   """value of x and y as an eye rhyme"""
   return suffix(x, y)
@@ -172,6 +207,7 @@ def concat_couples(a, b):
   return s
 
 def consonant_suffix(s):
+  # TODO option to disable this
   for k in tolerance.keys():
     if s.endswith(k):
       s = s[:-(len(k))] + tolerance[k]
