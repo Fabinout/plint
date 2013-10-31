@@ -1,6 +1,6 @@
-highlight possible hemistiche positions where an hemistiche could have been placed
-belle gestion des erreurs en html
-other examples of "mentions", "notions" ? ...
+- on web frontend, selecting a radio puts relevant template in the textarea
+- highlight possible hemistiche positions where an hemistiche could have been placed
+- belle gestion des erreurs en html
 
 == IRC ==
 
@@ -19,6 +19,7 @@ other examples of "mentions", "notions" ? ...
 - is "[^gq]ue [consonne]" or "[^gq]ues" ok ?
 - should we forbid "[^gq]uent", "ient", "éent" ?
 - 3-syllable vowel clusters?
+- other examples of "mentions", "notions" ? ...
 
 == Existing errors ==
 
