@@ -188,12 +188,6 @@ def phon_rhyme(x, y):
       return nphon
   return 0
 
-# def strip_consonants(x):
-#   return str([a for a in x if a in vowel or a == 'j'])
-# 
-# def assonance_rhyme(x, y):
-#   return phon_rhyme(strip_consonants(x), strip_consonants(y))
-# 
 def eye_rhyme(x, y):
   """value of x and y as an eye rhyme"""
   return suffix(x, y)
@@ -210,12 +204,8 @@ def consonant_suffix(s):
   # TODO option to disable this
   for k in tolerance.keys():
     if s.endswith(k):
-      s = s[:-(len(k))] + tolerance[k]
-  for i in range(len(s)):
-    if not s[-(i+1)] in consonants:
-      break
-  result = s[-(i):]
-  return result
+      return s[:-(len(k))] + tolerance[k]
+  return s
 
 def raw_lookup(s):
   # kludge: take the last three words and concatenate them to take short words
