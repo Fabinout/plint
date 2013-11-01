@@ -1,6 +1,5 @@
 - on web frontend, selecting a radio puts relevant template in the textarea
 - highlight possible hemistiche positions where an hemistiche could have been placed
-- update versetest.py
 - document expected errors of test.sh and commit necessary files
 - remove kludge for invalid characters, split them in specific chunks
 - produce error reports first to structured and then to text and json
