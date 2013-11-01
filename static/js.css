@@ -1,0 +1,21 @@
+#poem {
+  border: 2px inset gray;
+  width: inherit;
+  height: auto;
+  min-height: 200px;
+}
+
+#poem pre {
+  display: none;
+}
+
+#poem button {
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+  margin-left: 1em;
+}
+
+#poem pre {
+  margin-left: 1em;
+}

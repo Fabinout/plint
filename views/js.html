@@ -1,0 +1,27 @@
+{% extends "page.html" %}
+
+{% block body %}
+
+{% if lang == 'fr' %}
+<p id="desc">plint est un outil pour vérifier la métrique et les rimes de poèmes en
+langue française.</p>
+{% else %}
+<p id="desc">plint is a tool to check the metric and rhymes of French verse.</p>
+{% endif %}
+<p>
+<textarea id="custom_template">
+12
+</textarea>
+</p>
+
+<p id="status">status</p>
+
+<button onclick="check()">Check</button>
+<button onclick="$( '#poem' ).find('span').remove()">Remove errors</button>
+<button onclick="$( '#poem pre' ).css({'display': 'block'})">Expand all</button>
+<button onclick="$( '#poem pre' ).css({'display': 'none'})">Collapse all</button>
+<p id="poem" name="poem" contenteditable>
+</p>
+
+{% endblock %}
+
