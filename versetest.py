@@ -9,38 +9,45 @@ class SanityCheck(unittest.TestCase):
   def testSimple(self):
     text = "Hello World!!  This is a test"
     v = verse.Verse(text, template.Template(), template.Pattern("12"))
+    v.parse()
     self.assertEqual(text, v.line)
 
   def testComplex(self):
     text = "Aye AYAYE   aye  gue que geque AYAYAY a prt   sncf bbbéé"
     v = verse.Verse(text, template.Template(), template.Pattern("12"))
+    v.parse()
     self.assertEqual(text, v.line)
 
   def testLeadingSpace(self):
     text = " a"
     v = verse.Verse(text, template.Template(), template.Pattern("12"))
+    v.parse()
     self.assertEqual(text, v.line)
 
 class Eliminate(unittest.TestCase):
   def testEliminateOneGue(self):
     text = "gue"
     v = verse.Verse(text, template.Template(), template.Pattern("12"))
+    v.parse()
     c = ''.join([x['text'] for x in v.chunks])
     self.assertFalse("gue" in c)
 
   def testEliminateGue(self):
     text = "gue gue GUE ogues longuement la guerre"
     v = verse.Verse(text, template.Template(), template.Pattern("12"))
+    v.parse()
     c = ''.join([x['text'] for x in v.chunks])
     self.assertFalse("gue" in c)
 
 class BadChars(unittest.TestCase):
   def testBadAlone(self):
     v = verse.Verse("42", template.Template(), template.Pattern("12"))
+    v.parse()
     self.assertFalse(v.valid())
 
   def testBadAndGood(self):
     v = verse.Verse("bla h42 blah ", template.Template(), template.Pattern("12"))
+    v.parse()
     self.assertFalse(v.valid())
 
 
@@ -56,6 +63,7 @@ class BadChars(unittest.TestCase):
 class Counts(unittest.TestCase):
   def runCount(self, text, limit=12):
     v = verse.Verse(text, template.Template(), template.Pattern(str(limit)))
+    v.parse()
     return v.possible
 
   def getWeight(self, align):
@@ -129,7 +137,6 @@ class RealCounts(Counts):
 class BadCounts(Counts):
   def testBad(self):
     f = self.runCount("Cela cela", limit=5)
-    pprint(f)
     self.assertEqual(0, len(f))
 
 class PoemCounts(Counts):
