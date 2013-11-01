@@ -62,8 +62,7 @@ class Rhyme:
         else x) for x in phon])
 
   def supposed_liaison(self, x):
-    # TODO option to disable this
-    if x[-1] in liaison.keys():
+    if x[-1] in liaison.keys() and self.options['eye_supposed_ok']:
       return x + liaison[x[-1]]
     return x
 
@@ -77,7 +76,7 @@ class Rhyme:
     if not phon:
       phon = self.lookup(line)
     self.phon = set([self.apply_mergers(x) for x in phon])
-    self.eye = self.supposed_liaison(consonant_suffix(line))
+    self.eye = self.supposed_liaison(self.consonant_suffix(line))
     self.old_phon = None
     self.old_eye = None
     self.new_rhyme = None
@@ -100,7 +99,7 @@ class Rhyme:
     return ok
 
   def sufficient_eye(self):
-    return self.eye[-1] # TODO improve to distinguish original and tweaks
+    return self.eye[-1]
 
   def match(self, phon, eye):
     """limit our phon and eye to those which match phon and eye and which
@@ -127,7 +126,15 @@ class Rhyme:
     self.constraint.restrict(r.constraint)
     self.new_rhyme = r
     self.match(set([self.apply_mergers(x) for x in r.phon]),
-        self.supposed_liaison(consonant_suffix(r.eye)))
+        self.supposed_liaison(self.consonant_suffix(r.eye)))
+
+  def consonant_suffix(self, s):
+    if not self.options['eye_tolerance_ok']:
+      return s
+    for k in tolerance.keys():
+      if s.endswith(k):
+        return s[:-(len(k))] + tolerance[k]
+    return s
 
   def feed(self, line, constraint=None):
     """extend us with a line and a constraint"""
@@ -147,12 +154,10 @@ class Rhyme:
 
   def adjust(self, result, s):
     """add liason kludges"""
-    # TODO better here
     result2 = copy.deepcopy(result)
     # adjust for tolerance with classical rhymes
     # e.g. "vautours"/"ours", "estomac"/"Sidrac"
-    # TODO add an option to disable this
-    if self.constraint.classical:
+    if self.options['phon_supposed_ok']:
       # the case 'ent' would lead to trouble for gender
       if s[-1] in liaison.keys() and not s.endswith('ent'):
         for r in result2:
@@ -198,13 +203,6 @@ def concat_couples(a, b):
   for x in a:
     for y in b:
       s.add(x + y)
-  return s
-
-def consonant_suffix(s):
-  # TODO option to disable this
-  for k in tolerance.keys():
-    if s.endswith(k):
-      return s[:-(len(k))] + tolerance[k]
   return s
 
 def raw_lookup(s):
