@@ -26,10 +26,11 @@ aucun des modèles ne vous convient, vous pouvez <a href="#template">écrire le
   vôtre</a>.</p>
 
 <h2>Qu'est-ce qui est vérifié par plint&nbsp;?</h2>
-<p>Ces explications simplifiées ne sont pas exhaustives. Pour une description
-exacte, se reporter au code source.</p>
+<p>Les erreurs suivantes sont signalées par défaut. Des options de configuration
+dans le modèle permettent de rendre plint plus tolérant sur la plupart de ces
+erreurs&nbsp;: cela est documenté <a href="#template">plus bas</a>.</p>
 <dl>
-  <dt>Nombre de syllabes</dt>
+  <dt>Métrique</dt>
   <dd>Le nombre de syllabes par vers est habituellement fixé (12 pour les
   alexandrins, par exemple). Les syllabes sont comptées en scandant sans
   élision des <em>e</em> muets sauf quand un mot se termine par un <em>e</em>
@@ -38,29 +39,27 @@ exacte, se reporter au code source.</p>
   ce que vous obtenez en lisant le poème comme vous parlez tous les jours.
   Certains groupes de voyelles peuvent prendre deux syllabes soit
   systématiquement (par exemple "Léon") ou par une <em>diérèse</em> facultative
-  ou obligatoire ("passion")&nbsp;; plint utilise une approximation des diérèses
-  effectivement autorisées déduite à partir d'un corpus de textes classiques.
-  Par ailleurs, certains motifs ambigus comme "ies" et "ées" sont
-  interdits.</dd>
+  ou obligatoire ("passion")&nbsp;; plint utilise une approximation permissive
+  des diérèses effectivement autorisées déduite à partir d'un corpus de textes
+  classiques.</dd>
   <dt>Hémistiche</dt>
   <dd>Les alexandrins classiques sont divisés en deux <em>hémistiches</em> de
   6 syllabes. La césure ne doit pas couper un mot et le premier hémistiche ne
   doit pas se finir par un son faible (ie. une fin féminine non élidée).</dd>
-  <dt>Rime.</dt>
-  <dd>La contrainte la plus connue est que les vers doivent rimer. Les phonèmes
-  communs dans une rime doivent inclure un son vocalique (par exemple "tâte" et
-  "bête" ne riment pas parce que leur suffixe commun est [t] qui ne contient pas
-  de son vocalique). Les rimes sont vérifiées par plint avec une approximation
-  permissive de la prononciation de la fin des vers. Plint confond [ɛ] et [ɛː]
-  ("mettre" et "maître") et [a] et [ɑ] ("patte" et "pâte") mais pas [ɛ̃] et [œ̃]
-  ("brin" et "brun") ou [ɔ] et [o] ("cotte" et "côte"). Quand toutes les règles
-  classiques sont suivies, certaines rimes comme la rime normande ou la rime
-  avec liaison supposée sont acceptées mais un degré minimal de rime "pour
-  l'œil" est exigé (ainsi "-é" et "-er" ne riment pas), plint essaie de suivre
-  tout cela mais les détails sont complexes. On ne peut pas faire rimer un mot
-  avec lui-même (mais on peut faire rimer un mot avec des homographes de nature
-  grammaticale différente, ainsi le nombre d'occurrences d'un mot dans un motif
-  de rimes est majoré par son nombre de natures grammaticales possibles).</dd>
+  <dt>Rime</dt>
+  <dd>La contrainte poétique la plus connue est que les vers doivent rimer. Les
+  phonèmes communs dans une rime doivent inclure un son vocalique (par exemple
+  "tâte" et "bête" ne riment pas parce que leur suffixe commun est [t] qui ne
+  contient pas de son vocalique). Les rimes sont vérifiées par plint avec une
+  approximation permissive de la prononciation de la fin des vers. Plint confond
+  [ɛ] et [ɛː] ("mettre" et "maître") et [a] et [ɑ] ("patte" et "pâte") mais pas
+  [ɛ̃] et [œ̃] ("brin" et "brun") ou [ɔ] et [o] ("cotte" et "côte"). Quand toutes
+  les règles classiques sont suivies, certaines rimes comme la rime normande ou
+  la rime avec liaison supposée sont acceptées.</dd>
+  <dt>Rime pour l'œil</dt>
+  <dd>En poésie classique, un degré minimal de rime "pour l'œil" est exigé
+  (ainsi "-é" et "-er" ne riment pas), avec une certaine tolérance (pour "-é" et
+  "-ai" notamment).</dd>
   <dt>Genre des rimes.</dt>
   <dd>En poésie classique, les rimes doivent être <em>féminines</em> ou
   <em>masculines</em>. Une rime est féminine si elle se termine par un "e", "es"
@@ -68,18 +67,42 @@ exacte, se reporter au code source.</p>
   faire rimer alternativement deux terminaisons féminines et deux terminaisons
   masculines. plint vérifie cela, avec une approximation permissive pour
   déterminer si une terminaison est féminine ou non.</dd>
+  <dt>Motifs ambigus</dt>
+  <dd>Certains motifs ambigus comme "-ies" et "-ées", ou "-ie" ou "-ée" suivis
+  d'une consonne ou d'un 'h' aspiré, sont interdits en poésie classique et
+  signalés.</dd>
+  <dt>Hiatus</dt>
+  <dd>Le hiatus (juxtaposition de sons vocaliques sans 'e' muet intercalaire)
+  est interdit en poésie classique et signalé.</dd>
+  <dt>Mots répétés</dt>
+  <dd>On ne doit pas faire rimer un mot avec lui-même (mais on peut faire rimer
+  un mot avec des homographes de nature grammaticale différente), ainsi, plint
+  signale une erreur si le nombre d'occurrences d'un mot connu dans un motif de
+  rimes est plus grand par son nombre de natures grammaticales possibles.</dd>
+  <dt>Caractères interdits</dt>
+  <dd>Les caractères que plint ne reconnaît pas (notamment les chiffres arabes)
+  sont signalés comme des erreurs, d'une part parce qu'ils sont sans doute
+  irréguliers en poésie classique, d'autre part parce que cela signifie sans
+  doute que plint va mal interpréter le vers.</dd>
+  <dt>Longueur</dt>
+  <dd>Pour certains types de poèmes (par exemple les sonnets), le nombre de vers
+  est fixé, et une erreur est levée si le modèle n'est pas complet ou s'il a été
+  répété.</dd>
 </dl>
 
 <h2>Qu'est-ce qui n'est pas vérifié par plint&nbsp;?</h2>
 
 <p>Le comptage des syllabes est effectué par une approximation permissive qui
-peut autoriser certaines diérèses ou synérèses non autorisées. Presque aucune
+peut autoriser certaines diérèses ou synérèses non autorisées. Aucune
 vérification n'est faite pour s'assurer que la césure à l'hémistiche se fait à
 une position grammaticale raisonnable. Les rimes sont calculées par une
-approximation permissive, et il en va de même pour les genres. Plus
-important&nbsp;: plint ne vérifie pas si votre poème a un sens, il impose
-uniquement des contraintes formelles. Par exemple, <q>Tatata tatati tatati
-  tatata</q> est reconnu comme un alexandrin classique parfaitement valide.</p>
+approximation permissive, et il en va de même pour les genres. Il est interdit
+de faire rimer des mots dérivés l'un de l'autre (par exemple "justice" et
+"injustice") mais plint, faute de données, ne peut vérifier pas cette
+contrainte. Plint ne vérifie pas que les mots sont correctement orthographiés ou
+s'ils existent effectivement en français, ou si le poème a un sens de façon
+générale&nbsp;: par exemple, <q>Tatata tatati tatati tatata</q> est reconnu
+comme un alexandrin classique parfaitement valide.</p>
 
 <h2 id="template">Comment faire pour définir ses propres modèles&nbsp;?</h2>
 
@@ -232,47 +255,70 @@ source code.</p>
   is the last word). The syllable count is <em>not</em> what you get with a
   colloquial everyday reading. Some vowels clusters can count for two
   syllables either naturally ("Léon") or through <em>diérèse</em> ("passion");
-  plint uses an approximation of allowed <em>diérèses</em> trained on a corpus
-  of classical texts. Some patterns such as "ées" or "ies" are forbidden
-  altogether.</dd>
+  plint uses a tolerant approximation of allowed <em>diérèses</em> trained on a
+  corpus of classical texts.</dd>
   <dt>Hemistiche</dt>
   <dd>For classical alexandrines, the 12 syllables are separated in two groups
   of 6 with an intermediate cesura (the <em>hémistiche</em>). The cesura must
   not split a word and must not end in a weak sound (essentially, a non-elided
   feminine ending).</dd>
   <dt>Rhyme.</dt>
-  <dd>The most well-known constraint is that verses must rhyme. The rhyming
-  phonemes must include a vowel (eg. "tâte" and "bête" do not rhyme because
-  their common phoneme suffix is [t] which does not include a vowel sound).
-  plint enforces rhymes trough a liberal approximation of the pronunciation of
-  verse endings. Plint merges [ɛ] et [ɛː] ("mettre" and "maître") and [a] and
-  [ɑ] ("patte" and "pâte") but distinguishes [ɛ̃] and [œ̃] ("brin" and "brun") and
-  [ɔ] and [o] ("cotte" and "côte"). When all classical rules are enforced, some
-  rhymes such as <em>rime normande</em> and rhymes for a <em>liaison
-    supposée</em> are accepted though they do not rhyme phonetically, and rhymes
-  that do not match visually (such as "-é" and "-er") are refused, the details
-  are complex. A word cannot rhyme with itself, but rhymes between homographs of
-  a different grammatical nature are allowed (the number of occurrences of a
-  word in a rhyme is bounded by the number of possible grammatical natures for
-  this word).</dd>
+  <dd>The fact that verses must rhyme is the most well-known poetic constraint.
+  The rhyming phonemes must include a vowel (eg. "tâte" and "bête" do not rhyme
+  because their common phoneme suffix is [t] which does not include a vowel
+  sound). plint enforces rhymes trough a liberal approximation of the
+  pronunciation of verse endings. Plint merges [ɛ] et [ɛː] ("mettre" and
+  "maître") and [a] and [ɑ] ("patte" and "pâte") but distinguishes [ɛ̃] and [œ̃]
+  ("brin" and "brun") and [ɔ] and [o] ("cotte" and "côte"). When all classical
+  rules are enforced, some rhymes such as <em>rime normande</em> and rhymes for
+  a <em>liaison supposée</em> are accepted though they do not rhyme
+  phonetically.</dd>
+  <dt>Eye rhyme.</dt>
+  <dd>Classical rules require a minimal degree of <em>rime pour l'œil</em> (end
+  letter similarity); thus "-é" and "-er" do not rhyme, although common
+  tolerances exist, such as allowing "-é" and "-ai".</dd>
   <dt>Rhyme genre.</dt>
   <dd>In classical verse, rhymes must be made between feminine verse endings, or
   masculine verse endings. A verse ending is feminine if it ends with a silent
   "e", "es" or "ent", and masculine otherwise. plint enforces this, with a
   liberal approximation to try to guess if an ending is indeed silent. Besides,
   feminine and masculine rhymes must alternate.</dd>
+  <dt>Ambiguous patterns</dt>
+  <dd>Some patterns such as "-ées" or "-ies", or "-ée" and "-ie" followed by an
+  aspirated 'h' or a consonant, are forbidden by classical rules and
+  reported.</dd>
+  <dt>Hiatus</dt>
+  <dd>Juxtaposition of vowel sounds in two adjacent words with no mute 'e' in
+  the middle is forbidden and reported.</dd>
+  <dt>Repeated words</dt>
+  <dd>A word may not rhyme with itself, but may rhyme with a homograph of a
+  different grammatical nature, so plint will report as error any multiple
+  occurrences of a known word in a rhyme pattern if the number of occurrences is
+  more than the number of grammatical natures for the word.</dd>
+  <dt>Illegal characters</dt>
+  <dd>Characters that are not understood by plint, such as arabic numerals, are
+  reported as errors: on the one hand, they are probably best avoided in
+  classical poetry; on the second hand plint will probably misinterpret the
+  verse if it does not understand some of the characters.</dd>
+  <dt>Poem length</dt>
+  <dd>For some poetic forms such as the <em>sonnet</em>, the number of verses is
+  fixed, so an error is raised if the pattern was not completed to the end or
+  was repeated.</dd>
 </dl>
 
 <h2>What isn't checked by plint?</h2>
 
 <p>Syllable count is performed by a liberal estimate which may allow some
 invalid <em>diérèses</em> and <em>synérèses</em> to make the count match. It is
-(almost) not checked if <em>hémistiches</em> occur at a sensible grammatical
-position. Rhyme is computed by a liberal heuristic, as well as rhyme genre. More
-importantly, plint will not check if your poem makes any sense, does not contain
-spelling mistakes or has any poetic value; it only enforces formal constraints.
-For instance, <q>Tatata tatati tatati tatata</q> is recognized as a perfectly
-correct classical alexandrine.</p>
+not checked if <em>hémistiches</em> occur at a sensible grammatical position.
+Rhyme is computed by a liberal heuristic, as well as rhyme genre. Rhymes between
+words derived from one another, such as <em>justice</em> and <em>injustice</em>,
+but this is not checked by plint for lack of adequate data. More importantly,
+plint will not check if the words you use exist in French, or are correctly
+spelt, and if your poem makes any sense, does not contain spelling mistakes or
+  has any poetic value; it only enforces formal constraints. For instance,
+    <q>Tatata tatati tatati tatata</q> is recognized as a perfectly correct
+      classical alexandrine.</p>
 
 <h2 id="template">How can I define my own templates?</h2>
 
