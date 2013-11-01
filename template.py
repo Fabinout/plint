@@ -37,19 +37,38 @@ class Pattern:
     self.length = self.hemistiches.pop()
 
 class Template:
+  option_aliases = {
+    'fusionner': 'merge',
+    'ambiguous_ok': 'forbidden_ok',
+    'ambigu_ok': 'forbidden_ok',
+    'dierese': 'diaeresis',
+    'verifie_fin_hemistiche': 'check_end_hemistiche',
+    'verifie_occurrences': 'check_occurrences',
+    'repetition_ok': 'repeat_ok',
+    'incomplet_ok': 'incomplete_ok',
+    'phon_supposee_ok': 'phon_supposed_ok',
+    'oeil_supposee_ok': 'eye_supposed_ok',
+    'oeil_tolerance_ok': 'eye_tolerance_ok'
+    }
+
   def __init__(self, string=None):
     self.template = []
     self.pattern_line_no = 0
-    self.forbidden_ok = False
-    self.hiatus_ok = False
-    self.normande_ok = True
-    self.repeat_ok = True
-    self.overflowed = False
-    self.incomplete_ok = True
-    self.check_end_hemistiche = True
-    self.check_occurrences = True
-    self.diaeresis = "classical"
+    self.options = {
+        'forbidden_ok': False,
+        'hiatus_ok': False,
+        'normande_ok': True,
+        'eye_supposed_ok': True,
+        'phon_supposed_ok': True,
+        'eye_tolerance_ok': True,
+        'repeat_ok': True,
+        'incomplete_ok': True,
+        'check_end_hemistiche': True,
+        'check_occurrences': True,
+        'diaeresis': "classical"
+    }
     self.mergers = []
+    self.overflowed = False
     if string != None:
       self.load(string)
     self.line_no = 0
@@ -62,28 +81,18 @@ class Template:
 
   def read_option(self, x):
     key, value = x.split(':')
-    if key in ["merge", "fusionner"]:
+    if key in self.option_aliases.keys():
+      key = self.option_aliases[key]
+    if key == 'merge':
       self.mergers.append(value)
-    elif key in ["forbidden_ok", "ambiguous_ok", "ambigu_ok"]:
-      self.forbidden_ok = str2bool(value)
-    elif key in ["hiatus_ok"]:
-      self.hiatus_ok = str2bool(value)
-    elif key in ["normande_ok"]:
-      self.normande_ok = str2bool(value)
-    elif key in ["diaeresis", "dierese"]:
+    elif key == 'diaeresis':
       if value == "classique":
         value = "classical"
-      self.diaeresis = value
       if value not in ["permissive", "classical"]:
         raise error.TemplateLoadError(_("Bad value for global option %s") % key)
-    elif key in ["check_end_hemistiche", "verifie_fin_hemistiche"]:
-      self.check_end_hemistiche = str2bool(value)
-    elif key in ["check_occurrences", "verifie_occurrences"]:
-      self.check_occurrences = str2bool(value)
-    elif key in ["repeat_ok"]:
-      self.repeat_ok = str2bool(value)
-    elif key in ["incomplete_ok"]:
-      self.incomplete_ok = str2bool(value)
+      self.options['diaeresis'] = value
+    elif key in self.options.keys():
+      self.options[key] = str2bool(value)
     else:
       raise error.TemplateLoadError(_("Unknown global option"))
 
@@ -115,7 +124,7 @@ class Template:
     v = Verse(line, self, pattern)
 
     if last:
-      if was_incomplete and not self.incomplete_ok and not self.overflowed:
+      if was_incomplete and not self.options['incomplete_ok'] and not self.overflowed:
         return [error.ErrorIncompleteTemplate()], pattern, v
       return [], pattern, v
 
@@ -126,7 +135,7 @@ class Template:
     if pattern.myid not in self.env.keys():
       # initialize the rhyme
       self.env[pattern.myid] = rhyme.Rhyme(v.normalized, pattern.constraint,
-          self.mergers, self.normande_ok)
+          self.mergers, self.options)
     else:
       # update the rhyme
       self.env[pattern.myid].feed(v.normalized, pattern.constraint)
@@ -143,7 +152,7 @@ class Template:
             self.env[pattern.myid].new_rhyme))
 
     # occurrences
-    if self.check_occurrences:
+    if self.options['check_occurrences']:
       if pattern.myid not in self.occenv.keys():
         self.occenv[pattern.myid] = {}
       last_word = re.split(r'[- ]', line_with_case)[-1]
@@ -238,7 +247,7 @@ class Template:
     self.old_femenv = copy.deepcopy(self.femenv)
     self.old_occenv = copy.deepcopy(self.occenv)
     if self.beyond:
-      if not self.repeat_ok:
+      if not self.options['repeat_ok']:
         self.overflowed = True
       self.reset_state()
     result = self.template[self.position]

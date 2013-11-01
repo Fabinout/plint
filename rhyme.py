@@ -67,10 +67,10 @@ class Rhyme:
       return x + liaison[x[-1]]
     return x
 
-  def __init__(self, line, constraint, mergers=[], normande_ok=True, phon=None):
+  def __init__(self, line, constraint, mergers, options, phon=None):
     self.constraint = constraint
     self.mergers = {}
-    self.normande_ok = normande_ok
+    self.options = options
     for phon_set in mergers:
       for pho in phon_set[1:]:
         self.mergers[pho] = phon_set[0]
@@ -131,7 +131,7 @@ class Rhyme:
 
   def feed(self, line, constraint=None):
     """extend us with a line and a constraint"""
-    return self.restrict(Rhyme(line, constraint, self.mergers))
+    return self.restrict(Rhyme(line, constraint, self.mergers, self.options))
 
   def satisfied_phon(self):
     return len(self.phon) >= self.constraint.phon
@@ -164,7 +164,7 @@ class Rhyme:
   def lookup(self, s):
     """lookup the pronunciation of s, adding rime normande kludges"""
     result = raw_lookup(s)
-    if self.normande_ok and (s.endswith('er') or s.endswith('ers')):
+    if self.options['normande_ok'] and (s.endswith('er') or s.endswith('ers')):
       result.add("ER")
     return self.adjust(result, s)
 
@@ -228,7 +228,7 @@ if __name__ == '__main__':
     if len(line) < 1:
       continue
     constraint = Constraint(True, 1)
-    rhyme = Rhyme(line[0], constraint, self.mergers, self.normande_ok)
+    rhyme = Rhyme(line[0], constraint, self.mergers, self.options)
     for x in line[1:]:
       rhyme.feed(x)
       rhyme.pprint()

@@ -259,9 +259,9 @@ class Verse:
     return '-' in chunk['text'] or 'wordend' in chunk
 
   def possible_weights(self, pos):
-    if self.template.diaeresis == "classical":
+    if self.template.options['diaeresis'] == "classical":
       return vowels.possible_weights_ctx(self.chunks, pos)
-    elif self.template.diaeresis == "permissive":
+    elif self.template.options['diaeresis'] == "permissive":
       return vowels.possible_weights_approx(self.chunks[pos]['text'])
 
   def possible_weights_context(self, pos):
@@ -356,7 +356,8 @@ class Verse:
       next_hemistiches = hemistiches
       if (len(hemistiches) > 0 and count + weight == hemistiches[0] and
           is_vowels(chunk['text']) and (chunk['hemis'] == "ok" or not
-          self.template.check_end_hemistiche and chunk['hemis'] != "cut")):
+          self.template.options['check_end_hemistiche'] and 
+          chunk['hemis'] != "cut")):
         # we hemistiche here
         next_hemistiches = next_hemistiches[1:]
       current = dict(self.chunks[pos])
@@ -404,9 +405,10 @@ class Verse:
       result.append(error.ErrorBadMetric())
     for c in self.chunks:
       if 'error' in c:
-        if c['error'] == "ambiguous" and not self.template.forbidden_ok:
+        if (c['error'] == "ambiguous" and not
+            self.template.options['forbidden_ok']):
           errors.add(error.ErrorForbiddenPattern)
-        if c['error'] == "hiatus" and not self.template.hiatus_ok:
+        if c['error'] == "hiatus" and not self.template.options['hiatus_ok']:
           errors.add(error.ErrorHiatus)
         if c['error'] == "illegal":
           errors.add(error.ErrorBadCharacters)
