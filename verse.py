@@ -172,12 +172,15 @@ class Verse:
           elif last_opos < opos:
             part = w[0]['original'][last_opos+1:opos+1]
             last_opos = opos
-          # set elision to True because of possible ending vowels
-          # forbid hiatus and instruct that we must use text for the
-          # pronunciation
-          new_word.append({'original': part, 'text': x,
-            'elision': [True], 'no_hiatus': True, 'text_pron': True})
+          # allow or forbid elision because of possible ending '-e' before
+          # forbid hiatus both for this and for preceding
+          # instruct that we must use text for the pronunciation
+          new_word.append({'original': part, 'text': x, 'text_pron': True,
+            'elision': [False, True], 'no_hiatus': True})
         self.chunks[i] = new_word
+        # the last one is also elidable
+        if self.chunks[i][-1]['text'] == 'e':
+          self.chunks[i][-1]['elidable'] = [True]
 
     # vowel elision problems
     for w in self.chunks:
@@ -223,7 +226,8 @@ class Verse:
         continue
       if sum([1 for chunk in w if is_vowels(chunk['text'])]) <= 1:
         continue
-      w[-1]['elidable'] = self.chunks[i+1][0]['elision']
+      if 'elidable' not in w[-1].keys():
+        w[-1]['elidable'] = self.chunks[i+1][0]['elision']
 
     # annotate hiatus and ambiguities
     ambiguous_potential = ["ie", "ée"]
@@ -238,7 +242,8 @@ class Verse:
           w[-1]['error'] = "ambiguous"
           self.chunks[i+1][0]['error'] = "ambiguous"
       elif is_vowels(w[-1]['text']) and not w[-1]['text'].endswith('e'):
-        if is_vowels(self.chunks[i+1][0]['text']):
+        if (is_vowels(self.chunks[i+1][0]['text']) and 'no_hiatus' not in
+            self.chunks[i+1][0].keys()):
           if ''.join(x['text'] for x in w) not in no_hiatus:
             if ''.join(x['text'] for x in self.chunks[i+1]) not in no_hiatus:
               if 'no_hiatus' not in w[-1].keys():
