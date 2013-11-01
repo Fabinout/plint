@@ -153,15 +153,25 @@ class Verse:
         for j, x in enumerate(w[0]['text']):
           try:
             nc = letters[x]
+            # hack: the final 'e's in letters are just to help pronunciation
+            # inference and are only needed at end of word, otherwise they will
+            # mess syllable count up
+            if j < len(w[0]['text']) - 1 and nc[-1] == 'e':
+              nc = nc[:-1]
           except KeyError:
             nc = x + 'é'
-          new_chunks += re.split(consonants_regexp, nc)
-        new_chunks = [x for x in new_chunks if len(x) > 0]
+          new_chunks += [(j, x) for x in re.split(consonants_regexp, nc)]
+        new_chunks = [x for x in new_chunks if len(x[1]) > 0]
         new_word = []
-        for j, x in enumerate(new_chunks):
-          lindex = int(j*len(w[0]['original'])/len(w[0]['text']))
-          rindex = int((j+1)*len(w[0]['original'])/len(w[0]['text']))
-          part = w[0]['original'][lindex:rindex]
+        last_opos = -1
+        for j, (opos, x) in enumerate(new_chunks):
+          part = ""
+          if j == len(new_chunks) - 1:
+            # don't miss final spaces
+            part = w[0]['original'][last_opos+1:]
+          elif last_opos < opos:
+            part = w[0]['original'][last_opos+1:opos+1]
+            last_opos = opos
           # set elision to True because of possible ending vowels
           # forbid hiatus and instruct that we must use text for the
           # pronunciation
