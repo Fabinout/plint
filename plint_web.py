@@ -78,6 +78,11 @@ def root(lang):
   return env.get_template('index.html').render(title=get_title(lang),
       lang=lang, path="")
 
+@app.route('/<lang>/js')
+def about(lang):
+  return env.get_template('js.html').render(title=get_title(lang),
+      lang=lang, path="js")
+
 @app.route('/<lang>/about')
 def about(lang):
   return env.get_template('about.html').render(title=get_title(lang),
