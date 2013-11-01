@@ -4,18 +4,17 @@
 <form method="POST" action="check" id="bigform">
   {% if lang == 'fr' %}
   <p id="desc">plint est un outil pour vérifier la métrique et les rimes de poèmes en
-  langue française. Entrez votre poème ici&nbsp;:</p>
+  langue française.</p>
   {% else %}
-  <p id="desc">plint is a tool to check the metric and rhymes of French verse.
-  Input your poem here:</p>
+  <p id="desc">plint is a tool to check the metric and rhymes of French verse.</p>
   {% endif %}
   <label for="poem">
   </label><br />
   <textarea id="poem" name="poem"
   {% if lang == 'fr' %}
-    placeholder="Votre poème ici."
+    placeholder="Saisissez votre poème ici."
   {% else %}
-    placeholder="Your poem here."
+    placeholder="Input your poem here."
   {% endif %}
     ></textarea>
   <br/>
@@ -27,7 +26,7 @@
   {% endif %}
 </label><br />
 <ul id="template">
-  <li><input type="radio" name="template" value="classical"
+  <li><input onchange="showCustom(0)" type="radio" name="template" value="classical"
   id="classical" checked="checked" />
   <label for="classical">
   {% if lang == 'fr' %}
@@ -38,7 +37,7 @@
   rhyme genres.
   {% endif %}
 </label></li>
-  <li><input type="radio" name="template" value="italian_abba" id="italian_abba" />
+  <li><input onchange="showCustom(0)" type="radio" name="template" value="italian_abba" id="italian_abba" />
   <label for="italian_abba">
   {% if lang == 'fr' %}
   Sonnet italien classique d'alexandrins à rimes embrassées&nbsp;:<br/>deux quatrains 
@@ -49,7 +48,7 @@
   <em>tercets</em> with rhyme pattern CCD EED.
   {% endif %}
 </label></li>
-  <li><input type="radio" name="template" value="italian_abab" id="italian_abab" />
+  <li><input onchange="showCustom(0)" type="radio" name="template" value="italian_abab" id="italian_abab" />
   <label for="italian_abab">
   {% if lang == 'fr' %}
   Sonnet italien classique d'alexandrins à rimes croisées.
@@ -57,7 +56,7 @@
   Classical Italian sonnet of alexandrine verse with <em>rimes croisées</em>.
   {% endif %}
 </label></li>
-  <li><input type="radio" name="template" value="french_abba" id="french_abba" />
+  <li><input onchange="showCustom(0)" type="radio" name="template" value="french_abba" id="french_abba" />
   <label for="french_abba">
   {% if lang == 'fr' %}
   Sonnet français classique d'alexandrins à rimes embrassées&nbsp;:<br/>deux
@@ -69,7 +68,7 @@
   <em>tercets</em> with rhyme pattern CCD EDE.
   {% endif %}
 </label></li>
-  <li><input type="radio" name="template" value="french_abab" id="french_abab" />
+  <li><input onchange="showCustom(0)" type="radio" name="template" value="french_abab" id="french_abab" />
   <label for="french_abab">
   {% if lang == 'fr' %}
   Sonnet français classique d'alexandrins à rimes croisées.
@@ -77,7 +76,7 @@
   Classical French sonnet of alexandrine verse with <em>rimes croisées</em>.
   {% endif %}
 </label></li>
-  <li><input type="radio" name="template" value="alexandrin" id="alexandrin" />
+  <li><input onchange="showCustom(0)" type="radio" name="template" value="alexandrin" id="alexandrin" />
   <label for="alexandrin">
   {% if lang == 'fr' %}
   Alexandrins sans hémistiche, sans vérification de la rime.
@@ -85,18 +84,18 @@
   Alexandrine without <em>hémistiche</em> and without rhyme.
   {% endif %}
 </label></li>
-  <li><input type="radio" name="template" value="custom" id="custom" />
+  <li><input onchange="showCustom(1)" type="radio" name="template" value="custom" id="custom" />
   <label for="custom">
   {% if lang == 'fr' %}
-  Personnalisé (<a href="about#template">plus d'infos</a>)
+  Personnalisé (<a href="about#template" target="_blank">plus d'infos</a>)
   {%else%}
-  Custom (<a href="about#template">more info</a>)
+  Custom (<a href="about#template" target="_blank">more info</a>)
   {%endif%}
 </label>
 
   <textarea name="custom_template" id="custom_template"
   {% if lang == 'fr' %}
-  placeholder="Entrez votre modèle personnalisé ici."
+  placeholder="Saisissez votre modèle personnalisé ici."
   {% else %}
   placeholder="Input a custom template here."
   {% endif %}
@@ -104,7 +103,6 @@
 </li>
 
 </ul>
-  <input id="reset" type="reset" />
   <input id="submit" type="submit"
   {% if lang == 'fr' %}
     value="Valider"
