@@ -27,43 +27,43 @@ letters = {
     'z': 'zaide'
 }
 
+def elision(word):
+  if (word.startswith('y') and not word == 'y' and not word.startswith("yp") and
+      not word.startswith("yeu")):
+    return [False]
+  if word in ["oui", "ouis"] or word.startswith("ouistiti"):
+    # elision for those words, but beware, no elision for "ouighour"
+    # boileau : "Ont l'esprit mieux tourné que n'a l'homme ? Oui sans doute."
+    # so elission sometimes
+    return [True, False]
+  # "un", "une" are non-elided as nouns ("cette une")
+  if word in ["un", "une"]:
+    return [True, False]
+  # "onze" is not elided
+  if word == "onze":
+    return [False]
+  if word[0] == 'h':
+    return list(map((lambda s: not s), haspirater.lookup(word)))
+  if is_vowels(word[0]):
+    return [True]
+  return [False]
+
+def remove_trivial(chunks, predicate):
+  new_chunks = []
+  accu = ""
+  for i, w in enumerate(chunks):
+    if predicate(w):
+      if len(new_chunks) == 0:
+        accu = accu + w
+      else:
+        new_chunks[-1] = new_chunks[-1] + w
+    else:
+      new_chunks.append(accu + w)
+      accu = ""
+  return new_chunks
 
 
 class Verse:
-  def elision(self, word):
-    if (word.startswith('y') and not word == 'y' and not word.startswith("yp") and
-        not word.startswith("yeu")):
-      return [False]
-    if word in ["oui", "ouis"] or word.startswith("ouistiti"):
-      # elision for those words, but beware, no elision for "ouighour"
-      # boileau : "Ont l'esprit mieux tourné que n'a l'homme ? Oui sans doute."
-      # so elission sometimes
-      return [True, False]
-    # "un", "une" are non-elided as nouns ("cette une")
-    if word in ["un", "une"]:
-      return [True, False]
-    # "onze" is not elided
-    if word == "onze":
-      return [False]
-    if word[0] == 'h':
-      return list(map((lambda s: not s), haspirater.lookup(word)))
-    if is_vowels(word[0]):
-      return [True]
-    return [False]
-
-  def remove_trivial(self, chunks, predicate):
-    new_chunks = []
-    accu = ""
-    for i, w in enumerate(chunks):
-      if predicate(w):
-        if len(new_chunks) == 0:
-          accu = accu + w
-        else:
-          new_chunks[-1] = new_chunks[-1] + w
-      else:
-        new_chunks.append(accu + w)
-        accu = ""
-    return new_chunks
 
   @property
   def line(self):
@@ -87,10 +87,10 @@ class Verse:
     consonants_regexp = re.compile('([^'+all_consonants+'*-]*)', re.UNICODE)
 
     words = re.split(whitespace_regexp, line)
-    words = self.remove_trivial(words, (lambda w: re.match("^\s*$", w) or
+    words = remove_trivial(words, (lambda w: re.match("^\s*$", w) or
       len(normalize(w, rm_all=True)) == 0))
     pre_chunks = [re.split(consonants_regexp, word) for word in words]
-    pre_chunks = [self.remove_trivial(x, (lambda w: re.match("^\s*$", w) or
+    pre_chunks = [remove_trivial(x, (lambda w: re.match("^\s*$", w) or
       len(normalize(w, rm_all=True)) == 0)) for x in pre_chunks]
     self.chunks = [[{'original': y, 'text': normalize(y, rm_apostrophe=True)}
       for y in x] for x in pre_chunks]
@@ -185,7 +185,7 @@ class Verse:
     # vowel elision problems
     for w in self.chunks:
       if 'elision' not in w[0].keys():
-        w[0]['elision'] = self.elision(''.join(x['text'] for x in w))
+        w[0]['elision'] = elision(''.join(x['text'] for x in w))
 
     # case of 'y'
     ys_regexp = re.compile("(y*)")
