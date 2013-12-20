@@ -7,6 +7,7 @@ from common import normalize, legal, strip_accents_one, rm_punct
 from nature import nature_count
 from vowels import possible_weights_ctx, make_query
 from pprint import pprint
+from options import default_options
 
 
 class Pattern:
@@ -51,22 +52,11 @@ class Template:
     'oeil_tolerance_ok': 'eye_tolerance_ok'
     }
 
+
   def __init__(self, string=None):
     self.template = []
     self.pattern_line_no = 0
-    self.options = {
-        'forbidden_ok': False,
-        'hiatus_ok': False,
-        'normande_ok': True,
-        'eye_supposed_ok': True,
-        'phon_supposed_ok': True,
-        'eye_tolerance_ok': True,
-        'repeat_ok': True,
-        'incomplete_ok': True,
-        'check_end_hemistiche': True,
-        'check_occurrences': True,
-        'diaeresis': "classical"
-    }
+    self.options = dict(default_options)
     self.mergers = []
     self.overflowed = False
     if string != None:
