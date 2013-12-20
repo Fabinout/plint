@@ -4,7 +4,6 @@
 """Compute the number of syllabes taken by a vowel chunk"""
 
 from common import strip_accents
-from diaeresis import lookup
 
 def clear(x):
   return (x['text'] + ' ') if 'wordend' in x else x['text']
@@ -41,6 +40,7 @@ def make_query(chunks, pos):
       ''.join([x[::-1] for x in cleared[:pos][::-1]]))
 
 def possible_weights_ctx(chunks, pos):
+  from diaeresis import lookup
   chunk = chunks[pos]
   q = make_query(chunks, pos)
   #print (q)
