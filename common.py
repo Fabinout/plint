@@ -6,7 +6,7 @@ import re
 
 vowels = 'aeiouyœæ'
 consonants = "bcçdfghjklmnpqrstvwxzñĝ'"
-apostrophes = "'’"
+apostrophes = "'’`"
 legal = vowels + consonants + ' -'
 
 # a variant of x-sampa such that all french phonemes are one-character
@@ -83,10 +83,14 @@ def is_consonants(chunk):
       return False
   return True
 
-def normalize(text, downcase=True, rm_all=False, rm_apostrophe=False):
+def normalize(text, downcase=True, rm_all=False, rm_apostrophe=False, strip=True):
   """Normalize text, ie. lowercase, no useless punctuation or whitespace"""
-  return norm_spaces(rm_punct(text.lower() if downcase else text,
-    rm_all=rm_all, rm_apostrophe=rm_apostrophe)).rstrip().lstrip()
+  res = norm_spaces(rm_punct(text.lower() if downcase else text,
+    rm_all=rm_all, rm_apostrophe=rm_apostrophe))
+  if strip:
+    return res.rstrip().lstrip()
+  else:
+    return res
 
 def subst(string, subs):
   if len(subs) == 0:

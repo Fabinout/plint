@@ -48,6 +48,7 @@ header {
 
 #custom_template {
   height: 8em;
+  display: none;
 }
 
 body {

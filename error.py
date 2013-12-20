@@ -29,6 +29,8 @@ class ErrorCollection:
         'error': lambda x, y: ErrorCollection.keys.get(x, '') *
         len(chunk['original'])}
     def render(chunk, key):
+      if key == 'error' and chunk.get('error', '') == 'illegal':
+        return chunk['illegal_str']
       return (formatters.get(key, lambda x, y: str(x)))(chunk.get(key, ""), chunk)
     lines = {}
     for key in keys:
@@ -90,10 +92,7 @@ class ErrorBadRhyme:
     self.inferred = inferred
 
   def report(self, pattern):
-    # TODO indicate eye rhyme since this is also important
-    # TODO don't indicate more than the minimal required rhyme (in length and
-    # present of a vowel phoneme)
-    return (_("%s for type %s (expected \"%s\", inferred \"%s\")")
+    return (_("%s for type %s (expected %s, inferred %s)")
         % (self.kind, self.get_id(pattern), self.fmt(self.expected),
           self.fmt(self.inferred)))
 
@@ -106,30 +105,31 @@ class ErrorBadRhymeGenre(ErrorBadRhyme):
     result = _(' or ').join(list(l))
     if result == '':
       result = "?"
-    return result
+    return "\"" + result + "\""
 
   def get_id(self, pattern):
     return pattern.femid
 
-class ErrorBadRhymeSound(ErrorBadRhyme):
-  @property
-  def kind(self):
-    return _("Bad rhyme")
-
-  def fmt(self, l):
-    pron = l.phon
-    ok = []
-    if len(pron) > 0:
-      ok.append("")
-    return ("\"" + '/'.join(list(set([common.to_xsampa(x[-4:]) for x in pron])))
-        + "\"" + _(", ending: \"") + l.eye + "\"")
-
+class ErrorBadRhymeObject(ErrorBadRhyme):
   def get_id(self, pattern):
     return pattern.myid
 
-  def report(self, pattern):
-    return (_("%s for type %s (expected %s)")
-        % (self.kind, pattern.myid, self.fmt(self.expected)))
+class ErrorBadRhymeSound(ErrorBadRhymeObject):
+  @property
+  def kind(self):
+    return _("Bad rhyme sound")
+
+  def fmt(self, l):
+    return '/'.join("\"" + common.to_xsampa(x) + "\"" for x in
+      l.sufficient_phon())
+
+class ErrorBadRhymeEye(ErrorBadRhymeObject):
+  @property
+  def kind(self):
+    return _("Bad rhyme ending")
+
+  def fmt(self, l):
+    return "\"-" + l.sufficient_eye() + "\""
 
 class ErrorBadMetric:
   def report(self, pattern):

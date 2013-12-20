@@ -8,6 +8,27 @@ import haspirater
 import error
 from pprint import pprint
 
+# the writing is designed to make frhyme succeed
+# end vowels will be elided
+# missing letters have a default case
+letters = {
+    'f': 'effe',
+    'h': 'ache',
+    'j': 'gi',
+    'k': 'ka',
+    'l': 'elle',
+    'm': 'aime',
+    'n': 'aine',
+    'q': 'cu',
+    'r': 'ère',
+    's': 'esse',
+    'w': 'doublevé',
+    'x': 'ixe',
+    'z': 'zaide'
+}
+
+
+
 class Verse:
   def elision(self, word):
     if (word.startswith('y') and not word == 'y' and not word.startswith("yp") and
@@ -48,9 +69,17 @@ class Verse:
   def line(self):
     return ''.join(x['original'] for x in self.chunks)
 
+  @property
+  def normalized(self):
+    return ''.join(normalize(x['original'], strip=False)
+            if 'text_pron' not in x.keys() else x['text']
+            for x in self.chunks).lstrip().rstrip()
+
   def __init__(self, line, template, pattern):
     self.template = template
     self.pattern = pattern
+    # will be updated later, used in parse and feminine
+    self.phon = None
 
     whitespace_regexp = re.compile("(\s*)")
     ys_regexp = re.compile("(\s*)")
@@ -82,9 +111,15 @@ class Verse:
     # check forbidden characters
     for w in self.chunks:
       for y in w:
+        es = ""
         for x in y['text']:
           if not common.rm_punct(strip_accents_one(x)[0].lower()) in common.legal:
+            es += 'I'
             y['error'] = "illegal"
+          else:
+            es += ' '
+        if 'error' in y.keys() and y['error'] == "illegal":
+          y['illegal_str'] = es
 
     # gu- and qu- simplifications
     for w in self.chunks:
@@ -116,23 +151,41 @@ class Verse:
       if len(w) == 1 and is_consonants(w[0]['text']):
         new_chunks = []
         for j, x in enumerate(w[0]['text']):
-          if (x == 'w'):
-            nc = "doublevé"
-          else:
-            nc = x + "a"
-          new_chunks += re.split(consonants_regexp, nc)
-        new_chunks = [x for x in new_chunks if len(x) > 0]
+          try:
+            nc = letters[x]
+            # hack: the final 'e's in letters are just to help pronunciation
+            # inference and are only needed at end of word, otherwise they will
+            # mess syllable count up
+            if j < len(w[0]['text']) - 1 and nc[-1] == 'e':
+              nc = nc[:-1]
+          except KeyError:
+            nc = x + 'é'
+          new_chunks += [(j, x) for x in re.split(consonants_regexp, nc)]
+        new_chunks = [x for x in new_chunks if len(x[1]) > 0]
         new_word = []
-        for j, x in enumerate(new_chunks):
-          lindex = int(j*len(w[0]['original'])/len(w[0]['text']))
-          rindex = int((j+1)*len(w[0]['original'])/len(w[0]['text']))
-          part = w[0]['original'][lindex:rindex]
-          new_word.append({'original': part, 'text': x})
+        last_opos = -1
+        for j, (opos, x) in enumerate(new_chunks):
+          part = ""
+          if j == len(new_chunks) - 1:
+            # don't miss final spaces
+            part = w[0]['original'][last_opos+1:]
+          elif last_opos < opos:
+            part = w[0]['original'][last_opos+1:opos+1]
+            last_opos = opos
+          # allow or forbid elision because of possible ending '-e' before
+          # forbid hiatus both for this and for preceding
+          # instruct that we must use text for the pronunciation
+          new_word.append({'original': part, 'text': x, 'text_pron': True,
+            'elision': [False, True], 'no_hiatus': True})
         self.chunks[i] = new_word
+        # the last one is also elidable
+        if self.chunks[i][-1]['text'] == 'e':
+          self.chunks[i][-1]['elidable'] = [True]
 
     # vowel elision problems
     for w in self.chunks:
-      w[0]['elision'] = self.elision(''.join(x['text'] for x in w))
+      if 'elision' not in w[0].keys():
+        w[0]['elision'] = self.elision(''.join(x['text'] for x in w))
 
     # case of 'y'
     ys_regexp = re.compile("(y*)")
@@ -173,7 +226,8 @@ class Verse:
         continue
       if sum([1 for chunk in w if is_vowels(chunk['text'])]) <= 1:
         continue
-      w[-1]['elidable'] = self.chunks[i+1][0]['elision']
+      if 'elidable' not in w[-1].keys():
+        w[-1]['elidable'] = self.chunks[i+1][0]['elision']
 
     # annotate hiatus and ambiguities
     ambiguous_potential = ["ie", "ée"]
@@ -188,11 +242,13 @@ class Verse:
           w[-1]['error'] = "ambiguous"
           self.chunks[i+1][0]['error'] = "ambiguous"
       elif is_vowels(w[-1]['text']) and not w[-1]['text'].endswith('e'):
-        if is_vowels(self.chunks[i+1][0]['text']):
+        if (is_vowels(self.chunks[i+1][0]['text']) and 'no_hiatus' not in
+            self.chunks[i+1][0].keys()):
           if ''.join(x['text'] for x in w) not in no_hiatus:
             if ''.join(x['text'] for x in self.chunks[i+1]) not in no_hiatus:
-              w[-1]['error'] = "hiatus"
-              self.chunks[i+1][0]['error'] = "hiatus"
+              if 'no_hiatus' not in w[-1].keys():
+                w[-1]['error'] = "hiatus"
+                self.chunks[i+1][0]['error'] = "hiatus"
 
     # annotate word ends
     for w in self.chunks[:-1]:
@@ -201,6 +257,7 @@ class Verse:
     # collapse words
     self.chunks = sum(self.chunks, [])
 
+  def parse(self):
     # annotate weights
     for i, chunk in enumerate(self.chunks):
       if (not is_vowels(self.chunks[i]['text'])):
@@ -217,9 +274,9 @@ class Verse:
     return '-' in chunk['text'] or 'wordend' in chunk
 
   def possible_weights(self, pos):
-    if self.template.diaeresis == "classical":
+    if self.template.options['diaeresis'] == "classical":
       return vowels.possible_weights_ctx(self.chunks, pos)
-    elif self.template.diaeresis == "permissive":
+    elif self.template.options['diaeresis'] == "permissive":
       return vowels.possible_weights_approx(self.chunks[pos]['text'])
 
   def possible_weights_context(self, pos):
@@ -230,14 +287,25 @@ class Verse:
         and not (pos <= 1 or self.contains_break(self.chunks[pos-2]))):
       # special case for verse endings, which can get elided (or not)
       # but we don't elide lone syllables ("prends-le", etc.)
+
+
       if pos == len(self.chunks) - 1:
         return [0] # ending 'e' is elided
       if self.chunks[pos+1]['text'] == 's':
         return [0] # ending 'es' is elided
       if self.chunks[pos+1]['text'] == 'nt':
-        # ending 'ent' is sometimes elided
+        # ending 'ent' is sometimes elided, try to use pronunciation
         # actually, this will have an influence on the rhyme's gender
-        return [0, 1]
+        # see feminine
+        possible = []
+        if len(self.phon) == 0:
+          return [0, 1] # do something reasonable without pron
+        for possible_phon in self.phon:
+          if possible_phon.endswith(')') or possible_phon.endswith('#'):
+            possible.append(1)
+          else:
+            possible.append(0)
+        return possible
       return self.possible_weights(pos)
     if (pos == len(self.chunks) - 1 and self.chunks[pos]['text'] == 'e' and
         pos > 0 and (self.chunks[pos-1]['text'].endswith('-c') or
@@ -256,7 +324,7 @@ class Verse:
       return [0 if x else 1 for x in self.chunks[pos]['elidable']]
     return self.possible_weights(pos)
 
-  def feminine(self, align, phon):
+  def feminine(self, align):
     for a in sure_end_fem:
       if self.text.endswith(a):
         # check that this isn't a one-syllabe wourd
@@ -277,7 +345,7 @@ class Verse:
     possible = []
     # now, we must check pronunciation?
     # "tient" vs. "lient" for instance, "excellent"...
-    for possible_phon in phon:
+    for possible_phon in self.phon:
       if possible_phon.endswith(')') or possible_phon.endswith('#'):
         possible.append('M')
       else:
@@ -303,7 +371,8 @@ class Verse:
       next_hemistiches = hemistiches
       if (len(hemistiches) > 0 and count + weight == hemistiches[0] and
           is_vowels(chunk['text']) and (chunk['hemis'] == "ok" or not
-          self.template.check_end_hemistiche and chunk['hemis'] != "cut")):
+          self.template.options['check_end_hemistiche'] and 
+          chunk['hemis'] != "cut")):
         # we hemistiche here
         next_hemistiches = next_hemistiches[1:]
       current = dict(self.chunks[pos])
@@ -347,30 +416,31 @@ class Verse:
   def problems(self):
     result = []
     errors = set()
+    if len(self.possible) == 0:
+      result.append(error.ErrorBadMetric())
     for c in self.chunks:
       if 'error' in c:
-        if c['error'] == "ambiguous" and not self.template.forbidden_ok:
+        if (c['error'] == "ambiguous" and not
+            self.template.options['forbidden_ok']):
           errors.add(error.ErrorForbiddenPattern)
-        if c['error'] == "hiatus" and not self.template.hiatus_ok:
+        if c['error'] == "hiatus" and not self.template.options['hiatus_ok']:
           errors.add(error.ErrorHiatus)
         if c['error'] == "illegal":
           errors.add(error.ErrorBadCharacters)
     for k in errors:
       result.append(k())
-    if len(self.possible) == 0:
-      result.append(error.ErrorBadMetric())
     return result
 
   def valid(self):
     return len(self.problems()) == 0
 
-  def genders(self, phon):
+  def genders(self):
     result = set()
     for p in self.possible:
-      result.update(set(self.feminine(p, phon)))
+      result.update(set(self.feminine(p)))
     if len(self.possible) == 0:
       # try to infer gender even when metric is wrong
-      result.update(set(self.feminine(None, phon)))
+      result.update(set(self.feminine(None)))
     return result
 
 
