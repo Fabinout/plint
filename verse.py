@@ -257,7 +257,7 @@ class Verse:
     # collapse words
     self.chunks = sum(self.chunks, [])
 
-  def parse(self):
+  def annotate(self):
     # annotate weights
     for i, chunk in enumerate(self.chunks):
       if (not is_vowels(self.chunks[i]['text'])):
@@ -266,6 +266,9 @@ class Verse:
       if 'weights' not in self.chunks[i].keys():
         self.chunks[i]['weights'] = self.possible_weights_context(i)
       self.chunks[i]['hemis'] = self.hemistiche(i)
+
+  def parse(self):
+    self.annotate()
 
     self.possible = self.fit(0, 0, self.pattern.hemistiches)
     self.text = self.align2str(self.chunks)
@@ -324,10 +327,10 @@ class Verse:
       return [0 if x else 1 for x in self.chunks[pos]['elidable']]
     return self.possible_weights(pos)
 
-  def feminine(self, align):
+  def feminine(self, align=None):
     for a in sure_end_fem:
       if self.text.endswith(a):
-        # check that this isn't a one-syllabe wourd
+        # check that this isn't a one-syllabe word
         for i in range(4):
           try:
             if '-' in self.chunks[-i-1]['text'] or 'wordend' in self.chunks[-i-1]:
@@ -338,6 +341,8 @@ class Verse:
     if not self.text.endswith('ent'):
       return ['M']
     # verse ends with 'ent'
+    if not align:
+      return ['M', 'F']
     if align and align[-2]['weight'] == 0:
       return ['F'] # mute -ent
     if align and align[-2]['weight'] > 0 and align[-2]['text'] == 'e':
