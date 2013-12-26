@@ -7,7 +7,7 @@ import sys
 from pprint import pprint
 import frhyme
 import functools
-from common import consonants
+from options import default_options
 
 # number of possible rhymes to consider
 NBEST = 5
@@ -38,7 +38,7 @@ tolerance = {
 
 
 class Constraint:
-  def __init__(self, classical, phon):
+  def __init__(self, classical=True, phon=1):
     self.phon = phon # minimal number of common suffix phones
     self.classical = classical # should we impose classical rhyme rules
 
@@ -66,13 +66,20 @@ class Rhyme:
       return x + liaison[x[-1]]
     return x
 
-  def __init__(self, line, constraint, mergers, options, phon=None):
-    self.constraint = constraint
+  def __init__(self, line, constraint=None, mergers=None, options=None, phon=None):
+    if constraint:
+      self.constraint = constraint
+    else:
+      self.constraint = Constraint()
     self.mergers = {}
-    self.options = options
-    for phon_set in mergers:
-      for pho in phon_set[1:]:
-        self.mergers[pho] = phon_set[0]
+    if options:
+      self.options = options
+    else:
+      self.options = default_options
+    if mergers:
+      for phon_set in mergers:
+        for pho in phon_set[1:]:
+          self.mergers[pho] = phon_set[0]
     if not phon:
       phon = self.lookup(line)
     self.phon = set([self.apply_mergers(x) for x in phon])
@@ -225,7 +232,7 @@ if __name__ == '__main__':
     line = line.lower().strip().split(' ')
     if len(line) < 1:
       continue
-    constraint = Constraint(True, 1)
+    constraint = Constraint()
     rhyme = Rhyme(line[0], constraint, self.mergers, self.options)
     for x in line[1:]:
       rhyme.feed(x)
