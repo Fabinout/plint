@@ -138,9 +138,10 @@ class Verse:
     # remove empty chunks created by simplifications
     for i, w in enumerate(self.chunks):
       self.chunks[i] = [x for x in w if len(x['text']) > 0]
+
     # remove leading and trailing crap
     for w in self.chunks:
-      for p in [0, -1]:
+      for p in range(len(w)):
         while len(w[p]['text']) > 0 and w[p]['text'][0] in ' -':
           w[p]['text'] = w[p]['text'][1:]
         while len(w[p]['text']) > 0 and w[p]['text'][-1] in ' -':
@@ -409,7 +410,7 @@ class Verse:
       ok = False
       try:
         for i in range(2):
-          if '-' in self.chunks[pos-i-1]['text'] or 'wordend' in self.chunks[pos-i-1]:
+          if '-' in self.chunks[pos-i-1]['original'] or 'wordend' in self.chunks[pos-i-1]:
             ok = True
       except IndexError:
         pass
