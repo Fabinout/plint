@@ -43,13 +43,14 @@ def norm_spaces(text):
   """Remove multiple consecutive whitespace"""
   return re.sub("\s+-*\s*", ' ', text)
 
-def rm_punct(text, rm_all=False, rm_apostrophe=False):
+def rm_punct(text, rm_all=False, rm_apostrophe=False, rm_apostrophe_end=True):
   """Remove punctuation from text"""
   text = re.sub("[" + apostrophes + "]", "'", text) # no weird apostrophes
   text = re.sub("' *", "'", text) # space after apostrophes
   if rm_apostrophe:
     text = re.sub("'", "", text)
-  text = re.sub("'*$", "", text) # apostrophes at end of line
+  if rm_apostrophe_end:
+    text = re.sub("'*$", "", text) # apostrophes at end of line
   text = re.sub("[‒–—―⁓⸺⸻]", " ", text) # no weird dashes
 
   #TODO rather: keep only good chars
@@ -83,10 +84,12 @@ def is_consonants(chunk):
       return False
   return True
 
-def normalize(text, downcase=True, rm_all=False, rm_apostrophe=False, strip=True):
+def normalize(text, downcase=True, rm_all=False, rm_apostrophe=False,
+    rm_apostrophe_end=True, strip=True):
   """Normalize text, ie. lowercase, no useless punctuation or whitespace"""
   res = norm_spaces(rm_punct(text.lower() if downcase else text,
-    rm_all=rm_all, rm_apostrophe=rm_apostrophe))
+    rm_all=rm_all, rm_apostrophe=rm_apostrophe,
+    rm_apostrophe_end=rm_apostrophe_end))
   if strip:
     return res.rstrip().lstrip()
   else:
