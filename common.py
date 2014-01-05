@@ -60,6 +60,8 @@ def rm_punct(text, rm_all=False, rm_apostrophe=False, rm_apostrophe_end=True):
   else:
     pattern = re.compile("[^\w]", re.UNICODE)
     text2 = pattern.sub('', text)
+  text2 = re.sub("\s'*$", " ", text2) # no lonely apostrophes
+  text2 = re.sub("^'*$", "", text2) # not only apostrophes
   return text2
 
 def is_vowels(chunk, with_h=False, with_y=True, with_crap=False):
