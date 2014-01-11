@@ -80,6 +80,7 @@ class Verse:
     self.pattern = pattern
     # will be updated later, used in parse and feminine
     self.phon = None
+    self.possible = None
 
     whitespace_regexp = re.compile("(\s*)")
     ys_regexp = re.compile("(\s*)")

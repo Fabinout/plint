@@ -55,7 +55,8 @@ class ErrorCollection:
 
   def lines(self, short=False):
     l = []
-    l.append([self.say(x, short) for x in self.align()])
+    if self.verse.possible != None:
+      l.append([self.say(x, short) for x in self.align()])
     for e in self.errors:
       l.append([self.say(e.report(self.pattern), short)])
     return l
