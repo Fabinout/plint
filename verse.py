@@ -269,12 +269,12 @@ class Verse:
       if 'weights' not in self.chunks[i].keys():
         self.chunks[i]['weights'] = self.possible_weights_context(i)
       self.chunks[i]['hemis'] = self.hemistiche(i)
+    self.text = self.align2str(self.chunks)
 
   def parse(self):
     self.annotate()
 
     self.possible = self.fit(0, 0, self.pattern.hemistiches)
-    self.text = self.align2str(self.chunks)
 
   def contains_break(self, chunk):
     return '-' in chunk['text'] or 'wordend' in chunk
