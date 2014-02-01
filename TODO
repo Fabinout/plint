@@ -1,9 +1,12 @@
-- "Sans hydre à travers des vertèbres qui puent"
 - highlight possible hemistiche positions where an hemistiche could have been placed
 - document expected errors of test.sh and commit necessary files
 - remove kludge for invalid characters, split them in specific chunks
 - produce error reports first to structured and then to text and json
 - and then from json to html
+- évaluer sur la base de données lexique, sur la qualité de la génération, sur
+  le nombre d'erreurs reconnues en cross-validation
+- apprendre les rimes à partir des cooccurrences en fin de vers (et d'un
+  blacklist de mots ambigus ou qch?)
 
 == Web ==
 
