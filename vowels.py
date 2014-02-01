@@ -97,6 +97,10 @@ def possible_weights_seed(chunk):
   """Return the possible number of syllabes taken by a vowel chunk"""
   if len(chunk['text']) == 1:
     return [1]
+  # dioïde, maoïste, taoïste
+  if (chunk['text'][-1] == 'ï' and len(chunk['text']) >= 3 and not
+      chunk['text'][-3:-1] == 'ou'):
+    return [3]
   #if chunk in ['ai', 'ou', 'eu', 'ei', 'eau', 'au', 'oi']:
   #  return [1]
   # we can't tell
