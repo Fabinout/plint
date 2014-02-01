@@ -305,7 +305,7 @@ class Verse:
         # actually, this will have an influence on the rhyme's gender
         # see feminine
         possible = []
-        if len(self.phon) == 0:
+        if not self.phon or len(self.phon) == 0:
           return [0, 1] # do something reasonable without pron
         for possible_phon in self.phon:
           if possible_phon.endswith(')') or possible_phon.endswith('#'):
