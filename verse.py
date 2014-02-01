@@ -75,9 +75,10 @@ class Verse:
             if 'text_pron' not in x.keys() else x['text']
             for x in self.chunks).lstrip().rstrip()
 
-  def __init__(self, line, template, pattern):
+  def __init__(self, line, template, pattern, threshold=None):
     self.template = template
     self.pattern = pattern
+    self.threshold = threshold
     # will be updated later, used in parse and feminine
     self.phon = None
     self.possible = None
@@ -280,7 +281,8 @@ class Verse:
 
   def possible_weights(self, pos):
     if self.template.options['diaeresis'] == "classical":
-      return vowels.possible_weights_ctx(self.chunks, pos)
+      return vowels.possible_weights_ctx(self.chunks, pos,
+          threshold=self.threshold)
     elif self.template.options['diaeresis'] == "permissive":
       return vowels.possible_weights_approx(self.chunks[pos]['text'])
 

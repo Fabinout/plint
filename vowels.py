@@ -24,7 +24,7 @@ def contains_trema(chunk):
       return True
   return False
 
-threshold = 10
+default_threshold = 12
 
 def make_query(chunks, pos):
   cleared = [clear(x) for x in chunks]
@@ -39,7 +39,10 @@ def make_query(chunks, pos):
       ''.join(cleared[pos+1:]),
       ''.join([x[::-1] for x in cleared[:pos][::-1]]))
 
-def possible_weights_ctx(chunks, pos):
+def possible_weights_ctx(chunks, pos, threshold=None):
+  global default_threshold
+  if not threshold:
+    threshold = default_threshold
   from diaeresis import lookup
   chunk = chunks[pos]
   q = make_query(chunks, pos)
