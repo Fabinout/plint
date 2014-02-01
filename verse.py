@@ -345,12 +345,11 @@ class Verse:
     if not self.text.endswith('ent'):
       return ['M']
     # verse ends with 'ent'
-    if not align:
-      return ['M', 'F']
-    if align and align[-2]['weight'] == 0:
-      return ['F'] # mute -ent
-    if align and align[-2]['weight'] > 0 and align[-2]['text'] == 'e':
-      return ['M'] # non-mute "-ent" by the choice of metric
+    if align:
+      if align and align[-2]['weight'] == 0:
+        return ['F'] # mute -ent
+      if align and align[-2]['weight'] > 0 and align[-2]['text'] == 'e':
+        return ['M'] # non-mute "-ent" by the choice of metric
     possible = []
     # now, we must check pronunciation?
     # "tient" vs. "lient" for instance, "excellent"...
