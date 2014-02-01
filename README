@@ -75,7 +75,15 @@ along the lines of:
 To run plint on test files, you can use test.sh. However, because of known bugs,
 some errors will be reported on the test files.
 
-== 4. Related work ==
+== 4. Training ==
+
+The diaeresis pattern is trained by calling
+
+  ./train_diaeresis.sh
+
+This is currently undocumented.
+
+== 5. Related work ==
 
 * http://pentametron.com/
 * http://virga.org/cvf/alexanql.php
