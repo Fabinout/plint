@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILES="andromaque mithridate boileau ../additions cyrano $1"
+FILES="andromaque mithridate boileau ../additions cyrano$@"
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 mkdir -p contexts
 rm -f contexts/*
