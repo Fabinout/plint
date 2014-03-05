@@ -15,13 +15,10 @@
   <body>
     <header>
     <h1><a href="/">plint</a></h1>
-    <sup><a id="about" href="about">
-        {% if lang == 'fr' %}
-        aide
-        {% else %}
-        help
-        {% endif %}
-    </a></sup>
+    <sup><a class="headlink"
+        href="about">{% if lang == 'fr' %}aide{% else %}help{% endif %}</a>&nbsp;&bull;&nbsp;<a 
+        class="headlink"
+        href="about#log">{% if lang == 'fr' %}vie privée{% else %}privacy{% endif %}</a></sup>
     {% if nolocale != True %}
     <div id="lang">
       <a href="/fr/{{path}}">fr</a>&nbsp;&bull;&nbsp;<a href="/en/{{path}}">en</a>

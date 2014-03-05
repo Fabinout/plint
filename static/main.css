@@ -20,7 +20,7 @@ h1 {
   padding-right: 0.5em;
 }
 
-header a, #about {
+header a, .headlink {
   color: white;
   text-decoration: none;
 }
@@ -32,8 +32,7 @@ header {
   width: 100%;
 }
 
-#about a {
-  float: right;
+.headlink a {
   color: #0c0;
 }
 
