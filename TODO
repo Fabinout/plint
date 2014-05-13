@@ -1,3 +1,4 @@
+- "K-Fet" ; should count 'K'
 - highlight possible hemistiche positions where an hemistiche could have been placed
 - document expected errors of test.sh and commit necessary files
 - remove kludge for invalid characters, split them in specific chunks
