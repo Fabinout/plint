@@ -83,6 +83,7 @@ class Verse:
     self.phon = None
     self.possible = None
 
+    self.hyphen_regexp = re.compile("(-*)")
     whitespace_regexp = re.compile("(\s*)")
     ys_regexp = re.compile("(\s*)")
     all_consonants = consonants + consonants.upper()
@@ -91,7 +92,8 @@ class Verse:
     words = re.split(whitespace_regexp, line)
     words = remove_trivial(words, (lambda w: re.match("^\s*$", w) or
       len(normalize(w, rm_all=True)) == 0))
-    pre_chunks = [re.split(consonants_regexp, word) for word in words]
+    words2 = sum([self.splithyph(w) for w in words], [])
+    pre_chunks = [re.split(consonants_regexp, word) for word in words2]
     pre_chunks = [remove_trivial(x, (lambda w: re.match("^\s*$", w) or
       len(normalize(w, rm_all=True)) == 0)) for x in pre_chunks]
     self.chunks = [[{'original': y, 'text': normalize(y, rm_apostrophe=True)}
@@ -259,6 +261,35 @@ class Verse:
 
     # collapse words
     self.chunks = sum(self.chunks, [])
+
+  def splithyph(self, word):
+    """split hyphen-delimited word parts into separate words if they are only
+    consonants, so that the sigle code later can deal with them (e.g. "k-way")"""
+
+    pre_chunks2 = []
+    cs = re.split(self.hyphen_regexp, word)
+    miss = ""
+    for i in range(len(cs)):
+      if re.match("^-*$", cs[i]):
+        if len(pre_chunks2) > 0:
+          pre_chunks2[-1] += cs[i]
+          continue
+        else:
+          miss = cs[i]
+          continue
+      if is_consonants(cs[i]):
+        pre_chunks2.append(miss + cs[i])
+        miss = ""
+      else:
+        pre_chunks2.append(miss + "".join(cs[i:]))
+        miss = ""
+        break
+    if miss != "":
+      if len(pre_chunks2) > 0:
+        pre_chunks2[-1] += miss
+      else:
+        pre_chunks2 = [miss]
+    return pre_chunks2
 
   def annotate(self):
     # annotate weights
