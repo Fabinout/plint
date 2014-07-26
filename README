@@ -16,8 +16,9 @@ this program (see file "COPYING").  If not, see <http://www.gnu.org/licenses/>.
 
 bottle.py is a third-party file, its license is in file LICENSE_bottle.
 
-test/boileau is from Wikisource and test/baudelaire is from Project Gutenberg.
-Both of them are in the public domain.
+test/boileau and test/andromaque are from Wikisource and test/baudelaire and
+test/mithridate are from Project Gutenberg. Both of them are in the public
+domain.
 
 == 1. Features ==
 
