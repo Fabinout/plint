@@ -46,6 +46,14 @@ function setCustom() {
   setUnload();
 }
 
+function resizePoem(e) {
+  $( '#poem' ).height(
+      $( window ).height() - $( '#poem' ).offset().top - 20);
+}
+
+window.onresize = resizePoem;
+window.onload = resizePoem;
+
 function check() {
   $( "#status" ).html("Checking...");
   var poem = $( '#poem' ).val();
@@ -117,6 +125,7 @@ function loadPredef() {
       $( '#user_template' ).val(data);
       $('#user_template').show();
       $('#customize').prop("disabled", true);
+      resizePoem();
     }
     });
   }
@@ -129,6 +138,7 @@ function toggleCustom() {
     $('#user_template').hide();
     $('#customize').prop("disabled", false);
   }
+  resizePoem();
 }
 
 function gotoLine(l) {
