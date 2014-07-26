@@ -83,11 +83,6 @@ def root(lang):
   return env.get_template('index.html').render(title=get_title(lang),
       lang=lang, path="")
 
-@app.route('/<lang>/js')
-def about(lang):
-  return env.get_template('js.html').render(title=get_title(lang),
-      lang=lang, path="js")
-
 @app.route('/<lang>/about')
 def about(lang):
   return env.get_template('about.html').render(title=get_title(lang),
@@ -159,82 +154,6 @@ def q(lang):
         })
   d['result'] = r
   return dumps(d)
-
-@app.route('/<lang>/check', method='POST')
-def q(lang):
-  d = {
-      'poem': request.forms.get('poem'),
-      'template': request.forms.get('template'),
-      'lang': lang,
-      'nolocale': True,
-    }
-  localization.init_locale(lang)
-  d['poem'] = re.sub(r'<>&', '', d['poem'])
-  print(d['poem'])
-  poem = check(d['poem'])
-  if not poem:
-    if lang == 'fr':
-      msg = "Le poème est vide, trop long, ou a des lignes trop longues"
-    else:
-      msg = "Poem is empty, too long, or has too long lines"
-    d['error'] = msg
-    return env.get_template('error.html').render(**d)
-  if not re.match("^[a-z_]+$", d['template']):
-    if lang == 'fr':
-      msg = "Modèle inexistant"
-    else:
-      msg = "No such template"
-    d['error'] = msg
-    return env.get_template('error.html').render(**d)
-  if d['template'] == 'custom':
-    x = request.forms.get('custom_template')
-  else:
-    try:
-      f = open("static/tpl/" + d['template'] + ".tpl")
-      x = f.read()
-      f.close()
-    except IOError:
-      if lang == 'fr':
-        msg = "Modèle inexistant"
-      else:
-        msg = "No such template"
-      d['error'] = msg
-      return env.get_template('error.html').render(**d)
-  try:
-    templ = template.Template(x)
-  except error.TemplateLoadError as e:
-    if lang == 'fr':
-      msg = "Erreur à la lecture du modèle : " + e.msg
-    else:
-      msg = "Error when reading template: " + e.msg
-    d['error'] = msg
-    return env.get_template('error.html').render(**d)
-  print(d['template'])
-  print(x)
-  poem.append(None)
-  r = []
-  firsterror = None
-  nerror = 0
-  i = 0
-  for line in poem:
-    i += 1
-    last = False
-    if line == None:
-      line = ""
-      last = True
-    errors = templ.check(line, last=last)
-    if errors and not firsterror:
-      firsterror = i
-    r.append((line, '\n'.join(sum(errors.lines(short=True), [])) if errors else []))
-    nerror += len(errors.errors) if errors else 0
-  d['result'] = r
-  d['firsterror'] = firsterror
-  d['nerror'] = nerror
-  if nerror == 0:
-    d['title'] = "[Valid] " + get_title(lang)
-  else:
-    d['title'] = "[Invalid] " + get_title(lang)
-  return env.get_template('results.html').render(**d)
 
 if __name__ == '__main__':
   run(app, port='5000', server="cherrypy", host="0.0.0.0")
