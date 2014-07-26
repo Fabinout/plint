@@ -52,6 +52,10 @@ def get_title(lang):
 def server_static(filename):
   return static_file(filename, root="./static/tpl", mimetype="text/plain")
 
+@app.route('/<lang>/static/img/<filename>')
+def server_static(filename, lang=None):
+  return static_file(filename, root="./static/img")
+
 @app.route('/<lang>/static/tpl/<filename>')
 def server_static(filename, lang=None):
   return static_file(filename, root="./static/tpl", mimetype="text/plain")
@@ -112,7 +116,21 @@ def q(lang):
     else:
       msg = "Poem is empty, too long, or has too long lines"
     return dumps({'error': msg})
-  x = request.forms.get('template')
+  templateName = request.forms.get('template')
+  if templateName == 'custom':
+    x = request.forms.get('custom_template')
+  else:
+    try:
+      f = open("static/tpl/" + templateName + ".tpl")
+      x = f.read()
+      f.close()
+    except IOError:
+      if lang == 'fr':
+        msg = "Modèle inexistant"
+      else:
+        msg = "No such template"
+      return dumps({'error': msg})
+  print(x)
   try:
     templ = template.Template(x)
   except error.TemplateLoadError as e:
@@ -124,8 +142,6 @@ def q(lang):
   print(x)
   poem.append(None)
   r = []
-  firsterror = None
-  nerror = 0
   i = 0
   d = {}
   for line in poem:
@@ -135,17 +151,13 @@ def q(lang):
       line = ""
       last = True
     errors = templ.check(line, last=last)
-    if errors and not firsterror:
-      firsterror = i
-    r.append((line, '\n'.join(sum(errors.lines(short=True), [])) if errors else []))
-    nerror += len(errors.errors) if errors else 0
+    if errors:
+      r.append({
+        'line': line,
+        'num': i,
+        'errors': sum(errors.lines(short=True), [])
+        })
   d['result'] = r
-  d['firsterror'] = firsterror
-  d['nerror'] = nerror
-  if nerror == 0:
-    d['title'] = "[Valid] " + get_title(lang)
-  else:
-    d['title'] = "[Invalid] " + get_title(lang)
   return dumps(d)
 
 @app.route('/<lang>/check', method='POST')

@@ -6,197 +6,128 @@ function showCustom(a) {
   }
 }
 
-/*
-// http://stackoverflow.com/questions/13240310/how-to-enforce-li-formatting-in-a-contenteditable-ul
-//keyup prevented the user from deleting the bullet (by adding one back right after delete), but didn't add in li's on empty ul's, thus keydown added to check
-// TODO make this work
-// TODO fix border problems
-function setevt() {
-  $('#poem').on('keyup keydown', function() {
-    var $this = $(this);
-      if (! $this.find('li').length == 0) {
-          var $li = $('&lt;li&gt;&lt;/li&gt;');
-          var sel = window.getSelection();
-         var range = sel.getRangeAt(0);
-          range.collapse(false);
-          range.insertNode($li.get(0));
-          range = range.cloneRange();
-          range.selectNodeContents($li.get(0));
-          range.collapse(false);
-          sel.removeAllRanges();
-          sel.addRange(range);
+function reportError(msg) {
+  if (lang == "fr") {
+    var message = "Impossible de vérifier le poème faute de pouvoir communiquer avec le serveur&nbspp;: ";
+  } else {
+    var message = "Could not check poem due to error when communicating with server:";
+  }
+  $( "#status" ).html("<span class=\"error\">" + message + msg + "</span>");
+}
 
-      } else {
-          //are there any tags that AREN'T LIs?
-          //this should only occur on a paste
-          var $nonLI = $this.find(':not(li, br)');
+var setForCustom = false;
 
-          if ($nonLI.length) {
-              $this.contents().replaceWith(function() {
-      //we create a fake div, add the text, then get the html in order to strip out html code. we then clean up a bit by replacing nbsp's with real spaces
-  return '&lt;li&gt;' + $('&lt;div /&gt;').text($(this).text()).html().replace(/&nbsp;/g, ' ') + '</li>';
-              });
-              //we could make this better by putting the caret at the end of the last LI, or something similar
-          }                   
-      }
-  });
-};
+function setUnload() {
+  window.onbeforeunload = function() {
+    if (lang == "fr") {
+      return "Votre poème sera perdu en fermant cette page. Êtes-vous sûr de vouloir la quitter ?";
+    } else {
+      return "Your poem will be lost when closing this page. Are you sure you want to navigate away?";
+    }
+  };
+}
 
-*/
+function toggleUnload() {
+  if ($('#poem').val().length > 10) {
+    setUnload();
+  } else {
+    if (!setForCustom) {
+      window.onbeforeunload = null;
+    }
+  }
+}
 
-// http://stackoverflow.com/questions/13240310/how-to-enforce-li-formatting-in-a-contenteditable-ul
-//keyup prevented the user from deleting the bullet (by adding one back right after delete), but didn't add in li's on empty ul's, thus keydown added to check
-$( document ).ready(function() {
-  console.log("SETUP");
-
-  /*
-  $('#poem').on('keyup keydown paste', function() {
-      //are there any tags that AREN'T LIs?
-      //this should only occur on a paste
-      var $nonLI = $this.find(':not(li, br)');
-
-      if ($nonLI.length) {
-          $this.contents().replaceWith(function() {
-  //we create a fake div, add the text, then get the html in order to strip out html code. we then clean up a bit by replacing nbsp's with real spaces
-return '&lt;li&gt;' + $('&lt;div /&gt;').text($(this).text()).html().replace(/&nbsp;/g, ' ') + '</li>';
-          });
-          //we could make this better by putting the caret at the end of the last LI, or something similar
-      }                   
-  });
-  
-*/
-  $('#poem').on('paste', function() {
-
-    console.log("AHA");
-
-    object.saveCursorPosition(); // TODO
-    var textarea= $("<div contenteditable></div>");
-    textarea.css("position",  "absolute").css("left", "-1000px").css("top", object.$editable.offset().top + "px").attr("id","pasteHelper").appendTo("body");
-    textarea.html('<BR>');
-    textarea.focus();
-
-    setTimeout(function() {
-        object.$editable.focus();
-        object.restoreCursorPosition();
-        object.insertTextAtCursor(textarea.text());
-        textarea.remove();
-    }, 0);
-  });
-});
+function setCustom() {
+  setForCustom = true;
+  setUnload();
+}
 
 function check() {
-  // TODO handle errors
-  $( "#poem" ).find('span').remove()
-  $( "#poem" ).contenteditable = false;
   $( "#status" ).html("Checking...");
-  console.log($( "#poem" ).html());
-  var clone = $( "#poem" ).clone();
-  clone.find(":not(br)").remove().end().html();
-  clone.find("br").replaceWith("\n");
-  var poem = clone.text();
-  // TODO change errors in place
-  // TODO remove all errors
-  // TODO better error integration
-  // TODO template selection
-  // TODO page exit confirmation
+  var poem = $( '#poem' ).val();
+  var mydata = {
+      'poem': poem,
+      'template': $( '#predef' ).val()
+    };
+  if (mydata['template'] == 'custom') {
+    mydata['custom_template'] = $( "#user_template" ).val();
+  }
   $.ajax({
     url: "checkjs",
     type: "post",
-    data: {
-      'template': $( "#user_template" ).val(),
-     // 'poem': $( "#poem" ).contents().map(function() {
-     //   return $(this).text();
-     // }).get().join('\n')
-     // http://stackoverflow.com/questions/3442394/jquery-using-text-to-retrieve-only-text-not-nested-in-child-tags
-      'poem': poem
+    data: mydata,
+    error: function (jqxhr, stat, error) {
+      reportError(stat + (error.length > 0 ? ": " + error : ""));
     },
     success: function (data) {
       if ("error" in data) {
-        $( "#status" ).html("error: " + data.error);
-//        $( "#poem li").each(function() {
-//          $(this).css({'color': 'black'});
-//        });
-//      $
+        $( "#status" ).html("<span class=\"error\">" + data.error + "</span>");
       } else {
-        for (var i = data.result.length - 1; i >= 0; i--) {
-          if (data.result[i][1].length > 0) {
-            $( "#poem > br:nth-child(" + (i) + ")" ).before(" <span contenteditable=\"false\"><button>Toggle errors</button><pre>" + data.result[i][1] + "</pre></span>");
-            //$( "#poem li:nth-child(" + (i) + ")" ).css({'color': 'red'});
+        $( "#errors" ).empty();
+        for (var i = 0; i < data.result.length; i++) {
+          var err = data.result[i];
+          $( "#errors" ).append("<li onclick=\"gotoLine(" + err.num + ")\">" +
+            "<p>" + (lang == "fr" ? "Erreurs pour la ligne " : "Errors for line ")
+            + err.num + ":</p>" + 
+            "<blockquote>" + err.line + "</blockquote>" +
+            "<pre>" + err.errors.join("<br />") + "</pre></li>");
+        }
+        if (data.result.length > 0) {
+          var agreement = (data.result.length == 1 ? "" : "s");
+          var msg = data.result.length;
+          if (lang == "fr") {
+            msg += " erreur" + agreement + " trouvée" + agreement + " en validant le poème&nbsp;!";
+          } else {
+            msg += " error" + agreement + " found when validating poem" + "!";
           }
-        }
-        $( "#status" ).html("checked: nerror " + data.nerror);
-      }
-      $( "#poem" ).contenteditable = true;
-     //  $( "#poem  ").find('pre').each(function() {
-     //    $(this).css({'color': 'black'});
-     //  });
-      $('#poem button').on('click', function() {
-        var old = $(this).parent().find('pre').css("display");
-        var val;
-        if (old == "none") {
-          val = "block";
+          $( "#status" ).html("<span class=\"error\">" + msg + "</span>");
         } else {
-          val = "none";
+          if (lang == "fr") {
+            var msg = "Poème conforme au modèle&nbsp;!";
+          } else {
+            var msg = "Poem validated against template!";
+          }
+          $( "#status" ).html("<span class=\"success\">" + msg + "</span>");
         }
-        $(this).parent().find('pre').css({'display': val});
-      });
+      }
     }
     });
 }
 
+function loadPredef() {
+  var predef = $( '#predef' ).val();
+  if (predef == "custom")
+    return;
+  $('#predef option[value="custom"]').prop('selected', true)
+  $.ajax({
+    url: "static/tpl/" + predef + ".tpl",
+    type: "get",
+    error: function (jqxhr, stat, error) {
+      reportError(stat + (error.length > 0 ? ": " + error : ""));
+    },
+    success: function (data) {
+      $( '#user_template' ).val(data);
+      $('#user_template').show();
+      $('#customize').prop("disabled", true);
+    }
+    });
+  }
 
-/*
-// http://stackoverflow.com/questions/2176861/javascript-get-clipboard-data-on-paste-event-cross-browser
-function handlepaste (elem, e) {
-    var savedcontent = elem.innerHTML;
-    if (e && e.clipboardData && e.clipboardData.getData) {// Webkit - get data from clipboard, put into editdiv, cleanup, then cancel event
-        if (/text\/html/.test(e.clipboardData.types)) {
-            elem.innerHTML = e.clipboardData.getData('text/html');
-        }
-        else if (/text\/plain/.test(e.clipboardData.types)) {
-            elem.innerHTML = e.clipboardData.getData('text/plain');
-        }
-        else {
-            elem.innerHTML = "";
-        }
-        waitforpastedata(elem, savedcontent);
-        if (e.preventDefault) {
-                e.stopPropagation();
-                e.preventDefault();
-        }
-        return false;
-    }
-    else {// Everything else - empty editdiv and allow browser to paste content into it, then cleanup
-        elem.innerHTML = "";
-        waitforpastedata(elem, savedcontent);
-        return true;
-    }
+function toggleCustom() {
+  if ($( '#predef' ).val() == 'custom') {
+    $('#user_template').show();
+    $('#customize').prop( "disabled", true);
+  } else {
+    $('#user_template').hide();
+    $('#customize').prop("disabled", false);
+  }
 }
 
-function waitforpastedata (elem, savedcontent) {
-    if (elem.childNodes && elem.childNodes.length > 0) {
-        processpaste(elem, savedcontent);
-    }
-    else {
-        that = {
-            e: elem,
-            s: savedcontent
-        }
-        that.callself = function () {
-            waitforpastedata(that.e, that.s)
-        }
-        setTimeout(that.callself,20);
-    }
+function gotoLine(l) {
+  var pos = 0;
+  var lines = $( '#poem' ).val().split('\n');
+  for (var i = 0; i < l - 1; i++)
+    pos += lines[i].length + "\n".length;
+  $( '#poem' ).caretTo(pos);
 }
 
-function processpaste (elem, savedcontent) {
-    pasteddata = elem.innerHTML;
-    //^^Alternatively loop through dom (elem.childNodes or elem.getElementsByTagName) here
-
-    elem.innerHTML = savedcontent;
-
-    // Do whatever with gathered data;
-    $("#poem").text(pasteddata);
-}
-
-*/
