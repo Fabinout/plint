@@ -5,7 +5,16 @@
 <ol id="errors">
 </ol>
 
-<div style="width: 50%">
+<noscript>
+{% if lang == 'fr' %}
+<p>Désolé, votre navigateur doit supporter JavaScript pour faire fonctionner
+plint.</p>
+{% else %}
+<p>Sorry, plint requires a browser with JavaScript support.</p>
+{% endif %}
+</noscript>
+
+<div id="lcontainer">
   <p id="status">
 {% if lang == 'fr' %}
 plint est un outil pour vérifier la métrique et les rimes de poèmes en

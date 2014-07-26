@@ -16,6 +16,10 @@
   margin-left: 1em;
 }
 
+#lcontainer {
+  width: 42%;
+}
+
 #poem pre {
   margin-left: 1em;
 }
