@@ -5,8 +5,9 @@ import localization
 import re
 import template
 import error
-from bottle import run, Bottle, request, static_file, redirect
+from bottle import run, Bottle, request, static_file, redirect, response
 from jinja2 import Environment, PackageLoader
+from json import dumps
 
 env = Environment(loader=PackageLoader('plint_web', 'views'))
 
@@ -51,6 +52,10 @@ def get_title(lang):
 def server_static(filename):
   return static_file(filename, root="./static/tpl", mimetype="text/plain")
 
+@app.route('/<lang>/static/img/<filename>')
+def server_static(filename, lang=None):
+  return static_file(filename, root="./static/img")
+
 @app.route('/<lang>/static/tpl/<filename>')
 def server_static(filename, lang=None):
   return static_file(filename, root="./static/tpl", mimetype="text/plain")
@@ -93,37 +98,25 @@ def check(poem):
     s[x].strip()
   return s
 
-@app.route('/<lang>/check', method='POST')
+@app.route('/<lang>/checkjs', method='POST')
 def q(lang):
-  d = {
-      'poem': request.forms.get('poem'),
-      'template': request.forms.get('template'),
-      'lang': lang,
-      'nolocale': True,
-    }
+  response.content_type = 'application/json'
   localization.init_locale(lang)
-  d['poem'] = re.sub(r'<>&', '', d['poem'])
-  print(d['poem'])
-  poem = check(d['poem'])
+  poem = request.forms.get('poem')
+  poem = re.sub(r'<>&', '', request.forms.get('poem'))
+  poem = check(poem)
   if not poem:
     if lang == 'fr':
       msg = "Le poème est vide, trop long, ou a des lignes trop longues"
     else:
       msg = "Poem is empty, too long, or has too long lines"
-    d['error'] = msg
-    return env.get_template('error.html').render(**d)
-  if not re.match("^[a-z_]+$", d['template']):
-    if lang == 'fr':
-      msg = "Modèle inexistant"
-    else:
-      msg = "No such template"
-    d['error'] = msg
-    return env.get_template('error.html').render(**d)
-  if d['template'] == 'custom':
+    return dumps({'error': msg})
+  templateName = request.forms.get('template')
+  if templateName == 'custom':
     x = request.forms.get('custom_template')
   else:
     try:
-      f = open("static/tpl/" + d['template'] + ".tpl")
+      f = open("static/tpl/" + templateName + ".tpl")
       x = f.read()
       f.close()
     except IOError:
@@ -131,8 +124,8 @@ def q(lang):
         msg = "Modèle inexistant"
       else:
         msg = "No such template"
-      d['error'] = msg
-      return env.get_template('error.html').render(**d)
+      return dumps({'error': msg})
+  print(x)
   try:
     templ = template.Template(x)
   except error.TemplateLoadError as e:
@@ -140,15 +133,12 @@ def q(lang):
       msg = "Erreur à la lecture du modèle : " + e.msg
     else:
       msg = "Error when reading template: " + e.msg
-    d['error'] = msg
-    return env.get_template('error.html').render(**d)
-  print(d['template'])
+    return dumps({'error': msg})
   print(x)
   poem.append(None)
   r = []
-  firsterror = None
-  nerror = 0
   i = 0
+  d = {}
   for line in poem:
     i += 1
     last = False
@@ -156,18 +146,14 @@ def q(lang):
       line = ""
       last = True
     errors = templ.check(line, last=last)
-    if errors and not firsterror:
-      firsterror = i
-    r.append((line, '\n'.join(sum(errors.lines(short=True), [])) if errors else []))
-    nerror += len(errors.errors) if errors else 0
+    if errors:
+      r.append({
+        'line': line,
+        'num': i,
+        'errors': sum(errors.lines(short=True), [])
+        })
   d['result'] = r
-  d['firsterror'] = firsterror
-  d['nerror'] = nerror
-  if nerror == 0:
-    d['title'] = "[Valid] " + get_title(lang)
-  else:
-    d['title'] = "[Invalid] " + get_title(lang)
-  return env.get_template('results.html').render(**d)
+  return dumps(d)
 
 if __name__ == '__main__':
   run(app, port='5000', server="cherrypy", host="0.0.0.0")

@@ -1,115 +1,141 @@
 {% extends "page.html" %}
 
 {% block body %}
-<form method="POST" action="check" id="bigform">
-  {% if lang == 'fr' %}
-  <p id="desc">plint est un outil pour vérifier la métrique et les rimes de poèmes en
-  langue française.</p>
-  {% else %}
-  <p id="desc">plint is a tool to check the metric and rhymes of French verse.</p>
-  {% endif %}
-  <label for="poem">
-  </label><br />
-  <textarea id="poem" name="poem"
-  {% if lang == 'fr' %}
-    placeholder="Saisissez votre poème ici."
-  {% else %}
-    placeholder="Input your poem here."
-  {% endif %}
-    ></textarea>
-  <br/>
-  <label id="templatel">
-  {% if lang == 'fr' %}
-    Choisissez un modèle de poème&nbsp;:
-  {% else %}
-    Choose a poem template:
-  {% endif %}
-</label><br />
-<ul id="template">
-  <li><input onchange="showCustom(0)" type="radio" name="template" value="classical"
-  id="classical" checked="checked" />
-  <label for="classical">
-  {% if lang == 'fr' %}
-  Alexandrins classiques avec césure à l'hémistiche, rimes plates, genres
-  alternés.
-  {% else %}
-  Classical alexandrine verse with <em>hémistiche</em>, flat rhymes, alternate
-  rhyme genres.
-  {% endif %}
-</label></li>
-  <li><input onchange="showCustom(0)" type="radio" name="template" value="italian_abba" id="italian_abba" />
-  <label for="italian_abba">
-  {% if lang == 'fr' %}
-  Sonnet italien classique d'alexandrins à rimes embrassées&nbsp;:<br/>deux quatrains 
-  en rimes embrassées, deux tercets en rimes CCD EED.
-  {% else %}
-  Classical Italian sonnet of alexandrine verse with <em>rimes
-    embrassées</em>:<br/>two <em>quatrains</em> with <em>rimes embrassées</em>, two
-  <em>tercets</em> with rhyme pattern CCD EED.
-  {% endif %}
-</label></li>
-  <li><input onchange="showCustom(0)" type="radio" name="template" value="italian_abab" id="italian_abab" />
-  <label for="italian_abab">
-  {% if lang == 'fr' %}
-  Sonnet italien classique d'alexandrins à rimes croisées.
-  {% else %}
-  Classical Italian sonnet of alexandrine verse with <em>rimes croisées</em>.
-  {% endif %}
-</label></li>
-  <li><input onchange="showCustom(0)" type="radio" name="template" value="french_abba" id="french_abba" />
-  <label for="french_abba">
-  {% if lang == 'fr' %}
-  Sonnet français classique d'alexandrins à rimes embrassées&nbsp;:<br/>deux
-  quatrains en rimes embrassées, deux tercets en rimes CCD
-  EDE.
-  {% else %}
-  Classical French sonnet of alexandrine verse with <em>rimes
-    embrassées</em>:<br/>two <em>quatrains</em> with <em>rimes embrassées</em>, two
-  <em>tercets</em> with rhyme pattern CCD EDE.
-  {% endif %}
-</label></li>
-  <li><input onchange="showCustom(0)" type="radio" name="template" value="french_abab" id="french_abab" />
-  <label for="french_abab">
-  {% if lang == 'fr' %}
-  Sonnet français classique d'alexandrins à rimes croisées.
-  {% else %}
-  Classical French sonnet of alexandrine verse with <em>rimes croisées</em>.
-  {% endif %}
-</label></li>
-  <li><input onchange="showCustom(0)" type="radio" name="template" value="alexandrin" id="alexandrin" />
-  <label for="alexandrin">
-  {% if lang == 'fr' %}
-  Alexandrins sans hémistiche, sans vérification de la rime.
-  {% else %}
-  Alexandrine without <em>hémistiche</em> and without rhyme.
-  {% endif %}
-</label></li>
-  <li><input onchange="showCustom(1)" type="radio" name="template" value="custom" id="custom" />
-  <label for="custom">
-  {% if lang == 'fr' %}
-  Personnalisé (<a href="about#template" target="_blank">plus d'infos</a>)
-  {%else%}
-  Custom (<a href="about#template" target="_blank">more info</a>)
-  {%endif%}
-</label>
 
-  <textarea name="custom_template" id="custom_template"
-  {% if lang == 'fr' %}
-  placeholder="Saisissez votre modèle personnalisé ici."
-  {% else %}
-  placeholder="Input a custom template here."
-  {% endif %}
-  ></textarea>
-</li>
+<ol id="errors">
+</ol>
 
-</ul>
-  <input id="submit" type="submit"
+<noscript>
+{% if lang == 'fr' %}
+<p>Désolé, votre navigateur doit supporter JavaScript pour faire fonctionner
+plint.</p>
+{% else %}
+<p>Sorry, plint requires a browser with JavaScript support.</p>
+{% endif %}
+</noscript>
+
+<div id="lcontainer">
+  <p id="status">
+{% if lang == 'fr' %}
+plint est un outil pour vérifier la métrique et les rimes de poèmes en
+langue française. 
+Choisissez un modèle (survolez avec le pointeur pour plus de détails), saisissez
+votre poème, et cliquez sur "Valider".
+{% else %}
+plint is a tool to check the metric and rhymes of French verse.
+Select a template (hover for details), input your poem, and hit
+"Validate".
+{% endif %}
+</p>
+
+<select name="predef" id="predef" onChange="toggleCustom()" tabindex="1">
+  <option value="classical" id="classical"
   {% if lang == 'fr' %}
-    value="Valider"
+title="Alexandrins classiques avec césure à l'hémistiche, rimes plates, genres alternés.">
+  Alexandrins classiques avec rimes plates
   {% else %}
-    value="Check"
+  title="Classical alexandrine verse with hémistiche, flat rhymes, alternate rhyme genres.">
+  Classical alexandrine with flat rhymes
   {% endif %}
-    />
-  </form>
+  </option>
+
+  <option value="italian_abba" id="italian_abba"
+  {% if lang == 'fr' %}
+  title="Sonnet italien classique d'alexandrins à rimes embrassées : deux quatrains en rimes embrassées, deux tercets en rimes CCD EED.">
+  Sonnet classique, quatrains rimes embrassées, tercets CCD EED
+  {% else %}
+  title="Classical Italian sonnet of alexandrine verse with rimes embrassées: two quatrains with rimes embrassées, two tercets with rhyme pattern CCD EED.">
+  Classical sonnet, quatrains rimes embrassées, tercets CCD EED
+  {% endif %}
+  </option>
+
+  <option value="italian_abab" id="italian_abab"
+  {% if lang == 'fr' %}
+  title="Sonnet italien classique d'alexandrins à rimes croisées : deux quatrains en rimes croisées, deux tercets en rimes CCD EED.">
+  Sonnet classique, quatrains rimes croisées, tercets CCD EED
+  {% else %}
+  title="Classical Italian sonnet of alexandrine verse with rimes croisées: two quatrains with rimes croisées, two tercets with rhyme pattern CCD EED.">
+  Classical sonnet, quatrains rimes croisées, tercets CCD EED
+  {% endif %}
+  </option>
+
+  <option value="french_abba" id="french_abba"
+  {% if lang == 'fr' %}
+  title="Sonnet français classique d'alexandrins à rimes embrassées : deux quatrains en rimes embrassées, deux tercets en rimes CCD EDE.">
+  Sonnet classique, quatrains rimes embrassées, tercets CCD EDE
+  {% else %}
+  title="Classical French sonnet of alexandrine verse with rimes embrassées: two quatrains with rimes embrassées, two tercets with rhyme pattern CCD EDE.">
+  Classical sonnet, quatrains rimes embrassées, tercets CCD EDE
+  {% endif %}
+  </option>
+
+  <option value="french_abab" id="french_abab"
+  {% if lang == 'fr' %}
+  title="Sonnet français classique d'alexandrins à rimes croisées : deux quatrains en rimes croisées, deux tercets en rimes CCD EDE.">
+  Sonnet classique, quatrains rimes croisées, tercets CCD EDE
+  {% else %}
+  title="Classical French sonnet of alexandrine verse with rimes croisées: two quatrains with rimes croisées, two tercets with rhyme pattern CCD EDE.">
+  Classical sonnet, quatrains rimes croisées, tercets CCD EDE
+  {% endif %}
+  </option>
+
+  <option value="alexandrin" id="alexandrin"
+  {% if lang == 'fr' %}
+  title="Alexandrins sans hémistiche et sans vérification de la rime.">
+  Alexandrins sans hémistiche et sans rime
+  {% else %}
+  title="Alexandrine verse without hémistiche and without rhyme checks.">
+  Alexandrine without hemistiche or rhyme
+  {% endif %}
+  </option>
+
+  <option value="custom" id="custom"
+  {% if lang == 'fr' %}
+  title="Modèle personnalisé.">
+  Modèle personnalisé
+  {% else %}
+  title="Custom template.">
+  Custom template
+  {% endif %}
+  </option>
+</select>
+<br/>
+<textarea id="user_template" style="display:none;" onchange="setCustom()">
+6/6 A !X
+6/6 A !X
+6/6 B !x
+6/6 B !x
+</textarea>
+<p>
+<button onclick="loadPredef()" id="customize" tabindex="2">
+{% if lang == 'fr' %}
+  Personnaliser le modèle sélectionné
+{% else %}
+  Customize selected template
+{% endif %}
+</button>
+<a class="doclink" href="#"
+  onclick="window.open('about#template', '_blank');" tabindex="3">
+  documentation&nbsp;<img src="static/img/nw.png">
+</a>
+<button id="check" onclick="check()" tabindex="5">
+{% if lang == 'fr' %}
+  Valider
+{% else %}
+  Validate
+{% endif %}
+</button>
+</p>
+<textarea id="poem" name="poem" tabindex="4"
+  onchange="toggleUnload()"
+{% if lang == 'fr' %}
+  placeholder="Saisissez votre poème ici"
+{% else %}
+  placeholder="Input your poem here"
+{% endif %}
+>
+</textarea>
+</div>
+
 {% endblock %}
 
