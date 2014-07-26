@@ -5,8 +5,9 @@ import localization
 import re
 import template
 import error
-from bottle import run, Bottle, request, static_file, redirect
+from bottle import run, Bottle, request, static_file, redirect, response
 from jinja2 import Environment, PackageLoader
+from json import dumps
 
 env = Environment(loader=PackageLoader('plint_web', 'views'))
 
@@ -78,6 +79,11 @@ def root(lang):
   return env.get_template('index.html').render(title=get_title(lang),
       lang=lang, path="")
 
+@app.route('/<lang>/js')
+def about(lang):
+  return env.get_template('js.html').render(title=get_title(lang),
+      lang=lang, path="js")
+
 @app.route('/<lang>/about')
 def about(lang):
   return env.get_template('about.html').render(title=get_title(lang),
@@ -92,6 +98,55 @@ def check(poem):
       return None
     s[x].strip()
   return s
+
+@app.route('/<lang>/checkjs', method='POST')
+def q(lang):
+  response.content_type = 'application/json'
+  localization.init_locale(lang)
+  poem = request.forms.get('poem')
+  poem = re.sub(r'<>&', '', request.forms.get('poem'))
+  poem = check(poem)
+  if not poem:
+    if lang == 'fr':
+      msg = "Le poème est vide, trop long, ou a des lignes trop longues"
+    else:
+      msg = "Poem is empty, too long, or has too long lines"
+    return dumps({'error': msg})
+  x = request.forms.get('template')
+  try:
+    templ = template.Template(x)
+  except error.TemplateLoadError as e:
+    if lang == 'fr':
+      msg = "Erreur à la lecture du modèle : " + e.msg
+    else:
+      msg = "Error when reading template: " + e.msg
+    return dumps({'error': msg})
+  print(x)
+  poem.append(None)
+  r = []
+  firsterror = None
+  nerror = 0
+  i = 0
+  d = {}
+  for line in poem:
+    i += 1
+    last = False
+    if line == None:
+      line = ""
+      last = True
+    errors = templ.check(line, last=last)
+    if errors and not firsterror:
+      firsterror = i
+    r.append((line, '\n'.join(sum(errors.lines(short=True), [])) if errors else []))
+    nerror += len(errors.errors) if errors else 0
+  d['result'] = r
+  d['firsterror'] = firsterror
+  d['nerror'] = nerror
+  if nerror == 0:
+    d['title'] = "[Valid] " + get_title(lang)
+  else:
+    d['title'] = "[Invalid] " + get_title(lang)
+  return dumps(d)
 
 @app.route('/<lang>/check', method='POST')
 def q(lang):
