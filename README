@@ -59,8 +59,8 @@ To run the web interface on port 5000, run plint_web.py. CherryPy is required
 (but the code is easy to adapt), see
 http://bottlepy.org/docs/dev/tutorial.html#deployment
 Beware, if you use CherryPy under Debian, simply installing python-cherrypy3
-might not work (no module named cherrypy) and you may need to install CherryPy
-manually (sudo python3 setup.py install).
+might not work ("no module named cherrypy"). In this case, you need to install
+CherryPy by hand from source (sudo python3 setup.py install).
 
 An undocumented IRC interface for use with irctk is available (plint_irc.py).
 The poem that it produces can be compiled to HTML automatically using something
