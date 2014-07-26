@@ -8,9 +8,11 @@ function showCustom(a) {
 
 function reportError(msg) {
   if (lang == "fr") {
-    var message = "Impossible de vérifier le poème faute de pouvoir communiquer avec le serveur&nbspp;: ";
+    var message = ("Impossible de vérifier le poème faute de pouvoir "
+      + "communiquer avec le serveur&nbspp;: ");
   } else {
-    var message = "Could not check poem due to error when communicating with server:";
+    var message = ("Could not check poem due to error when "
+      + "communicating with server: ");
   }
   $( "#status" ).html("<span class=\"error\">" + message + msg + "</span>");
 }
@@ -20,9 +22,11 @@ var setForCustom = false;
 function setUnload() {
   window.onbeforeunload = function() {
     if (lang == "fr") {
-      return "Votre poème sera perdu en fermant cette page. Êtes-vous sûr de vouloir la quitter ?";
+      return ("Votre poème sera perdu en fermant cette page. "
+          + "Êtes-vous sûr de vouloir la quitter ?");
     } else {
-      return "Your poem will be lost when closing this page. Are you sure you want to navigate away?";
+      return ("Your poem will be lost when closing this page. "
+          + "Are you sure you want to navigate away?");
     }
   };
 }
@@ -67,7 +71,9 @@ function check() {
         for (var i = 0; i < data.result.length; i++) {
           var err = data.result[i];
           $( "#errors" ).append("<li onclick=\"gotoLine(" + err.num + ")\">" +
-            "<p>" + (lang == "fr" ? "Erreurs pour la ligne " : "Errors for line ")
+            "<p>" + (lang == "fr"
+              ? "Erreurs pour la ligne "
+              : "Errors for line ")
             + err.num + ":</p>" + 
             "<blockquote>" + err.line + "</blockquote>" +
             "<pre>" + err.errors.join("<br />") + "</pre></li>");
@@ -76,9 +82,11 @@ function check() {
           var agreement = (data.result.length == 1 ? "" : "s");
           var msg = data.result.length;
           if (lang == "fr") {
-            msg += " erreur" + agreement + " trouvée" + agreement + " en validant le poème&nbsp;!";
+            msg += (" erreur" + agreement + " trouvée" + agreement
+                + " en validant le poème&nbsp;!");
           } else {
-            msg += " error" + agreement + " found when validating poem" + "!";
+            msg += (" error" + agreement
+              + " found when validating poem" + "!");
           }
           $( "#status" ).html("<span class=\"error\">" + msg + "</span>");
         } else {
