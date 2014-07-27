@@ -52,7 +52,6 @@ class Template:
     'oeil_tolerance_ok': 'eye_tolerance_ok',
     'pauvre_oeil_requise': 'poor_eye_required',
     'pauvre_oeil_supposee_ok': 'poor_eye_supposed_ok',
-    'pauvre_adverbe_ok': 'poor_adverb_ok',
     }
 
 
