@@ -93,11 +93,17 @@ class Verse:
     words = remove_trivial(words, (lambda w: re.match("^\s*$", w) or
       len(normalize(w, rm_all=True)) == 0))
     words2 = sum([self.splithyph(w) for w in words], [])
-    pre_chunks = [re.split(consonants_regexp, word) for word in words2]
-    pre_chunks = [remove_trivial(x, (lambda w: re.match("^\s*$", w) or
-      len(normalize(w, rm_all=True)) == 0)) for x in pre_chunks]
-    self.chunks = [[{'original': y, 'text': normalize(y, rm_apostrophe=True)}
-      for y in x] for x in pre_chunks]
+    pre_chunks = [(b, re.split(consonants_regexp, word)) for (b, word) in words2]
+    pre_chunks = [(b, remove_trivial(x, (lambda w: re.match("^\s*$", w) or
+      len(normalize(w, rm_all=True)) == 0))) for (b, x) in pre_chunks]
+    self.chunks = []
+    for (b, chunk) in pre_chunks:
+      self.chunks.append([{'original': y, 'text': normalize(y, rm_apostrophe=True)}
+      for y in chunk])
+      if not b:
+        # word end is a fake word end
+        for y in self.chunks[-1]:
+          y['hemis'] = 'cut'
 
     # collapse apostrophes
     self.chunks2 = []
@@ -182,6 +188,9 @@ class Verse:
           # instruct that we must use text for the pronunciation
           new_word.append({'original': part, 'text': x, 'text_pron': True,
             'elision': [False, True], 'no_hiatus': True})
+          # propagate information from splithyph
+          if 'hemis' in w[0].keys():
+            new_word[-1]['hemis'] = w[0]['hemis']
         self.chunks[i] = new_word
         # the last one is also elidable
         if self.chunks[i][-1]['text'] == 'e':
@@ -264,7 +273,8 @@ class Verse:
 
   def splithyph(self, word):
     """split hyphen-delimited word parts into separate words if they are only
-    consonants, so that the sigle code later can deal with them (e.g. "k-way")"""
+    consonants, so that the sigle code later can deal with them (e.g. "k-way")
+    annotates parts with boolean indicating if there is a word end afterward"""
 
     pre_chunks2 = []
     cs = re.split(self.hyphen_regexp, word)
@@ -272,23 +282,23 @@ class Verse:
     for i in range(len(cs)):
       if re.match("^-*$", cs[i]):
         if len(pre_chunks2) > 0:
-          pre_chunks2[-1] += cs[i]
+          pre_chunks2[-1] = (pre_chunks2[-1][0], pre_chunks2[-1][1] + cs[i])
           continue
         else:
           miss = cs[i]
           continue
       if is_consonants(normalize(cs[i])):
-        pre_chunks2.append(miss + cs[i])
+        pre_chunks2.append((False if i < len(cs) - 1 else True, miss + cs[i]))
         miss = ""
       else:
-        pre_chunks2.append(miss + "".join(cs[i:]))
+        pre_chunks2.append((True, miss + "".join(cs[i:])))
         miss = ""
         break
     if miss != "":
       if len(pre_chunks2) > 0:
-        pre_chunks2[-1] += miss
+        pre_chunks2[-1] = (pre_chunks2[-1][0], pre_chunks2[-1][1] + miss)
       else:
-        pre_chunks2 = [miss]
+        pre_chunks2 = [(True, miss)]
     return pre_chunks2
 
   def annotate(self):
@@ -299,7 +309,8 @@ class Verse:
       # for the case of "pays" and related words
       if 'weights' not in self.chunks[i].keys():
         self.chunks[i]['weights'] = self.possible_weights_context(i)
-      self.chunks[i]['hemis'] = self.hemistiche(i)
+      if 'hemis' not in self.chunks[i].keys():
+        self.chunks[i]['hemis'] = self.hemistiche(i)
     self.text = self.align2str(self.chunks)
 
   def parse(self):
