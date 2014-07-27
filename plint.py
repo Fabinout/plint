@@ -1,5 +1,6 @@
 #!/usr/bin/python3 -uO
 
+import diaeresis
 import localization
 import sys
 import template
@@ -8,8 +9,8 @@ import error
 def run():
   ok = True
   f2 = None
-  if len(sys.argv) == 3:
-    f2 = open(sys.argv[2], 'w')
+  if len(sys.argv) == 4:
+    f2 = open(sys.argv[3], 'w')
   should_end = False
   while True:
     line = sys.stdin.readline()
@@ -26,13 +27,20 @@ def run():
 
 if __name__ == '__main__':
   localization.init_locale()
-  if len(sys.argv) < 2 or len(sys.argv) > 3:
-    print(_("Usage: %s TEMPLATE [OCONTEXT]") % sys.argv[0], file=sys.stderr)
+  if len(sys.argv) < 2 or len(sys.argv) > 4:
+    print(_("Usage: %s TEMPLATE [DFILE [OCONTEXT]]") % sys.argv[0], file=sys.stderr)
     print(_("Check stdin according to TEMPLATE, report errors on stdout"),
         file=sys.stderr)
     sys.exit(1)
 
   template_name = sys.argv[1]
+  if len(sys.argv) > 2:
+    diaeresis_name = sys.argv[2]
+  else:
+    diaeresis_name = "diaeresis.json"
+
+  diaeresis.load_diaeresis(diaeresis_name)
+
   f = open(template_name)
   x = f.read()
   f.close()
