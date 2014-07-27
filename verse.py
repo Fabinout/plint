@@ -146,6 +146,12 @@ class Verse:
           if w[i+1]['text'][1] in "eéèa":
             w[i+1]['text'] = w[i+1]['text'][1:]
 
+    # elide inside words ("porte-avions")
+    for word in self.chunks:
+      for i, w in enumerate(word[:-1]):
+        if w['text'] == "e-":
+          w['weights'] = [0] # force elision
+
     # remove leading and trailing crap
     for w in self.chunks:
       for p in range(len(w)):
