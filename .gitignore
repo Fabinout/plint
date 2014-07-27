@@ -16,6 +16,6 @@ contextsm
 messages.mo
 messages.pot
 res/*.mo
-diaeresis*.json
+diaeresis?.json
 Lexique*.zip
 haspirater

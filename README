@@ -81,7 +81,11 @@ simple test suite, run python3 versetest.py; they should all pass.
 
 The diaeresis pattern "diaeresis.json" is trained by calling
 
-  ./train_diaeresis.sh
+  ./train_diaeresis.sh > diaeresis.json
+
+You can also train a specific pattern for _Cyrano de Bergerac_ with:
+
+  ./train_diaeresis.sh _full ../additions_cyrano > diaeresis_cyrano.json
 
 This is currently undocumented. The plint folder should contain a copy of the
 haspirater code (possibly as a symlink) in "haspirater/".
