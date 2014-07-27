@@ -145,9 +145,6 @@ class Verse:
         if w[i]['text'].endswith('g') and len(w[i+1]['text']) >= 2:
           if w[i+1]['text'][1] in "eéèa":
             w[i+1]['text'] = w[i+1]['text'][1:]
-    # remove empty chunks created by simplifications
-    for i, w in enumerate(self.chunks):
-      self.chunks[i] = [x for x in w if len(x['text']) > 0]
 
     # remove leading and trailing crap
     for w in self.chunks:
@@ -156,6 +153,18 @@ class Verse:
           w[p]['text'] = w[p]['text'][1:]
         while len(w[p]['text']) > 0 and w[p]['text'][-1] in ' -':
           w[p]['text'] = w[p]['text'][:-1]
+
+    # collapse empty chunks created by simplifications
+    for i, w in enumerate(self.chunks):
+      new_chunks = []
+      for x in self.chunks[i]:
+        if len(x['text']) > 0:
+          new_chunks.append(x)
+        else:
+          # propagate the original text
+          # newly empty chunks cannot be the first ones
+          new_chunks[-1]['original'] += x['original']
+      self.chunks[i] = new_chunks
 
     # sigles
     for i, w in enumerate(self.chunks):
