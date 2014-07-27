@@ -78,7 +78,7 @@ def possible_weights_approx(chunk):
     return [1, 2] # "pouah"
   if chunk == "ao":
     return [1, 2] # "paon"
-  for x in ['oa', 'ea', 'eua', 'euo', 'ua', 'uo', 'yo', 'yau']:
+  for x in ['oa', 'ea', 'eua', 'euo', 'ua', 'uo', 'yau']:
     if x in chunk:
       return [2]
   # beware of "déesse"
