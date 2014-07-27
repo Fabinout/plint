@@ -3,6 +3,7 @@
 import localization
 import re
 import sys
+import diaeresis
 import rhyme
 from template import Template
 from pprint import pprint
@@ -101,6 +102,8 @@ f = open(sys.argv[1])
 x = f.read()
 f.close()
 template = Template(x)
+
+diaeresis.load_diaeresis('diaeresis.json')
 
 template.reject_errors = True
 

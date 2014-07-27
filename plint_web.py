@@ -5,6 +5,7 @@ import localization
 import re
 import template
 import error
+import diaeresis
 from bottle import run, Bottle, request, static_file, redirect, response
 from jinja2 import Environment, PackageLoader
 from json import dumps
@@ -156,5 +157,6 @@ def q(lang):
   return dumps(d)
 
 if __name__ == '__main__':
+  diaeresis.load_diaeresis('diaeresis.json')
   run(app, port='5000', server="cherrypy", host="0.0.0.0")
 
