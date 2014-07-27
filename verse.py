@@ -277,7 +277,7 @@ class Verse:
         else:
           miss = cs[i]
           continue
-      if is_consonants(cs[i]):
+      if is_consonants(normalize(cs[i])):
         pre_chunks2.append(miss + cs[i])
         miss = ""
       else:

@@ -96,6 +96,11 @@ class SigleCounts(Counts):
     self.assertEqual(1, len(f))
     self.assertEqual(self.getWeight(f[0]), 2)
 
+  def testResplit1b(self):
+    f = self.runCount("K-Fêt", limit=2)
+    self.assertEqual(1, len(f))
+    self.assertEqual(self.getWeight(f[0]), 2)
+
   def testResplit2(self):
     f = self.runCount("sp-algèbre", limit=4)
     self.assertEqual(1, len(f))
