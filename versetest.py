@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import template
+import diaeresis
 import verse
 import unittest
 from pprint import pprint
@@ -122,6 +123,12 @@ class SimpleCounts(Counts):
     self.assertEqual(1, len(f))
     self.assertEqual(self.getWeight(f[0]), 4)
 
+class ExceptionCounts(Counts):
+  def testPays(self):
+    f = self.runCount("pays abbaye alcoyle", limit=8)
+    self.assertEqual(1, len(f))
+    self.assertEqual(self.getWeight(f[0]), 8)
+
 class AspiratedCounts(Counts):
   def testBaudelaire1half(self):
     possible = self.runCount("funeste hélas", limit=4)
@@ -178,5 +185,6 @@ class PoemCounts(Counts):
     self.assertTrue(self.achievesPossibility(possible, 12))
 
 if __name__ == "__main__":
+    diaeresis.load_diaeresis('diaeresis.json')
     unittest.main()
 
