@@ -105,6 +105,7 @@ def q(lang):
   localization.init_locale(lang)
   poem = request.forms.get('poem')
   poem = re.sub(r'<>&', '', request.forms.get('poem'))
+  print(poem)
   poem = check(poem)
   if not poem:
     if lang == 'fr':
@@ -135,7 +136,6 @@ def q(lang):
     else:
       msg = "Error when reading template: " + e.msg
     return dumps({'error': msg})
-  print(x)
   poem.append(None)
   r = []
   i = 0
