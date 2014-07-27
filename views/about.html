@@ -185,6 +185,12 @@ options suivantes sont reconnues&nbsp;:</p>
   <dt>eye_tolerance_ok</dt>
   <dd>Autoriser les tolérances pour les rimes pour l'œil telles que "-é"/"-ai"
   (vrai par défaut).</dd>
+  <dt>poor_eye_required</dt>
+  <dd>Imposer des rimes pour l'œil d'au moins 2 caractères dans le cas d'une
+  rime pauvre (un seul phonème) qui ne comporte pas de mots monosyllabiques
+  (vrai par défaut, n'a de sens que pour les rimes classiques).</dd>
+  <dt>poor_eye_supposed_ok</dt>
+  <dd>Autoriser la rime pour l'œil pour poor_eye_required (faux par défaut).</dd>
 </dl>
 
 <p>Désolé si tout cela semble un peu obscur. Vous pouvez regarder les modèles
@@ -403,6 +409,13 @@ form option:value and separated by spaces, with the following possibilities:</p>
   <dt>eye_tolerance_ok</dt>
   <dd>Allow tolerances for <em>rimes pour l'œil</em> such as "-é"/"-ai" (default
   is true).</dd>
+  <dt>poor_eye_required</dt>
+  <dd>Require at least 2 characters in <em>rimes pour l'œil</em> when the sound
+  rhyme is poor (only one phoneme) and there are no monosyllabic words in the
+  rhyme (default is true, only applies to classical rhymes).</dd>
+  <dt>poor_eye_supposed_ok</dt>
+  <dd>Allow <em>rime pour l'œil</em> for poor_eye_required (default is
+  false).</dd>
 </dl>
 
 <p>Sorry if all of this is a bit obscure. You can have a look to the predefined

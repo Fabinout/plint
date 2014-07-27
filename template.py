@@ -49,7 +49,10 @@ class Template:
     'incomplet_ok': 'incomplete_ok',
     'phon_supposee_ok': 'phon_supposed_ok',
     'oeil_supposee_ok': 'eye_supposed_ok',
-    'oeil_tolerance_ok': 'eye_tolerance_ok'
+    'oeil_tolerance_ok': 'eye_tolerance_ok',
+    'pauvre_oeil_requise': 'poor_eye_required',
+    'pauvre_oeil_supposee_ok': 'poor_eye_supposed_ok',
+    'pauvre_adverbe_ok': 'poor_adverb_ok',
     }
 
 
@@ -121,25 +124,22 @@ class Template:
     if self.overflowed:
       return [error.ErrorOverflowedTemplate()], pattern, v
 
+    rhyme_failed = False
     # rhymes
     if pattern.myid not in self.env.keys():
       # initialize the rhyme
-      self.env[pattern.myid] = rhyme.Rhyme(v.normalized, pattern.constraint,
-          self.mergers, self.options)
+      # last_count is passed later
+      self.env[pattern.myid] = rhyme.Rhyme(v.normalized,
+              pattern.constraint, self.mergers, self.options)
     else:
       # update the rhyme
       self.env[pattern.myid].feed(v.normalized, pattern.constraint)
-      if not self.env[pattern.myid].satisfied():
-        # no more possible rhymes, something went wrong
-        phon_ok = self.env[pattern.myid].satisfied_phon()
-        eye_ok = self.env[pattern.myid].satisfied_eye()
+      if not self.env[pattern.myid].satisfied_phon():
+        # no more possible rhymes, something went wrong, check phon
         self.env[pattern.myid].rollback()
-        if not phon_ok:
-          errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid],
-            self.env[pattern.myid].new_rhyme))
-        if not eye_ok:
-          errors.append(error.ErrorBadRhymeEye(self.env[pattern.myid],
-            self.env[pattern.myid].new_rhyme))
+        rhyme_failed = True
+        errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid],
+          self.env[pattern.myid].new_rhyme))
 
     # occurrences
     if self.options['check_occurrences']:
@@ -155,6 +155,19 @@ class Template:
 
     v.phon = self.env[pattern.myid].phon
     v.parse()
+
+    # now that we have parsed, adjust rhyme to reflect last word length
+    # and check eye
+    if not rhyme_failed:
+      self.env[pattern.myid].adjustLastCount(v.lastCount())
+      if not self.env[pattern.myid].satisfied_eye():
+        old_phon = len(self.env[pattern.myid].phon)
+        self.env[pattern.myid].rollback()
+        errors.append(error.ErrorBadRhymeEye(self.env[pattern.myid],
+          self.env[pattern.myid].new_rhyme, old_phon))
+   
+    rhyme_failed = False
+
     errors = v.problems() + errors
 
     if ofile:

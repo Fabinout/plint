@@ -468,6 +468,21 @@ class Verse:
     'fem': '\\', # preceding word ends by a mute e
     }
 
+  def lastCount(self):
+    """return min number of syllables for last word"""
+    
+    tot = 0
+    for c in self.chunks[::-1]:
+      if c['original'].endswith(' '):
+        if tot > 0:
+          break
+      if 'weights' in c.keys():
+        tot += min(c['weights'])
+      if ' ' in c['original'].rstrip():
+        if tot > 0:
+          break
+    return tot
+
   def align2str(self, align):
     return ''.join([x['text'] for x in align])
 

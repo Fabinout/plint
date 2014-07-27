@@ -88,9 +88,10 @@ class ErrorHiatus(ErrorBadElement):
   key = "hiatus"
 
 class ErrorBadRhyme:
-  def __init__(self, expected, inferred):
+  def __init__(self, expected, inferred, old_phon=None):
     self.expected = expected
     self.inferred = inferred
+    self.old_phon = old_phon
 
   def report(self, pattern):
     return (_("%s for type %s (expected %s, inferred %s)")
@@ -130,7 +131,7 @@ class ErrorBadRhymeEye(ErrorBadRhymeObject):
     return _("Bad rhyme ending")
 
   def fmt(self, l):
-    return "\"-" + l.sufficient_eye() + "\""
+    return "\"-" + l.sufficient_eye(self.old_phon) + "\""
 
 class ErrorBadMetric:
   def report(self, pattern):

@@ -63,7 +63,7 @@ class Rhyme:
 
   def supposed_liaison(self, x):
     if x[-1] in liaison.keys() and self.options['eye_supposed_ok']:
-      return x + liaison[x[-1]]
+      return x[:-1] + liaison[x[-1]]
     return x
 
   def __init__(self, line, constraint=None, mergers=None, options=None, phon=None):
@@ -72,6 +72,9 @@ class Rhyme:
     else:
       self.constraint = Constraint()
     self.mergers = {}
+    # length of smallest end-of-verse word in syllables
+    # will be provided later
+    self.last_count = 42
     if options:
       self.options = options
     else:
@@ -84,13 +87,18 @@ class Rhyme:
       phon = self.lookup(line)
     self.phon = set([self.apply_mergers(x) for x in phon])
     self.eye = self.supposed_liaison(self.consonant_suffix(line))
+    self.raw_eye = line
     self.old_phon = None
     self.old_eye = None
+    self.old_raw_eye = None
+    self.old_last_count = None
     self.new_rhyme = None
 
   def rollback(self):
     self.phon = self.old_phon
     self.eye = self.old_eye
+    self.raw_eye = self.old_raw_eye
+    self.last_count = self.old_last_count
 
   def sufficient_phon(self):
     # return the shortest accepted rhymes among old_phon
@@ -105,10 +113,27 @@ class Rhyme:
       ok.add(p[-slen:])
     return ok
 
-  def sufficient_eye(self):
-    return self.eye[-1]
+  def sufficient_eye_length(self, old_phon=None):
+    if not self.constraint.classical:
+      return self.eye, 0 # not classical, nothing required
+    if ((old_phon >= 2 if old_phon else self.satisfied_phon(2))
+        or not self.options['poor_eye_required']):
+      return self.eye, 1
+    if self.last_count == 1:
+      return self.eye, 1
+    if self.options['poor_eye_supposed_ok']:
+      return self.eye, 2
+    else:
+      return self.raw_eye, 2
 
-  def match(self, phon, eye):
+  def sufficient_eye(self, old_phon=None):
+    d, val = self.sufficient_eye_length(old_phon)
+    if val <= len(d):
+      return d[-val:]
+    else:
+      return d
+
+  def match(self, phon, eye, raw_eye):
     """limit our phon and eye to those which match phon and eye and which
     respect constraints"""
     new_phon = set()
@@ -124,16 +149,28 @@ class Rhyme:
         self.eye = ""
       else:
         self.eye = self.eye[-val:]
+    if self.raw_eye:
+      val = eye_rhyme(self.raw_eye, raw_eye)
+      if val == 0:
+        self.raw_eye = ""
+      else:
+        self.raw_eye = self.raw_eye[-val:]
+
+  def adjustLastCount(self, v):
+    self.last_count = min(self.last_count, v)
 
   def restrict(self, r):
     """take the intersection between us and rhyme object r"""
     if self.satisfied():
       self.old_phon = self.phon
       self.old_eye = self.eye
+      self.old_last_count = self.last_count
+      self.old_raw_eye = self.raw_eye
+    # lastCount will be applied later
     self.constraint.restrict(r.constraint)
     self.new_rhyme = r
     self.match(set([self.apply_mergers(x) for x in r.phon]),
-        self.supposed_liaison(self.consonant_suffix(r.eye)))
+        self.supposed_liaison(self.consonant_suffix(r.eye)), r.raw_eye)
 
   def consonant_suffix(self, s):
     if not self.options['eye_tolerance_ok']:
@@ -145,13 +182,20 @@ class Rhyme:
 
   def feed(self, line, constraint=None):
     """extend us with a line and a constraint"""
+    # lastCount is not applied yet
     return self.restrict(Rhyme(line, constraint, self.mergers, self.options))
 
-  def satisfied_phon(self):
-    return len(self.phon) >= self.constraint.phon
+  def satisfied_phon(self, val=None):
+    if not val:
+      val = self.constraint.phon
+    for x in self.phon:
+      if len(x) >= val:
+        return True
+    return False
 
   def satisfied_eye(self):
-    return (len(self.eye) > 0 or not self.constraint.classical)
+    d, l = self.sufficient_eye_length()
+    return len(d) >= l
 
   def satisfied(self):
     return self.satisfied_phon() and self.satisfied_eye()
@@ -235,7 +279,7 @@ if __name__ == '__main__':
     constraint = Constraint()
     rhyme = Rhyme(line[0], constraint, self.mergers, self.options)
     for x in line[1:]:
-      rhyme.feed(x)
+      rhyme.feed(x, 42)
       rhyme.pprint()
       if not rhyme.satisfied():
         print("No.")

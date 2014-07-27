@@ -1,4 +1,8 @@
 - profiling
+- option to forbid rhyme with only "-ment" except for "doublement",
+  "triplement", "-uplement", and "complètement" -- not with boileau
+- document "poor_adverb_ok"
+- change additions to give numerical syllable count
 - highlight possible hemistiche positions where an hemistiche could have been placed
 - document expected errors of test.sh and commit necessary files
 - remove kludge for invalid characters, split them in specific chunks

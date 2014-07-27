@@ -9,5 +9,8 @@ default_options = {
   'incomplete_ok': True,
   'check_end_hemistiche': True,
   'check_occurrences': True,
+  'poor_eye_required': True,
+  'poor_eye_supposed_ok': False,
+  'poor_adverb_ok': False,
   'diaeresis': "classical"
   }
