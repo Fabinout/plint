@@ -91,6 +91,26 @@ class SigleCounts(Counts):
     self.assertEqual(1, len(f))
     self.assertEqual(self.getWeight(f[0]), 13)
 
+  def testResplit1(self):
+    f = self.runCount("k-fêt", limit=2)
+    self.assertEqual(1, len(f))
+    self.assertEqual(self.getWeight(f[0]), 2)
+
+  def testResplit1b(self):
+    f = self.runCount("K-Fêt", limit=2)
+    self.assertEqual(1, len(f))
+    self.assertEqual(self.getWeight(f[0]), 2)
+
+  def testResplit2(self):
+    f = self.runCount("sp-algèbre", limit=4)
+    self.assertEqual(1, len(f))
+    self.assertEqual(self.getWeight(f[0]), 4)
+
+  def testResplit3(self):
+    f = self.runCount("k-raté k-way", limit=5)
+    self.assertEqual(1, len(f))
+    self.assertEqual(self.getWeight(f[0]), 5)
+
 class SimpleCounts(Counts):
   def testTrivialMonovoc(self):
     f = self.runCount("Ba", limit=1)
