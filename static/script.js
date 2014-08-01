@@ -56,6 +56,7 @@ window.onload = resizePoem;
 
 function check() {
   $( "#status" ).html("Checking...");
+  $('#check').prop( "disabled", true);
   var poem = $( '#poem' ).val();
   var mydata = {
       'poem': poem,
@@ -70,6 +71,7 @@ function check() {
     data: mydata,
     error: function (jqxhr, stat, error) {
       reportError(stat + (error.length > 0 ? ": " + error : ""));
+      $('#check').prop( "disabled", false);
     },
     success: function (data) {
       if ("error" in data) {
@@ -106,6 +108,7 @@ function check() {
           $( "#status" ).html("<span class=\"success\">" + msg + "</span>");
         }
       }
+      $('#check').prop( "disabled", false);
     }
     });
 }
