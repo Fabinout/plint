@@ -236,15 +236,14 @@ pour les premiers phonèmes. Les derniers devraient être bons, cependant.</p>
   href="https://en.wikipedia.org/wiki/Lint_(software)">lint</a>" pour les
 programmes), mais aussi pour l'homophonie avec "plainte".</p>
 
-<h2 id="log">Est-ce que des logs sont conservés&nbsp;?</h2>
+<h2 id="log">Vie privée&nbsp;: Est-ce que des logs sont conservés&nbsp;?</h2>
 
 <p>Oui, des logs peuvent être conservés, afin de pouvoir identifier, quand le
-programme plante, pourquoi le poème d'entrée l'a fait planter. Actuellement je
-ne conserve pas explicitement d'informations sur l'adresse IP qui a soumis le
-poème, encore que le serveur Web conserve peut-être cela... Ne soumettez pas de
-données confidentielles ou personnelles ; récupérez le <a
-  href="http://gitorious.org/plint">code source</a> et faites tourner plint
-localement pour ce genre d'usages.</p>
+programme plante, pourquoi le poème d'entrée l'a fait planter. Je conserve donc
+des informations sur les requêtes entrantes (poème, adresse IP). Ausis, ne
+soumettez pas de données confidentielles ou personnelles ; récupérez le <a
+href="http://gitorious.org/plint">code source</a> et faites tourner plint
+localement pour de tels usages.</p>
 
 {% else %}
 
@@ -463,12 +462,11 @@ programs), but also because "plint" in French would be read like "plainte",
 meaning "complaint".</p>
 
 
-<h2 id="log">Do you keep logs?</h2>
+<h2 id="log">Privacy: Do you keep logs?</h2>
 
 <p>Yes, I do, because whenever the program chokes on a poem I need to figure out
-what happened, and I need the input poem for that. For now I don't keep explicit
-information about which IP submitted what, although maybe the Web server is
-storing this elsewhere. Hence, if you want to run plint on confidential or
+what happened, and I need the input poem for that, so I keep a trace of incoming
+requests (poem, IP address, etc.). Hence, if you want to run plint on confidential or
 personal poems, do not submit them to the online version; instead, retrieve the
 <a href="http://gitorious.org/plint">source code</a> and run plint locally.</p>
 {% endif %}
