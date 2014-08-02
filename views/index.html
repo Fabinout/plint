@@ -116,7 +116,12 @@ title="Alexandrins classiques avec césure à l'hémistiche, rimes plates, genre
 </button>
 <a class="doclink" href="#"
   onclick="window.open('about#template', '_blank');" tabindex="3">
-  documentation&nbsp;<img src="static/img/nw.png">
+  documentation&nbsp;<img src="static/img/nw.png"
+{% if lang == 'fr' %}
+alt="s'ouvre dans une nouvelle fenêtre">
+{% else %}
+alt="opens in a new window">
+{% endif %}
 </a>
 <button id="check" onclick="check()" tabindex="5">
 {% if lang == 'fr' %}
