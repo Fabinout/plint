@@ -78,6 +78,7 @@ function check() {
     success: function (data) {
       if ("error" in data) {
         $( "#status" ).html("<span class=\"error\">" + data.error + "</span>");
+        $( "#errors" ).empty();
       } else {
         $( "#errors" ).empty();
         for (var i = 0; i < data.result.length; i++) {
