@@ -268,7 +268,15 @@ class Verse:
     for i, w in enumerate(self.chunks[:-1]):
       if w[-1]['text'] != "e":
         continue
-      if sum([1 for chunk in w if is_vowels(chunk['text'])]) <= 1:
+      nweight = 0
+      for chunk in w[::-1]:
+        if is_vowels(chunk['text']):
+          nweight += 1
+        # "fais-le" not elidable, but "suis-je" and "est-ce" is
+        if ('-' in chunk['text'] and not chunk['text'].endswith('-j') and not
+            chunk['text'].endswith('-c')):
+          break
+      if nweight == 1:
         continue
       if 'elidable' not in w[-1].keys():
         w[-1]['elidable'] = self.chunks[i+1][0]['elision']
