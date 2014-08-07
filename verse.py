@@ -6,6 +6,7 @@ import re
 import vowels
 import haspirater
 import error
+import sys
 from pprint import pprint
 
 # the writing is designed to make frhyme succeed
@@ -311,6 +312,11 @@ class Verse:
 
     # collapse words
     self.chunks = sum(self.chunks, [])
+
+    now_line = ''.join(x['original'] for x in self.chunks)
+    if now_line != line:
+      print("%s became %s" % (line, now_line), file=sys.stderr)
+      pprint(self.chunks, stream=sys.stderr)
 
   def splithyph(self, word):
     """split hyphen-delimited word parts into separate words if they are only
