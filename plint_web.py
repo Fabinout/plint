@@ -106,7 +106,11 @@ def check(poem):
 @app.route('/<lang>/checkjs', method='POST')
 def q(lang):
   global throttle
-  ip = request.environ.get('REMOTE_ADDR')
+  # necessary when serving with lighttpd proxy-core
+  ip = request.environ.get('HTTP_X_FORWARDED_FOR')
+  if not ip:
+    # fallback; this is 127.0.0.1 with proxy-core
+    ip = request.environ.get('REMOTE_ADDR')
   t = time.time()
   print("== %s %s ==" % (ip, t))
   response.content_type = 'application/json'
