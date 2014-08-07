@@ -72,6 +72,8 @@ function check() {
     error: function (jqxhr, stat, error) {
       reportError(stat + (error.length > 0 ? ": " + error : ""));
       $('#check').prop( "disabled", false);
+      // do not keep old errors around lest the user may miss the problem
+      $( "#errors" ).empty();
     },
     success: function (data) {
       if ("error" in data) {
