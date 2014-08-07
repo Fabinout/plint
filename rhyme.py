@@ -8,6 +8,7 @@ from pprint import pprint
 import frhyme
 import functools
 from options import default_options
+from common import is_vowels, normalize
 
 # number of possible rhymes to consider
 NBEST = 5
@@ -95,11 +96,23 @@ class Rhyme:
     self.old_last_count = None
     self.new_rhyme = None
 
+    # store if rhyme is a succession of two vowels
+    self.double_vocalic = False
+    l2 = normalize(line)
+    if len(l2) >= 2:
+      if is_vowels(l2[-2], with_y=False, with_h=False):
+        self.double_vocalic = True
+      if l2[-2] == 'h':
+        if len(l2) >= 3 and is_vowels(l2[-3], with_y=False, with_h=False):
+          self.double_vocalic = True
+    self.old_double_vocalic = False
+
   def rollback(self):
     self.phon = self.old_phon
     self.eye = self.old_eye
     self.raw_eye = self.old_raw_eye
     self.last_count = self.old_last_count
+    self.double_vocalic = self.old_double_vocalic
 
   def sufficient_phon(self):
     # return the shortest accepted rhymes among old_phon
@@ -121,6 +134,8 @@ class Rhyme:
         or not self.options['poor_eye_required']):
       return self.eye, 1
     if self.last_count == 1:
+      return self.eye, 1
+    if self.options['poor_eye_vocalic_ok'] and self.double_vocalic:
       return self.eye, 1
     if self.options['poor_eye_supposed_ok']:
       return self.eye, 2
@@ -166,10 +181,13 @@ class Rhyme:
       self.old_phon = self.phon
       self.old_eye = self.eye
       self.old_last_count = self.last_count
+      self.old_double_vocalic = self.double_vocalic
       self.old_raw_eye = self.raw_eye
     # lastCount will be applied later
     self.constraint.restrict(r.constraint)
     self.new_rhyme = r
+    if not r.double_vocalic:
+      self.double_vocalic = False # rhyme is ok if all rhymes are double vocalic
     self.match(set([self.apply_mergers(x) for x in r.phon]),
         self.supposed_liaison(self.consonant_suffix(r.eye)), r.raw_eye)
 
