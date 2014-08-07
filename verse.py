@@ -291,7 +291,7 @@ class Verse:
         if w[-2]['text'] in ambiguous_potential:
           w[-2]['error'] = "ambiguous"
           w[-1]['error'] = "ambiguous"
-      if w[-1]['text'] in ambiguous_potential:
+      if len(w[-1]['text']) >= 2 and w[-1]['text'][-2:] in ambiguous_potential:
         nchunk = self.chunks[i+1][0]
         if 'elision' not in nchunk.keys() or True not in nchunk['elision']:
           w[-1]['error'] = "ambiguous"
