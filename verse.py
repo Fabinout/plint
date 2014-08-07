@@ -142,6 +142,7 @@ class Verse:
           w[i+1]['text'] = w[i+1]['text'][1:]
           if w[i+1]['text'] == '':
             w[i]['original'] += w[i+1]['original']
+            w[i+1]['original'] = ''
         if w[i]['text'].endswith('g') and len(w[i+1]['text']) >= 2:
           if w[i+1]['text'][1] in "eéèa":
             w[i+1]['text'] = w[i+1]['text'][1:]
