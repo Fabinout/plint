@@ -282,10 +282,12 @@ class Verse:
           w[-2]['error'] = "ambiguous"
           w[-1]['error'] = "ambiguous"
       if w[-1]['text'] in ambiguous_potential:
-        if self.chunks[i+1][0]['text'][0] in consonants:
+        nchunk = self.chunks[i+1][0]
+        if 'elision' not in nchunk.keys() or True not in nchunk['elision']:
           w[-1]['error'] = "ambiguous"
           self.chunks[i+1][0]['error'] = "ambiguous"
-      elif (is_vowels(w[-1]['text']) or w[-1]['text'] == 'Y') and not w[-1]['text'].endswith('e'):
+      elif ((is_vowels(w[-1]['text']) or w[-1]['text'] == 'Y') and not
+          w[-1]['text'].endswith('e')):
         if (is_vowels(self.chunks[i+1][0]['text']) and 'no_hiatus' not in
             self.chunks[i+1][0].keys()):
           if ''.join(x['text'] for x in w) not in no_hiatus:
