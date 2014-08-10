@@ -490,12 +490,12 @@ class Verse:
     
     tot = 0
     for c in self.chunks[::-1]:
-      if c['original'].endswith(' '):
+      if c['original'].endswith(' ') or c['original'].endswith('-'):
         if tot > 0:
           break
       if 'weights' in c.keys():
         tot += min(c['weights'])
-      if ' ' in c['original'].rstrip():
+      if ' ' in c['original'].rstrip() or '-' in c['original'].rstrip():
         if tot > 0:
           break
     return tot
