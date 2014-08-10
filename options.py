@@ -11,5 +11,6 @@ default_options = {
   'check_occurrences': True,
   'poor_eye_required': True,
   'poor_eye_supposed_ok': False,
+  'poor_eye_vocalic_ok': False,
   'diaeresis': "classical"
   }
