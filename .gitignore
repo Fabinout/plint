@@ -24,3 +24,4 @@ poem
 backup/*
 poem*.tpl
 poem2html
+plint_log
