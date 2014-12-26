@@ -52,6 +52,7 @@ class Template:
     'oeil_tolerance_ok': 'eye_tolerance_ok',
     'pauvre_oeil_requise': 'poor_eye_required',
     'pauvre_oeil_supposee_ok': 'poor_eye_supposed_ok',
+    'pauvre_oeil_vocalique_ok': 'poor_eye_vocalic_ok',
     }
 
 
@@ -280,9 +281,9 @@ class Template:
     return None
 
 def str2bool(x):
-  if x.lower() in ["yes", "oui", "y", "o"]:
+  if x.lower() in ["yes", "oui", "y", "o", "true", "t", "vrai", "v"]:
     return True
-  if x.lower() in ["no", "non", "n"]:
+  if x.lower() in ["no", "non", "n", "false", "faux", "f"]:
     return False
   raise error.TemplateLoadError(_("Bad value in global option"))
 

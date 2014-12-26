@@ -36,20 +36,6 @@ header {
   color: #0c0;
 }
 
-#bigform a {
-  color: white;
-}
-
-#poem {
-  width: 100%;
-  height: 10em;
-}
-
-#custom_template {
-  height: 8em;
-  display: none;
-}
-
 body {
   margin: 0;
   padding: 0;
@@ -59,101 +45,95 @@ body {
   vertical-align: super;
 }
 
-#bigform {
-  max-width: 35em;
-  border: 3px outset #040;
-  padding: 1em;
-  padding-top: 0;
-  background: #040;
-  color: white;
-  margin: auto;
-  margin-top: 2em;
-  margin-bottom: 2em;
-  overflow: auto;
-}
-
-#bigform li, #custom_template {
-  font-size: 80%;
-  margin-bottom: 0.5em;
-}
-
 dt {
   font-weight: bold;
 }
 
-#bigform ul {
-  list-style-type: none;
-  padding: 0px;
+#lcontainer {
+  width: 42%;
 }
 
-#bigform #submit {
-  float: right;
-  margin-top: 0.3em;
-  margin-bottom: 0;
-  width: 7em;
-}
-
-#bigform textarea {
-  margin-bottom: 2em;
-  width: 100%;
-}
-
-h2.correct, h2.incorrect {
-  font-size: 120%;
-  color: white;
-  font-family: "Bitstream Vera Sans", sans-serif;
-  padding: 0.2em;
-  text-align: center;
-  overflow: auto;
-}
-
-#dump {
+#errors li {
+  cursor: pointer;
+  background: #fdd;
   padding: 1em;
-  padding-left: 5em;
-}
-
-#dump.correct {
-  border: 1px solid #55b05a;
-  border-left: 6px double #55b05a;
-}
-
-#dump.incorrect {
-  border: 1px solid #d23d24;
-  border-left: 6px double #d23d24;
-}
-
-#dump {
-  margin: auto;
-  border: 1px solid black;
+  margin-bottom: 1em;
   overflow: auto;
+  border: 2px outset red;
 }
 
-h2.correct {
-  background: #55b05a;
-}
-h2.incorrect {
-  background: #d23d24;
-}
-li.incorrect {
-  color: #d23d24;
-  border-right: 6px double #d23d24;
+#errors li:hover {
+  background: #fee;
+  border: 2px outset #faa;
 }
 
-#firsterror {
-  font-size: 50%;
+#errors li p {
+  margin: 0;
+  color: #a00;
+  font-weight: bold;
+}
+
+#errors li blockquote {
+  padding: 0;
   font-style: italic;
+  margin-left: 0;
+}
+
+#errors {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 0;
+  float: right;
+  overflow: auto;
+  height: 90vh;
+  max-width: 55%;
+}
+
+#poem {
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+  min-height: 8em;
+}
+
+#predef {
+  max-width: 100%;
+  min-width: 100%;
+}
+
+.doclink {
+  font-size: 80%;
+}
+
+#user_template {
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  height: 10vh;
+  min-height: 6em;
+}
+
+#check {
   float: right;
 }
 
-#firsterror a {
-  color: white;
+.error {
+  display: block;
+  background: #fdd;
+  padding: 0.5em;
+  border: 1px solid red;
 }
 
-#desc {
-  margin-bottom: 0em;
+.success {
+  display: block;
+  background: #dfd;
+  padding: 0.5em;
+  border: 1px solid green;
 }
 
-#reset {
-  width: 7em;
+#status {
+  display: block;
+  width: 100%;
+  overflow: auto;
 }
 

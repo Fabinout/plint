@@ -1,3 +1,11 @@
+function htmlentities(x) {
+  return $('<div/>').text(x).html();
+}
+
+function onlydigits(x) {
+  return String(x).replace(/[^0-9]/, '');
+}
+
 function showCustom(a) {
   if (a) {
     document.getElementById("custom_template").style.display = "block";
@@ -56,6 +64,7 @@ window.onload = resizePoem;
 
 function check() {
   $( "#status" ).html("Checking...");
+  $('#check').prop( "disabled", true);
   var poem = $( '#poem' ).val();
   var mydata = {
       'poem': poem,
@@ -69,21 +78,29 @@ function check() {
     type: "post",
     data: mydata,
     error: function (jqxhr, stat, error) {
-      reportError(stat + (error.length > 0 ? ": " + error : ""));
+      reportError(htmlentities(stat) +
+         (error.length > 0 ? ": " + htmlentities(error) : ""));
+      $('#check').prop( "disabled", false);
+      // do not keep old errors around lest the user may miss the problem
+      $( "#errors" ).empty();
     },
     success: function (data) {
       if ("error" in data) {
-        $( "#status" ).html("<span class=\"error\">" + data.error + "</span>");
+        $( "#status" ).html("<span class=\"error\">" + htmlentities(data.error) + "</span>");
+        $( "#errors" ).empty();
       } else {
         $( "#errors" ).empty();
         for (var i = 0; i < data.result.length; i++) {
           var err = data.result[i];
-          $( "#errors" ).append("<li onclick=\"gotoLine(" + err.num + ")\">" +
+          for (var j = 0; j < err.errors.length; j++) {
+            err.errors[j] = htmlentities(err.errors[j]);
+          }
+          $( "#errors" ).append("<li onclick=\"gotoLine(" + onlydigits(err.num) + ")\">" +
             "<p>" + (lang == "fr"
               ? "Erreurs pour la ligne "
               : "Errors for line ")
-            + err.num + ":</p>" + 
-            "<blockquote>" + err.line + "</blockquote>" +
+            + onlydigits(err.num) + ":</p>" +
+            "<blockquote>" + htmlentities(err.line) + "</blockquote>" +
             "<pre>" + err.errors.join("<br />") + "</pre></li>");
         }
         if (data.result.length > 0) {
@@ -106,6 +123,7 @@ function check() {
           $( "#status" ).html("<span class=\"success\">" + msg + "</span>");
         }
       }
+      $('#check').prop( "disabled", false);
     }
     });
 }
@@ -119,10 +137,11 @@ function loadPredef() {
     url: "static/tpl/" + predef + ".tpl",
     type: "get",
     error: function (jqxhr, stat, error) {
-      reportError(stat + (error.length > 0 ? ": " + error : ""));
+      reportError(htmlentities(stat) +
+          (error.length > 0 ? ": " + htmlentities(error) : ""));
     },
     success: function (data) {
-      $( '#user_template' ).val(data);
+      $( '#user_template' ).val(htmlentities(data));
       $('#user_template').show();
       $('#customize').prop("disabled", true);
       resizePoem();

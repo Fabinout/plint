@@ -190,7 +190,11 @@ options suivantes sont reconnues&nbsp;:</p>
   rime pauvre (un seul phonème) qui ne comporte pas de mots monosyllabiques
   (vrai par défaut, n'a de sens que pour les rimes classiques).</dd>
   <dt>poor_eye_supposed_ok</dt>
-  <dd>Autoriser la rime pour l'œil pour poor_eye_required (faux par défaut).</dd>
+  <dd>Autoriser la liaison supposée pour la rime pour l'œil pour
+  poor_eye_required (faux par défaut).</dd>
+  <dt>poor_eye_vocalic_ok</dt>
+  <dd>Ne pas imposer la rime de poor_eye_required pour des successions de deux
+  sons vocaliques (par exemple Noé/avoué).</dd>
 </dl>
 
 <p>Désolé si tout cela semble un peu obscur. Vous pouvez regarder les modèles
@@ -236,15 +240,14 @@ pour les premiers phonèmes. Les derniers devraient être bons, cependant.</p>
   href="https://en.wikipedia.org/wiki/Lint_(software)">lint</a>" pour les
 programmes), mais aussi pour l'homophonie avec "plainte".</p>
 
-<h2 id="log">Est-ce que des logs sont conservés&nbsp;?</h2>
+<h2 id="log">Vie privée&nbsp;: Est-ce que des logs sont conservés&nbsp;?</h2>
 
 <p>Oui, des logs peuvent être conservés, afin de pouvoir identifier, quand le
-programme plante, pourquoi le poème d'entrée l'a fait planter. Actuellement je
-ne conserve pas explicitement d'informations sur l'adresse IP qui a soumis le
-poème, encore que le serveur Web conserve peut-être cela... Ne soumettez pas de
-données confidentielles ou personnelles ; récupérez le <a
-  href="http://gitorious.org/plint">code source</a> et faites tourner plint
-localement pour ce genre d'usages.</p>
+programme plante, pourquoi le poème d'entrée l'a fait planter. Je conserve donc
+des informations sur les requêtes entrantes (poème, adresse IP). Aussi, ne
+soumettez pas de données confidentielles ou personnelles ; récupérez le <a
+href="http://gitorious.org/plint">code source</a> et faites tourner plint
+localement pour de tels usages.</p>
 
 {% else %}
 
@@ -342,9 +345,9 @@ words derived from one another, such as <em>justice</em> and <em>injustice</em>,
 but this is not checked by plint for lack of adequate data. More importantly,
 plint will not check if the words you use exist in French, or are correctly
 spelt, and if your poem makes any sense, does not contain spelling mistakes or
-  has any poetic value; it only enforces formal constraints. For instance,
-    <q>Tatata tatati tatati tatata</q> is recognized as a perfectly correct
-      classical alexandrine.</p>
+has any poetic value; it only enforces formal constraints. For instance,
+<q>Tatata tatati tatati tatata</q> is recognized as a perfectly correct
+classical alexandrine.</p>
 
 <h2 id="template">How can I define my own templates?</h2>
 
@@ -414,8 +417,11 @@ form option:value and separated by spaces, with the following possibilities:</p>
   rhyme is poor (only one phoneme) and there are no monosyllabic words in the
   rhyme (default is true, only applies to classical rhymes).</dd>
   <dt>poor_eye_supposed_ok</dt>
-  <dd>Allow <em>rime pour l'œil</em> for poor_eye_required (default is
-  false).</dd>
+  <dd>Allow <em>liaison supposée</em> for the <em>rime pour l'œil</em> for
+  poor_eye_required (default is false).</dd>
+  <dt>poor_eye_vocalic_ok</dt>
+  <dd>Do not require the rhyme of poor_eye_required for successions of two
+  vocalic sounds (such as Noé/avoué).</dd>
 </dl>
 
 <p>Sorry if all of this is a bit obscure. You can have a look to the predefined
@@ -463,12 +469,11 @@ programs), but also because "plint" in French would be read like "plainte",
 meaning "complaint".</p>
 
 
-<h2 id="log">Do you keep logs?</h2>
+<h2 id="log">Privacy: Do you keep logs?</h2>
 
 <p>Yes, I do, because whenever the program chokes on a poem I need to figure out
-what happened, and I need the input poem for that. For now I don't keep explicit
-information about which IP submitted what, although maybe the Web server is
-storing this elsewhere. Hence, if you want to run plint on confidential or
+what happened, and I need the input poem for that, so I keep a trace of incoming
+requests (poem, IP address, etc.). Hence, if you want to run plint on confidential or
 personal poems, do not submit them to the online version; instead, retrieve the
 <a href="http://gitorious.org/plint">source code</a> and run plint locally.</p>
 {% endif %}

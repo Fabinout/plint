@@ -9,10 +9,14 @@ import diaeresis
 from bottle import run, Bottle, request, static_file, redirect, response
 from jinja2 import Environment, PackageLoader
 from json import dumps
+import time
 
 env = Environment(loader=PackageLoader('plint_web', 'views'))
 
 app = Bottle()
+
+THROTTLE_DELAY = 2
+throttle = set()
 
 def best_match(matches, header):
   # inspired by http://www.xml.com/pub/a/2005/06/08/restful.html
@@ -101,8 +105,28 @@ def check(poem):
 
 @app.route('/<lang>/checkjs', method='POST')
 def q(lang):
+  global throttle
+  # necessary when serving with lighttpd proxy-core
+  ip = request.environ.get('HTTP_X_FORWARDED_FOR')
+  if not ip:
+    # fallback; this is 127.0.0.1 with proxy-core
+    ip = request.environ.get('REMOTE_ADDR')
+  t = time.time()
+  print("== %s %s ==" % (ip, t))
   response.content_type = 'application/json'
   localization.init_locale(lang)
+  throttle = set(x for x in throttle if t - x[1] < THROTTLE_DELAY)
+  if ip in (x[0] for x in throttle):
+    if lang == 'fr':
+      msg = (("Trop de requêtes pour vérifier le poème,"
+        + " veuillez réessayer dans %d secondes") %
+          THROTTLE_DELAY)
+    else:
+      msg = (("Too many requests to check poem,"
+        + " please try again in %d seconds") %
+          THROTTLE_DELAY)
+    return dumps({'error': msg})
+  throttle.add((ip, t))
   poem = request.forms.get('poem')
   poem = re.sub(r'<>&', '', request.forms.get('poem'))
   print(poem)

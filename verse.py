@@ -6,6 +6,7 @@ import re
 import vowels
 import haspirater
 import error
+import sys
 from pprint import pprint
 
 # the writing is designed to make frhyme succeed
@@ -142,6 +143,7 @@ class Verse:
           w[i+1]['text'] = w[i+1]['text'][1:]
           if w[i+1]['text'] == '':
             w[i]['original'] += w[i+1]['original']
+            w[i+1]['original'] = ''
         if w[i]['text'].endswith('g') and len(w[i+1]['text']) >= 2:
           if w[i+1]['text'][1] in "eéèa":
             w[i+1]['text'] = w[i+1]['text'][1:]
@@ -268,7 +270,15 @@ class Verse:
     for i, w in enumerate(self.chunks[:-1]):
       if w[-1]['text'] != "e":
         continue
-      if sum([1 for chunk in w if is_vowels(chunk['text'])]) <= 1:
+      nweight = 0
+      for chunk in w[::-1]:
+        if is_vowels(chunk['text']):
+          nweight += 1
+        # "fais-le" not elidable, but "suis-je" and "est-ce" is
+        if ('-' in chunk['text'] and not chunk['text'].endswith('-j') and not
+            chunk['text'].endswith('-c')):
+          break
+      if nweight == 1:
         continue
       if 'elidable' not in w[-1].keys():
         w[-1]['elidable'] = self.chunks[i+1][0]['elision']
@@ -281,11 +291,13 @@ class Verse:
         if w[-2]['text'] in ambiguous_potential:
           w[-2]['error'] = "ambiguous"
           w[-1]['error'] = "ambiguous"
-      if w[-1]['text'] in ambiguous_potential:
-        if self.chunks[i+1][0]['text'][0] in consonants:
+      if len(w[-1]['text']) >= 2 and w[-1]['text'][-2:] in ambiguous_potential:
+        nchunk = self.chunks[i+1][0]
+        if 'elision' not in nchunk.keys() or True not in nchunk['elision']:
           w[-1]['error'] = "ambiguous"
           self.chunks[i+1][0]['error'] = "ambiguous"
-      elif (is_vowels(w[-1]['text']) or w[-1]['text'] == 'Y') and not w[-1]['text'].endswith('e'):
+      elif ((is_vowels(w[-1]['text']) or w[-1]['text'] == 'Y') and not
+          w[-1]['text'].endswith('e')):
         if (is_vowels(self.chunks[i+1][0]['text']) and 'no_hiatus' not in
             self.chunks[i+1][0].keys()):
           if ''.join(x['text'] for x in w) not in no_hiatus:
@@ -300,6 +312,11 @@ class Verse:
 
     # collapse words
     self.chunks = sum(self.chunks, [])
+
+    now_line = ''.join(x['original'] for x in self.chunks)
+    if now_line != line:
+      print("%s became %s" % (line, now_line), file=sys.stderr)
+      pprint(self.chunks, stream=sys.stderr)
 
   def splithyph(self, word):
     """split hyphen-delimited word parts into separate words if they are only
@@ -473,12 +490,12 @@ class Verse:
     
     tot = 0
     for c in self.chunks[::-1]:
-      if c['original'].endswith(' '):
+      if c['original'].endswith(' ') or c['original'].endswith('-'):
         if tot > 0:
           break
       if 'weights' in c.keys():
         tot += min(c['weights'])
-      if ' ' in c['original'].rstrip():
+      if ' ' in c['original'].rstrip() or '-' in c['original'].rstrip():
         if tot > 0:
           break
     return tot
