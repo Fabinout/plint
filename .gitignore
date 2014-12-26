@@ -19,3 +19,8 @@ res/*.mo
 diaeresis?.json
 Lexique*.zip
 haspirater
+*.pyo
+poem
+backup/*
+poem*.tpl
+poem2html
