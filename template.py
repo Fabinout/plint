@@ -281,9 +281,9 @@ class Template:
     return None
 
 def str2bool(x):
-  if x.lower() in ["yes", "oui", "y", "o"]:
+  if x.lower() in ["yes", "oui", "y", "o", "true", "t", "vrai", "v"]:
     return True
-  if x.lower() in ["no", "non", "n"]:
+  if x.lower() in ["no", "non", "n", "false", "faux", "f"]:
     return False
   raise error.TemplateLoadError(_("Bad value in global option"))
 

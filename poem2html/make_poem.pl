@@ -15,7 +15,7 @@ while (<STDIN>) {
     } else {
       my $did = encode_entities($2, '<>&"');
       print "</p>\n";
-      print "<p class=\"did\">Il $did</p>\n";
+      print "<p class=\"did\">$actor $did</p>\n";
       print "<p class=\"speech\">\n";
     }
   } elsif (/^<([^>]*)> (.*)$/) {
