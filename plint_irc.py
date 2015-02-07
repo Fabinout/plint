@@ -66,6 +66,8 @@ def manage(line, descriptor=sys.stdout):
         or text.lstrip().endswith("...") or text.lstrip().endswith("…")) and
         len(text) < 13):
       return False # too short
+    if len(text) > 130:
+      return False # too long
   if (text.rstrip().endswith("...") or
       text.rstrip().endswith("…")):
     # it might be a call
