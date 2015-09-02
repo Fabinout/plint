@@ -36,11 +36,9 @@ var setForCustom = false;
 function setUnload() {
   window.onbeforeunload = function() {
     if (lang == "fr") {
-      return ("Votre poème sera perdu en fermant cette page. "
-          + "Êtes-vous sûr de vouloir la quitter ?");
+      return ("Votre poème sera perdu en fermant cette page.");
     } else {
-      return ("Your poem will be lost when closing this page. "
-          + "Are you sure you want to navigate away?");
+      return ("Your poem will be lost when closing this page.");
     }
   };
 }
@@ -90,14 +88,39 @@ function sanitize(e) {
   }
 }
 
+var poem_h, poem_w, user_template_h, user_template_w;
+
 function resizeCErrors(e) {
+  // resize in width
+  var twidth = $( window ).width() - $( '#poem' ).width() - em2px(2);
+  if (twidth > 50) {
+    $( '#cerrors' ).width(twidth);
+  }
+
   if ($( window ).width() > 650) {
     /* stretch cerrors */
     $( '#cerrors' ).height($( window ).height() - $( '#cerrors' ).offset().top - em2px(1));
   }
+  if ($( window ).width() <= 650) {
+    // everyone takes full width
+    $( '#cerrors' ).width($( window ).width() - em2px(2));
+    $( '#user_template' ).width($( window ).width() - em2px(2));
+    $( '#poem' ).width($( window ).width() - em2px(2));
+    $( '#lcontainer' ).width($( window ).width() - em2px(2));
+  }
+  // store the sizes (see resizeAllLast function)
+  // following http://stackoverflow.com/a/7055197
+  poem_h = $( '#poem' ).height();
+  poem_w = $( '#poem' ).width();
+  user_template_h = $( '#user_template' ).height();
+  user_template_w = $( '#user_template' ).width();
 }
 
 function resizeAllPoem(e) {
+  if ($( '#poem' ).height() == poem_h && $( '#poem' ).width() == poem_w) {
+    // nothing changed
+    return;
+  }
   sanitize(e);
   var avail = getAvail();
   var h1 = $( '#poem' ).height();
@@ -119,10 +142,17 @@ function resizeAllPoem(e) {
       $( '#user_template' ).height(0.1 + avail);
     }
   }
+  // resize in width
+  $( '#user_template' ).width($( '#poem' ).width());
+  $( '#lcontainer' ).width($( '#poem' ).width());
   resizeCErrors(e);
 }
 
 function resizeAllUserTemplate(e) {
+  if ($( '#user_template' ).height() == user_template_h && $( '#user_template' ).width() == user_template_w) {
+    // nothing changed
+    return;
+  }
   sanitize(e);
   var avail = getAvail();
   var h1 = $( '#poem' ).height();
@@ -138,6 +168,9 @@ function resizeAllUserTemplate(e) {
   if ($( window ).width() <= 650) {
     $( '#cerrors' ).height(0.1 + h3 * avail/used);
   }
+  // resize in width
+  $( '#poem' ).width($( '#user_template' ).width());
+  $( '#lcontainer' ).width($( '#user_template' ).width());
   resizeCErrors(e);
 }
 
@@ -163,6 +196,24 @@ function resizeAll(e) {
     $( '#cerrors' ).height(0.1 + h3 * avail/used);
   }
   resizeCErrors(e);
+}
+
+function resizeAllLast(e) {
+  // chrome does not fire mouseup when it happens outside of the element
+  // and does not fire mousedown when resizing
+  // https://code.google.com/p/chromium/issues/detail?id=453023
+  // so we have to detect mouseups globally
+  // and figure out who was resized
+  // by comparing against stored sizes...
+  if ($( '#poem' ).height() != poem_h || $( '#poem' ).width() != poem_w) {
+    resizeAllPoem();
+  } else if ($( '#user_template' ).height() != user_template_h || $( '#user_template' ).width() != user_template_w) {
+    resizeAllUserTemplate();
+  } else {
+    // we can't figure it out (or the mouseup is irrelevant)
+    // run resizeAll
+    resizeAll();
+  }
 }
 
 window.onresize = resizeAll;
@@ -288,15 +339,15 @@ jQuery(document).ready(function(){
    $( '#poem' ).dblclick(function(){
      resizeAllPoem();
    });
+   $(document).mouseup(function() {
+     resizeAllLast();
+   });
    resizeAll();
-  setTimeout(function () {
-        $(window).resize();
-  }, 1000);
 });
 
 $(document).load(function(e) {
   setTimeout(function () {
         $(window).resize();
-  }, 1000);
+  }, 100);
 });
 

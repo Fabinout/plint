@@ -15,7 +15,22 @@
 }
 
 #lcontainer {
-  width: initial;
   float: none;
+  width: 100%;
+}
+
+#poem {
+  min-width: 100%;
+  max-width: 100%;
+}
+
+#predef {
+  max-width: 100%;
+  min-width: 100%;
+}
+
+#user_template {
+  min-width: 100%;
+  max-width: 100%;
 }
 
