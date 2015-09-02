@@ -2,9 +2,6 @@
 
 {% block body %}
 
-<ol id="errors">
-</ol>
-
 <noscript>
 {% if lang == 'fr' %}
 <p>Désolé, votre navigateur doit supporter JavaScript pour faire fonctionner
@@ -15,19 +12,6 @@ plint.</p>
 </noscript>
 
 <div id="lcontainer">
-  <p id="status">
-{% if lang == 'fr' %}
-plint est un outil pour vérifier la métrique et les rimes de poèmes en
-langue française. 
-Choisissez un modèle (survolez avec le pointeur pour plus de détails), saisissez
-votre poème, et cliquez sur "Valider".
-{% else %}
-plint is a tool to check the metric and rhymes of French verse.
-Select a template (hover for details), input your poem, and hit
-"Validate".
-{% endif %}
-</p>
-
 <select name="predef" id="predef" onChange="toggleCustom()" tabindex="1">
   <option value="classical" id="classical"
   {% if lang == 'fr' %}
@@ -106,20 +90,21 @@ title="Alexandrins classiques avec césure à l'hémistiche, rimes plates, genre
 6/6 B !x
 6/6 B !x
 </textarea>
-<p>
+<p id="tools">
 <button onclick="loadPredef()" id="customize" tabindex="2">
 {% if lang == 'fr' %}
-  Personnaliser le modèle sélectionné
+  Éditer le modèle
 {% else %}
-  Customize selected template
+  Tweak template
 {% endif %}
 </button>
 <a class="doclink" href="#"
   onclick="window.open('about#template', '_blank');" tabindex="3">
-  documentation&nbsp;<img src="static/img/nw.png"
 {% if lang == 'fr' %}
+aide&nbsp;<img src="static/img/nw.png"
 alt="s'ouvre dans une nouvelle fenêtre">
 {% else %}
+help&nbsp;<img src="static/img/nw.png"
 alt="opens in a new window">
 {% endif %}
 </a>
@@ -140,6 +125,24 @@ alt="opens in a new window">
 {% endif %}
 >
 </textarea>
+</div>
+
+<div id="cerrors">
+  <p id="status">
+{% if lang == 'fr' %}
+plint est un outil pour vérifier la métrique et les rimes de poèmes en
+langue française. 
+Choisissez un modèle (survolez avec le pointeur pour plus de détails), saisissez
+votre poème, et cliquez sur "Valider".
+{% else %}
+plint is a tool to check the metric and rhymes of French verse.
+Select a template (hover for details), input your poem, and hit
+"Validate".
+{% endif %}
+</p>
+
+<ol id="errors">
+</ol>
 </div>
 
 {% endblock %}

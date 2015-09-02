@@ -1,3 +1,9 @@
+/* http://chrissilich.com/blog/convert-em-size-to-pixels-with-jquery/ */
+function em2px(n) {
+    var emSize = parseFloat($("body").css("font-size"));
+    return (emSize * n);
+}
+
 function htmlentities(x) {
   return $('<div/>').text(x).html();
 }
@@ -54,13 +60,113 @@ function setCustom() {
   setUnload();
 }
 
-function resizePoem(e) {
-  $( '#poem' ).height(
-      $( window ).height() - $( '#poem' ).offset().top - 20);
+function getAvail() {
+  var avail = $( window ).height() - $( '#lcontainer' ).offset().top - em2px(4) - $( '#tools' ).height() - $( '#predef' ).height();
+  if ($( '#user_template' ).is(":visible")) {
+    avail -= em2px(.5);
+  }
+  if ($( window ).width() <= 650) {
+    avail -= em2px(1);
+  }
+  return avail;
 }
 
-window.onresize = resizePoem;
-window.onload = resizePoem;
+function sanitize(e) {
+  var avail = getAvail();
+  var h1 = $( '#poem' ).height();
+  var h2 = $( '#user_template' ).height();
+  var h3 = $( '#cerrors' ).height();
+  if (h1 > avail) {
+    $( '#poem' ).height(avail);
+    h1 = avail;
+  }
+  if (h2 > avail) {
+    $( '#user_template' ).height(avail);
+    h2 = avail;
+  }
+  if (h3 > avail) {
+    $( '#cerrors' ).height(avail);
+    h3 = avail;
+  }
+}
+
+function resizeCErrors(e) {
+  if ($( window ).width() > 650) {
+    /* stretch cerrors */
+    $( '#cerrors' ).height($( window ).height() - $( '#cerrors' ).offset().top - em2px(1));
+  }
+}
+
+function resizeAllPoem(e) {
+  sanitize(e);
+  var avail = getAvail();
+  var h1 = $( '#poem' ).height();
+  avail -= h1;
+  var h2 = $( '#user_template' ).height();
+  var h3 = $( '#cerrors' ).height();
+  if (!($( '#user_template' ).is(":visible")) && ($( window ).width() > 650)) {
+    /* silly, just take the entire height */
+    $( '#poem' ).height(avail + h1);
+  } else {
+    if ($( window ).width() <= 650) {
+      /* fix user_template, use the rest for cerrors*/
+      if ($( '#user_template' ).is(":visible")) {
+        avail -= h2;
+      }
+      $( '#cerrors' ).height(0.1 + avail);
+    } else {
+      /* use the rest for user_template */
+      $( '#user_template' ).height(0.1 + avail);
+    }
+  }
+  resizeCErrors(e);
+}
+
+function resizeAllUserTemplate(e) {
+  sanitize(e);
+  var avail = getAvail();
+  var h1 = $( '#poem' ).height();
+  var h2 = $( '#user_template' ).height();
+  var h3 = $( '#cerrors' ).height();
+  avail -= h2;
+  /* share what remains among other elements */
+  var used = h1 + 0.01;
+  if ($( window ).width() <= 650) {
+    used += h3;
+  }
+  $( '#poem' ).height(h1 * avail/used);
+  if ($( window ).width() <= 650) {
+    $( '#cerrors' ).height(0.1 + h3 * avail/used);
+  }
+  resizeCErrors(e);
+}
+
+function resizeAll(e) {
+  sanitize(e);
+  var avail = getAvail();
+  var h1 = $( '#poem' ).height();
+  var h2 = $( '#user_template' ).height();
+  var h3 = $( '#cerrors' ).height();
+  /* just scale existing proportions */
+  var used = h1 + 0.01;
+  if ($( '#user_template' ).is(":visible")) {
+    used += h2;
+  }
+  if ($( window ).width() <= 650) {
+    used += h3;
+  }
+  $( '#poem' ).height(h1 * avail/used);
+  if ($( '#user_template' ).is(":visible")) {
+    $( '#user_template' ).height(0.1 + h2 * avail/used);
+  }
+  if ($( window ).width() <= 650) {
+    $( '#cerrors' ).height(0.1 + h3 * avail/used);
+  }
+  resizeCErrors(e);
+}
+
+window.onresize = resizeAll;
+window.onload = resizeAll;
 
 function check() {
   $( "#status" ).html("Checking...");
@@ -144,7 +250,7 @@ function loadPredef() {
       $( '#user_template' ).val(htmlentities(data));
       $('#user_template').show();
       $('#customize').prop("disabled", true);
-      resizePoem();
+      resizeAll();
     }
     });
   }
@@ -157,7 +263,7 @@ function toggleCustom() {
     $('#user_template').hide();
     $('#customize').prop("disabled", false);
   }
-  resizePoem();
+  resizeAll();
 }
 
 function gotoLine(l) {
@@ -167,4 +273,30 @@ function gotoLine(l) {
     pos += lines[i].length + "\n".length;
   $( '#poem' ).caretTo(pos);
 }
+
+/* http://stackoverflow.com/a/7055239 */
+jQuery(document).ready(function(){
+   $( '#user_template' ).mouseup(function(){
+     resizeAllUserTemplate();
+   });
+   $( '#user_template' ).dblclick(function(){
+     resizeAllUserTemplate();
+   });
+   $( '#poem' ).mouseup(function(){
+     resizeAllPoem();
+   });
+   $( '#poem' ).dblclick(function(){
+     resizeAllPoem();
+   });
+   resizeAll();
+  setTimeout(function () {
+        $(window).resize();
+  }, 1000);
+});
+
+$(document).load(function(e) {
+  setTimeout(function () {
+        $(window).resize();
+  }, 1000);
+});
 

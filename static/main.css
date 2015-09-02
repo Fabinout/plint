@@ -51,54 +51,68 @@ dt {
 
 #lcontainer {
   width: 42%;
+  float: left;
 }
 
-#errors li {
+#cerrors li {
   cursor: pointer;
   background: #fdd;
   padding: 1em;
   margin-bottom: 1em;
   overflow: auto;
   border: 2px outset red;
+  min-height: 3em;
 }
 
-#errors li:hover {
+#cerrors li:hover {
   background: #fee;
   border: 2px outset #faa;
 }
 
-#errors li p {
+#cerrors li p {
   margin: 0;
   color: #a00;
   font-weight: bold;
 }
 
-#errors li blockquote {
+#cerrors li blockquote {
   padding: 0;
   font-style: italic;
   margin-left: 0;
 }
 
+#cerrors {
+  margin-top: 0;
+  overflow: auto;
+  height: 90vh;
+  width: 55%;
+  float: right;
+}
+
 #errors {
   list-style-type: none;
   padding: 0;
-  margin-top: 0;
-  float: right;
-  overflow: auto;
-  height: 90vh;
-  max-width: 55%;
 }
 
 #poem {
-  width: 100%;
-  max-width: 100%;
-  min-width: 100%;
   min-height: 8em;
+  min-width: 100%;
+  max-width: 100%;
+  width: 100%;
+  /* http://stackoverflow.com/a/4156343 */
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 #predef {
   max-width: 100%;
   min-width: 100%;
+  width: 100%;
+  /* http://stackoverflow.com/a/4156343 */
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 .doclink {
@@ -109,6 +123,10 @@ dt {
   width: 100%;
   min-width: 100%;
   max-width: 100%;
+  /* http://stackoverflow.com/a/4156343 */
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   height: 10vh;
   min-height: 6em;
 }
@@ -135,5 +153,10 @@ dt {
   display: block;
   width: 100%;
   overflow: auto;
+  margin-top: 0;
 }
 
+p {
+  /* reset */
+  margin: 1em 0;
+}
