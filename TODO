@@ -1,26 +1,21 @@
-- profiling
+- faire marcher oublieux
 - change additions to give numerical syllable count
-- highlight possible hemistiche positions where an hemistiche could have been placed
 - document expected errors of test.sh and commit necessary files
 - remove kludge for invalid characters, split them in specific chunks
+- improve performance with profiling
+
+== Error reporting ==
+
 - produce error reports first to structured and then to text and json
 - and then from json to html
+- indiquer l'état des hémistiches seulement s'il y a un problème, et seulement
+  pour les syllabes plausibles
+- highlight possible hemistiche positions where an hemistiche could have been placed
+
+== Evaluation ==
+
 - évaluer sur la base de données lexique, sur la qualité de la génération, sur
   le nombre d'erreurs reconnues en cross-validation
-- apprendre les rimes à partir des cooccurrences en fin de vers (et d'un
-  blacklist de mots ambigus ou qch?)
-
-== IRC ==
-
-- undo for irc, edit for irc
-- fournir un red (et peut-être de quoi revert) sur irc
-- /me lint
-- plint en mode serveur, pas de communication entre les participants sauf en
-  alexandrins
-
-== Alignment ==
-
-- improve eye rhyme error reporting
 
 == Rules ==
 
@@ -28,11 +23,6 @@
 - should we forbid "[^gq]uent", "ient", "éent" ?
 - 3-syllable vowel clusters?
 - other examples of "mentions", "notions" ? ...
-
-== Existing errors ==
-
-- "prix"/"fils"
-- the rest of test.sh
 
 == Other approaches ==
 
