@@ -28,22 +28,44 @@ letters = {
     'z': 'zaide'
 }
 
-def elision(word):
-  if (word.startswith('y') and not word == 'y' and not word.startswith("yp") and
-      not word.startswith("yeu")):
-    return [False]
-  if word in ["oui", "ouis"] or word.startswith("ouistiti"):
+def elision(word, was_cap):
+  if word.startswith('y'):
+    if word == 'y':
+      return [True]
+    if was_cap:
+      if word == 'york':
+        return [False]
+      # Grevisse, Le Bon usage, 14th ed., paragraphs 49-50
+      # depends on whether it's French or foreign...
+      return [True, False]
+    else:
+      exc = ["york", "yeux", "yeuse", "ypérite"]
+      for w in exc:
+        if word.startswith(w):
+          return [True]
+      # otherwise, no elision
+      return [False]
+  if word in ["oui", "ouis"]:
     # elision for those words, but beware, no elision for "ouighour"
     # boileau : "Ont l'esprit mieux tourné que n'a l'homme ? Oui sans doute."
-    # so elission sometimes
+    # so elision sometimes
     return [True, False]
+  if word.startswith("ouistiti") or word.startswith("ouagadougou"):
+    return [False]
   # "un", "une" are non-elided as nouns ("cette une")
   if word in ["un", "une"]:
     return [True, False]
   # "onze" is not elided
   if word == "onze":
     return [False]
+  if word.startswith('ulul'):
+    return [False] # ululement, ululer, etc.
+  if word.startswith('uhlan'):
+    return [False] # uhlan
   if word[0] == 'h':
+    if word == "huis":
+      # special case, "huis" is elided but "huis clos" isn't
+      return [True, False]
     return list(map((lambda s: not s), haspirater.lookup(word)))
   if is_vowels(word[0]):
     return [True]
@@ -216,7 +238,9 @@ class Verse:
     # vowel elision problems
     for w in self.chunks:
       if 'elision' not in w[0].keys():
-        w[0]['elision'] = elision(''.join(x['text'] for x in w))
+        first_letter = common.rm_punct(w[0]['original'].strip())
+        w[0]['elision'] = elision(''.join(x['text'] for x in w),
+            first_letter == first_letter.upper())
 
     # case of 'y'
     ys_regexp = re.compile("(y*)")
