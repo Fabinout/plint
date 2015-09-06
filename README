@@ -75,7 +75,7 @@ along the lines of:
 
 To run plint on some provided test files, you can use test.sh. However, because
 of known bugs, some errors will be reported on the test files. To run a very
-simple test suite, run python3 versetest.py; they should all pass.
+simple test suite, run ./versetest.py; they should all pass.
 
 == 4. Training ==
 
