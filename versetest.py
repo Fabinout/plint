@@ -189,6 +189,15 @@ class PoemCounts(Counts):
     possible = self.runCount(self.v3, limit="6/6")
     self.assertTrue(self.achievesPossibility(possible, 12))
 
+class SanityCheck(unittest.TestCase):
+  def testSimple(self):
+    text = "Patati patata patata tata vies"
+    v = verse.Verse(text, template.Template(), template.Pattern("12"))
+    v.parse()
+    gend = v.genders()
+    self.assertEqual(1, len(gend))
+    self.assertEqual('F', next(iter(gend)))
+
 if __name__ == "__main__":
     diaeresis.load_diaeresis('diaeresis.json')
     unittest.main()

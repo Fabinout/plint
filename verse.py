@@ -423,6 +423,12 @@ class Verse:
   def feminine(self, align=None):
     for a in sure_end_fem:
       if self.text.endswith(a):
+        # if vowel before, it must be fem
+        try:
+          if self.text[-len(a)-1] in common.vowels:
+            return ['F']
+        except IndexError:
+          return ['M', 'F']
         # check that this isn't a one-syllabe word
         for i in range(4):
           try:
