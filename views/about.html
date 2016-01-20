@@ -25,12 +25,12 @@ intéressé par le dictionnaire de rimes <a
 aucun des modèles ne vous convient, vous pouvez <a href="#template">écrire le
   vôtre</a>.</p>
 
-<h2>Qu'est-ce qui est vérifié par plint&nbsp;?</h2>
+<h2 id="whatcheck">Qu'est-ce qui est vérifié par plint&nbsp;?</h2>
 <p>Les erreurs suivantes sont signalées par défaut. Des options de configuration
 dans le modèle permettent de rendre plint plus tolérant sur la plupart de ces
 erreurs&nbsp;: cela est documenté <a href="#template">plus bas</a>.</p>
 <dl>
-  <dt>Métrique</dt>
+  <dt id="whatcheck_syllable">Métrique</dt>
   <dd>Le nombre de syllabes par vers est habituellement fixé (12 pour les
   alexandrins, par exemple). Les syllabes sont comptées en scandant sans
   élision des <em>e</em> muets sauf quand un mot se termine par un <em>e</em>
@@ -42,11 +42,11 @@ erreurs&nbsp;: cela est documenté <a href="#template">plus bas</a>.</p>
   ou obligatoire ("passion")&nbsp;; plint utilise une approximation permissive
   des diérèses effectivement autorisées déduite à partir d'un corpus de textes
   classiques.</dd>
-  <dt>Hémistiche</dt>
+  <dt id="whatcheck_hemistiche">Hémistiche</dt>
   <dd>Les alexandrins classiques sont divisés en deux <em>hémistiches</em> de
   6 syllabes. La césure ne doit pas couper un mot et le premier hémistiche ne
   doit pas se finir par un son faible (ie. une fin féminine non élidée).</dd>
-  <dt>Rime</dt>
+  <dt id="whatcheck_rhyme">Rime</dt>
   <dd>La contrainte poétique la plus connue est que les vers doivent rimer. Les
   phonèmes communs dans une rime doivent inclure un son vocalique (par exemple
   "tâte" et "bête" ne riment pas parce que leur suffixe commun est [t] qui ne
@@ -56,35 +56,39 @@ erreurs&nbsp;: cela est documenté <a href="#template">plus bas</a>.</p>
   [ɛ̃] et [œ̃] ("brin" et "brun") ou [ɔ] et [o] ("cotte" et "côte"). Quand toutes
   les règles classiques sont suivies, certaines rimes comme la rime normande ou
   la rime avec liaison supposée sont acceptées.</dd>
-  <dt>Rime pour l'œil</dt>
+  <dt id="whatcheck_eye">Rime pour l'œil</dt>
   <dd>En poésie classique, un degré minimal de rime "pour l'œil" est exigé
   (ainsi "-é" et "-er" ne riment pas), avec une certaine tolérance (pour "-é" et
   "-ai" notamment).</dd>
-  <dt>Genre des rimes.</dt>
+  <dt id="whatcheck_genre">Genre des rimes.</dt>
   <dd>En poésie classique, les rimes doivent être <em>féminines</em> ou
   <em>masculines</em>. Une rime est féminine si elle se termine par un "e", "es"
   ou "ent" silencieux, et est masculine dans le cas contraire. Les rimes doivent
   faire rimer alternativement deux terminaisons féminines et deux terminaisons
   masculines. plint vérifie cela, avec une approximation permissive pour
   déterminer si une terminaison est féminine ou non.</dd>
-  <dt>Motifs ambigus</dt>
-  <dd>Certains motifs ambigus comme "-ies" et "-ées", ou "-ie" ou "-ée" suivis
-  d'une consonne ou d'un 'h' aspiré, sont interdits en poésie classique et
-  signalés.</dd>
-  <dt>Hiatus</dt>
+  <dt id="whatcheck_ambiguous">Motifs ambigus</dt>
+  <dd>Certains motifs comme "-ies" et "-ées", ou "-ie" ou "-ée" suivis
+  d'une consonne ou d'un 'h' aspiré, sont interdits en poésie classique.
+  La raison est que ces motifs sont ambigus car ils pouvaient être prononcés ou
+  élidés suivant les règles classiques de prosodie à l'époque, ce qui empêchait
+  de compter correctement les syllabes. Selon la prosodie moderne, ils sont
+  toujours élidés, mais ils sont toujours interdits suivant les règles
+  classiques : plint les signale.</dd>
+  <dt id="whatcheck_hiatus">Hiatus</dt>
   <dd>Le hiatus (juxtaposition de sons vocaliques sans 'e' muet intercalaire)
   est interdit en poésie classique et signalé.</dd>
-  <dt>Mots répétés</dt>
+  <dt id="whatcheck_repeated">Mots répétés</dt>
   <dd>On ne doit pas faire rimer un mot avec lui-même (mais on peut faire rimer
   un mot avec des homographes de nature grammaticale différente), ainsi, plint
   signale une erreur si le nombre d'occurrences d'un mot connu dans un motif de
   rimes est plus grand par son nombre de natures grammaticales possibles.</dd>
-  <dt>Caractères interdits</dt>
+  <dt id="whatcheck_illegal">Caractères interdits</dt>
   <dd>Les caractères que plint ne reconnaît pas (notamment les chiffres arabes)
   sont signalés comme des erreurs, d'une part parce qu'ils sont sans doute
   irréguliers en poésie classique, d'autre part parce que cela signifie sans
   doute que plint va mal interpréter le vers.</dd>
-  <dt>Longueur</dt>
+  <dt id="whatcheck_length">Longueur</dt>
   <dd>Pour certains types de poèmes (par exemple les sonnets), le nombre de vers
   est fixé, et une erreur est levée si le modèle n'est pas complet ou s'il a été
   répété.</dd>
@@ -272,11 +276,11 @@ powered by <a href="http://python.org">Python</a> and <a
 predefined templates suit you, you can <a href="#template">write your
   own</a>.</p>
 
-<h2>What does plint check?</h2>
+<h2 id="whatcheck">What does plint check?</h2>
 <p>Here are some simplified explanations. To know all the details, go read the
 source code.</p>
 <dl>
-  <dt>Syllable count</dt>
+  <dt id="whatcheck_syllable">Syllable count</dt>
   <dd>The number of syllables in each verse is usually fixed (12 in
   alexandrines, for instance). Syllables are counted in a reading with no
   elision of mute <em>e</em>'s except at the end of a word <em>and</em> when
@@ -286,12 +290,12 @@ source code.</p>
   syllables either naturally ("Léon") or through <em>diérèse</em> ("passion");
   plint uses a tolerant approximation of allowed <em>diérèses</em> trained on a
   corpus of classical texts.</dd>
-  <dt>Hemistiche</dt>
+  <dt id="whatcheck_hemistiche">Hemistiche</dt>
   <dd>For classical alexandrines, the 12 syllables are separated in two groups
   of 6 with an intermediate cesura (the <em>hémistiche</em>). The cesura must
   not split a word and must not end in a weak sound (essentially, a non-elided
   feminine ending).</dd>
-  <dt>Rhyme.</dt>
+  <dt id="whatcheck_rhyme">Rhyme.</dt>
   <dd>The fact that verses must rhyme is the most well-known poetic constraint.
   The rhyming phonemes must include a vowel (eg. "tâte" and "bête" do not rhyme
   because their common phoneme suffix is [t] which does not include a vowel
@@ -302,34 +306,38 @@ source code.</p>
   rules are enforced, some rhymes such as <em>rime normande</em> and rhymes for
   a <em>liaison supposée</em> are accepted though they do not rhyme
   phonetically.</dd>
-  <dt>Eye rhyme.</dt>
+  <dt id="whatcheck_eye">Eye rhyme.</dt>
   <dd>Classical rules require a minimal degree of <em>rime pour l'œil</em> (end
   letter similarity); thus "-é" and "-er" do not rhyme, although common
   tolerances exist, such as allowing "-é" and "-ai".</dd>
-  <dt>Rhyme genre.</dt>
+  <dt id="whatcheck_genre">Rhyme genre.</dt>
   <dd>In classical verse, rhymes must be made between feminine verse endings, or
   masculine verse endings. A verse ending is feminine if it ends with a silent
   "e", "es" or "ent", and masculine otherwise. plint enforces this, with a
   liberal approximation to try to guess if an ending is indeed silent. Besides,
   feminine and masculine rhymes must alternate.</dd>
-  <dt>Ambiguous patterns</dt>
+  <dt id="whatcheck_ambiguous">Ambiguous patterns</dt>
   <dd>Some patterns such as "-ées" or "-ies", or "-ée" and "-ie" followed by an
-  aspirated 'h' or a consonant, are forbidden by classical rules and
-  reported.</dd>
-  <dt>Hiatus</dt>
+  aspirated 'h' or a consonant, are forbidden by classical rules. They are
+  called "ambiguous" because, according to classical prosody rules at the time,
+  they could be either pronounced or elided, so it was unclear how to count
+  syllables. In modern French, they are always elided, but classical poetry
+  still prohibits them. They are
+  reported by plint.</dd>
+  <dt id="whatcheck_hiatus">Hiatus</dt>
   <dd>Juxtaposition of vowel sounds in two adjacent words with no mute 'e' in
   the middle is forbidden and reported.</dd>
-  <dt>Repeated words</dt>
+  <dt id="whatcheck_repeated">Repeated words</dt>
   <dd>A word may not rhyme with itself, but may rhyme with a homograph of a
   different grammatical nature, so plint will report as error any multiple
   occurrences of a known word in a rhyme pattern if the number of occurrences is
   more than the number of grammatical natures for the word.</dd>
-  <dt>Illegal characters</dt>
+  <dt id="whatcheck_illegal">Illegal characters</dt>
   <dd>Characters that are not understood by plint, such as arabic numerals, are
   reported as errors: on the one hand, they are probably best avoided in
   classical poetry; on the second hand plint will probably misinterpret the
   verse if it does not understand some of the characters.</dd>
-  <dt>Poem length</dt>
+  <dt id="whatcheck_length">Poem length</dt>
   <dd>For some poetic forms such as the <em>sonnet</em>, the number of verses is
   fixed, so an error is raised if the pattern was not completed to the end or
   was repeated.</dd>
