@@ -25,8 +25,8 @@ domain.
 plint is a tool to check French poetry. Specifically, it validates metric,
 rhymes and rhyme genres against an unexpressive template language. It features a
 command-line interface, an IRC wrapper (for use with irctk) and a web interface.
-It depends on haspirater <http://a3nm.net/git/haspirater> and frhyme
-<http://a3nm.net/git/frhyme>, and the web interface requires CherryPy.
+It depends on haspirater <https://a3nm.net/git/haspirater> and frhyme
+<https://a3nm.net/git/frhyme>, and the web interface requires CherryPy.
 
 The full documentation of plint's features is available in views/about.html.
 
