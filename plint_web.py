@@ -182,5 +182,5 @@ def q(lang):
 
 if __name__ == '__main__':
   diaeresis.load_diaeresis('diaeresis.json')
-  run(app, port='5000', server="cherrypy", host="0.0.0.0")
+  run(app, port='5000', server="cherrypy", host="::")
 
