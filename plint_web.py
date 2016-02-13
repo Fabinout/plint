@@ -13,7 +13,19 @@ import time
 
 env = Environment(loader=PackageLoader('plint_web', 'views'))
 
+# force HTTPS usage
+# http://bottlepy.org/docs/dev/faq.html#problems-with-reverse-proxies
+# because bottle makes absolute redirects
+# https://github.com/bottlepy/bottle/blob/9fe68c89e465004a5e6babed0955bc1eeba88002/bottle.py#L2637
+# even though relative Location: is now allowed
+# http://stackoverflow.com/a/25643550
+def fix_https(app):
+  def fixed_app(environ, start_response):
+    environ['wsgi.url_scheme'] = 'https'
+    return app(environ, start_response)
+  return fixed_app
 app = Bottle()
+app.wsgi = fix_https(app.wsgi)
 
 THROTTLE_DELAY = 2
 throttle = set()
