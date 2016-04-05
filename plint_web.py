@@ -139,7 +139,6 @@ def q(lang):
           THROTTLE_DELAY)
     return dumps({'error': msg})
   throttle.add((ip, t))
-  poem = request.forms.get('poem')
   poem = re.sub(r'<>&', '', request.forms.get('poem'))
   print(poem)
   poem = check(poem)
