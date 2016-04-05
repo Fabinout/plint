@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: plint\n"
-"POT-Creation-Date: 2014-07-27 00:57+CEST\n"
-"PO-Revision-Date: 2014-07-27 00:58+0100\n"
+"POT-Creation-Date: 2016-04-05 20:50+0200\n"
+"PO-Revision-Date: 2016-04-05 20:51+0200\n"
 "Last-Translator: Antoine Amarilli <a3nm@a3nm.net>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.8.7.1\n"
 
 #: error.py:70
 msgid " (see '%s' above)"
@@ -32,55 +32,61 @@ msgstr "Motif ambigu interdit"
 msgid "Illegal hiatus"
 msgstr "Hiatus interdit"
 
-#: error.py:96
+#: error.py:97
 msgid "%s for type %s (expected %s, inferred %s)"
 msgstr "%s pour le type %s (attendu : %s, lu : %s)"
 
-#: error.py:103
+#: error.py:104
 msgid "Bad rhyme genre"
 msgstr "Mauvais genre de rime"
 
-#: error.py:106
+#: error.py:107
 msgid " or "
 msgstr " ou "
 
-#: error.py:121
+#: error.py:122
 msgid "Bad rhyme sound"
 msgstr "Mauvaise rime"
 
-#: error.py:130
+#: error.py:131
 msgid "Bad rhyme ending"
 msgstr "Mauvaise rime pour l'œil"
 
-#: error.py:137
+#: error.py:138
 msgid "Illegal metric: expected %d syllable%s%s"
 msgstr "Métrique illégale: attendu : %d syllabe%s%s"
 
-#: error.py:140
+#: error.py:141
 msgid " with hemistiche%s at "
 msgstr " avec hémistiche%s en "
 
-#: error.py:150
+#: error.py:151
 msgid "Too many occurrences of word \"%s\" for rhyme %s"
 msgstr "Trop d'occurrences du mot \"%s\" pour la rime %s"
 
-#: error.py:155
+#: error.py:156
 msgid "Poem is not complete"
 msgstr "Poème incomplet"
 
-#: error.py:159
+#: error.py:160
 msgid "Verse is beyond end of poem"
 msgstr "Vers au-delà de la fin du poème"
 
-#: plint.py:30
-msgid "Usage: %s TEMPLATE [OCONTEXT]"
-msgstr "Usage : %s MODÈLE [OCONTEXTE]"
-
 #: plint.py:31
+msgid "Usage: %s TEMPLATE [DFILE [OCONTEXT]]"
+msgstr "Usage : %s MODÈLE [FICHIERD [CONTEXTEO]]"
+
+#: plint.py:33
 msgid "Check stdin according to TEMPLATE, report errors on stdout"
 msgstr ""
 "Vérifie l'entrée standard suivant MODÈLE, signale les erreurs sur la sortie "
 "standard"
+
+#: plint.py:35
+msgid "DFILE is the diaeresis file, OCONTEXT is the context output file"
+msgstr ""
+"FICHIERD est le fichier de diérèses, CONTEXTEO est le fichier de sortie "
+"pour les contextes"
 
 #: template.py:30
 msgid "Metric description should only contain positive integers"
@@ -90,19 +96,25 @@ msgstr "La métrique ne doit contenir que des entiers strictement positifs"
 msgid "Metric length limit exceeded"
 msgstr "La longueur de la métrique est trop grande"
 
-#: template.py:82
+#: template.py:80
+msgid "Global options must be provided as key-value pairs"
+msgstr ""
+"Les options globales doivent être fournies sous la forme de paires clé-"
+"valeur"
+
+#: template.py:89
 msgid "Bad value for global option %s"
 msgstr "Mauvaise valeur pour l'option globale %s"
 
-#: template.py:87
+#: template.py:94
 msgid "Unknown global option"
 msgstr "Option globale inconnue"
 
-#: template.py:102
+#: template.py:109
 msgid "Template is empty"
 msgstr "Modèle vide"
 
-#: template.py:275
+#: template.py:292
 msgid "Bad value in global option"
 msgstr "Mauvaise valeur pour l'option globale %s"
 
