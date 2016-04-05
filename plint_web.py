@@ -148,7 +148,8 @@ def q(lang):
     else:
       msg = "Poem is empty, too long, or has too long lines"
     return dumps({'error': msg})
-  templateName = request.forms.get('template')
+  templateName = re.sub(r'[^a-z_]', '', request.forms.get('template'))
+  print(templateName)
   if templateName == 'custom':
     x = request.forms.get('custom_template')
   else:
