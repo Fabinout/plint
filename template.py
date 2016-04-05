@@ -73,7 +73,11 @@ class Template:
     self.reject_errors = False
 
   def read_option(self, x):
-    key, value = x.split(':')
+    try:
+      key, value = x.split(':')
+    except ValueError:
+      raise error.TemplateLoadError(
+        _("Global options must be provided as key-value pairs"))
     if key in self.option_aliases.keys():
       key = self.option_aliases[key]
     if key == 'merge':
