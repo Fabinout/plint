@@ -28,8 +28,11 @@ def run():
 if __name__ == '__main__':
   localization.init_locale()
   if len(sys.argv) < 2 or len(sys.argv) > 4:
-    print(_("Usage: %s TEMPLATE [DFILE [OCONTEXT]]") % sys.argv[0], file=sys.stderr)
+    print(_("Usage: %s TEMPLATE [DFILE [OCONTEXT]]") % sys.argv[0],
+        file=sys.stderr)
     print(_("Check stdin according to TEMPLATE, report errors on stdout"),
+        file=sys.stderr)
+    print(_("DFILE is the diaeresis file, OCONTEXT is the context output file"),
         file=sys.stderr)
     sys.exit(1)
 
