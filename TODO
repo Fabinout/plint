@@ -1,6 +1,3 @@
-plantage:
-  echo " -f" | ./plint.py test/boileau.tpl
-
 - faire marcher oublieux
 - change additions to give numerical syllable count
 - document expected errors of test.sh and commit necessary files

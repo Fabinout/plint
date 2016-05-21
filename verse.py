@@ -351,12 +351,12 @@ class Verse:
     cs = re.split(self.hyphen_regexp, word)
     miss = ""
     for i in range(len(cs)):
-      if re.match("^-*$", cs[i]):
+      if re.match("^-*$", cs[i]) or re.match("^ *$", cs[i]):
         if len(pre_chunks2) > 0:
           pre_chunks2[-1] = (pre_chunks2[-1][0], pre_chunks2[-1][1] + cs[i])
           continue
         else:
-          miss = cs[i]
+          miss += cs[i]
           continue
       if is_consonants(normalize(cs[i])):
         pre_chunks2.append((False if i < len(cs) - 1 else True, miss + cs[i]))

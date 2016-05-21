@@ -25,6 +25,18 @@ class SanityCheck(unittest.TestCase):
     v.parse()
     self.assertEqual(text, v.line)
 
+  def testLeadingSpaceHyphenVowel(self):
+    text = " -a"
+    v = verse.Verse(text, template.Template(), template.Pattern("12"))
+    v.parse()
+    self.assertEqual(text, v.line)
+
+  def testLeadingSpaceHyphenConsonant(self):
+    text = " -c"
+    v = verse.Verse(text, template.Template(), template.Pattern("12"))
+    v.parse()
+    self.assertEqual(text, v.line)
+
 class Eliminate(unittest.TestCase):
   def testEliminateOneGue(self):
     text = "gue"
