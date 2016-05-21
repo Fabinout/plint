@@ -239,7 +239,7 @@ class Disjunct(Counts):
       possible = self.runCount(vv, limit=v)
       self.assertTrue(self.achievesPossibility(possible, v))
 
-class SanityCheck(unittest.TestCase):
+class SanityCheckB(unittest.TestCase):
   def testSimple(self):
     text = "Patati patata patata tata vies"
     v = verse.Verse(text, template.Template(), template.Pattern("12"))
