@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import common
 import template
 import diaeresis
 import verse
@@ -36,6 +37,10 @@ class SanityCheck(unittest.TestCase):
     v = verse.Verse(text, template.Template(), template.Pattern("12"))
     v.parse()
     self.assertEqual(text, v.line)
+
+  def testLoneHyphens(self):
+    text = " - - -- --   - -  - --"
+    self.assertEqual(common.normalize(text), "")
 
 class Eliminate(unittest.TestCase):
   def testEliminateOneGue(self):
