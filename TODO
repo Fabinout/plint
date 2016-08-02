@@ -8,6 +8,10 @@ Concluera l'examen. Venez, je vous invite !
 /usr/lib/python3.5/re.py:203: FutureWarning: split() requires a non-empty pattern match.
 
 Remerciez-le plutôt, et félicitez-vous
+
+- fuzz testing
+- log exceptions separately for plint_web
+
 - faire marcher oublieux
 - change additions to give numerical syllable count
 - document expected errors of test.sh and commit necessary files
