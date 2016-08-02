@@ -1,3 +1,13 @@
+should be rejected (hemistiche is broken):
+Tatata ta verre un tata tatata
+
+-ue and -ues should be ambiguous (except g/q)
+Concluera l'examen. Venez, je vous invite !
+^ n'existe pas, mais vérifier
+
+/usr/lib/python3.5/re.py:203: FutureWarning: split() requires a non-empty pattern match.
+
+Remerciez-le plutôt, et félicitez-vous
 - faire marcher oublieux
 - change additions to give numerical syllable count
 - document expected errors of test.sh and commit necessary files
