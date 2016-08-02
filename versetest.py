@@ -2,6 +2,7 @@
 
 import template
 import diaeresis
+import common
 import verse
 import unittest
 from pprint import pprint
@@ -238,6 +239,12 @@ class Disjunct(Counts):
       vv = "belle " + k
       possible = self.runCount(vv, limit=v)
       self.assertTrue(self.achievesPossibility(possible, v))
+
+class RmAccents(unittest.TestCase):
+  def testSimple(self):
+    text = "déjà"
+    v = common.strip_accents(text)
+    self.assertEqual(v, "deja")
 
 class SanityCheck(unittest.TestCase):
   def testSimple(self):
