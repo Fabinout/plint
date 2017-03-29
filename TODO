@@ -1,3 +1,5 @@
+"pays" and "paysage": "payse", "abbaye"
+
 should be rejected (hemistiche is broken):
 Tatata ta verre un tata tatata
 
@@ -5,15 +7,14 @@ Tatata ta verre un tata tatata
 Concluera l'examen. Venez, je vous invite !
 ^ n'existe pas, mais vérifier
 
-/usr/lib/python3.5/re.py:203: FutureWarning: split() requires a non-empty pattern match.
-
 Remerciez-le plutôt, et félicitez-vous
 
 - fuzz testing
 - log exceptions separately for plint_web
 
-- faire marcher oublieux
-- change additions to give numerical syllable count
+- change additions to give numerical syllable count for affected syllable
+- adjust the diaeresis uncertainty threshold to assert that all verses are
+  correct (change your opinion about the syllable with least confidence)
 - document expected errors of test.sh and commit necessary files
 - remove kludge for invalid characters, split them in specific chunks
 - improve performance with profiling

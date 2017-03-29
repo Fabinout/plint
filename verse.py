@@ -106,11 +106,10 @@ class Verse:
     self.phon = None
     self.possible = None
 
-    self.hyphen_regexp = re.compile("(-*)")
-    whitespace_regexp = re.compile("(\s*)")
-    ys_regexp = re.compile("(\s*)")
+    self.hyphen_regexp = re.compile("(-+)")
+    whitespace_regexp = re.compile("(\s+)")
     all_consonants = consonants + consonants.upper()
-    consonants_regexp = re.compile('([^'+all_consonants+'*-]*)', re.UNICODE)
+    consonants_regexp = re.compile('([^'+all_consonants+'*-]+)', re.UNICODE)
 
     words = re.split(whitespace_regexp, line)
     words = remove_trivial(words, (lambda w: re.match("^\s*$", w) or
@@ -243,7 +242,7 @@ class Verse:
             first_letter == first_letter.upper())
 
     # case of 'y'
-    ys_regexp = re.compile("(y*)")
+    ys_regexp = re.compile("(y+)")
     for i, w in enumerate(self.chunks):
       new_word = []
       for j, chunk in enumerate(w):
