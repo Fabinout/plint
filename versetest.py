@@ -151,6 +151,13 @@ class ExceptionCounts(Counts):
     f = self.runCount("porte-avions porte-avions", limit=6)
     self.assertEqual(1, len(f))
     self.assertEqual(self.getWeight(f[0]), 6)
+  
+  def testSainteHelene(self):
+    # from "Les Trophées", José-Maria de Heredia
+    text = "Le navire, doublant le cap de Sainte-Hélène,"
+    f = self.runCount(text, limit=12)
+    self.assertEqual(1, len(f))
+    self.assertEqual(self.getWeight(f[0]), 12)
 
 class AspiratedCounts(Counts):
   def testBaudelaire1half(self):

@@ -177,6 +177,21 @@ class Verse:
       for i, w in enumerate(word[:-1]):
         if w['text'] == "e-":
           w['weights'] = [0] # force elision
+        if (w['text'] == "e" and i < len(word) - 1 and
+            word[i+1]['text'].startswith("-h")):
+          # collect what follows until the next hyphen or end
+          flw = word[i+1]['original'].split('-')[1]
+          ii = i+2
+          while ii < len(word):
+              flw += word[ii]['original'].split('-')[0]
+              if '-' in word[ii]['original']:
+                  break
+              ii += 1
+          # TODO: not sure if this reconstruction of the original word is bulletproof...
+          if haspirater.lookup(normalize(flw)):
+              w['weights'] = [0]
+          else:
+              w['weights'] = [1]
 
     # remove leading and trailing crap
     for w in self.chunks:

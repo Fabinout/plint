@@ -1,6 +1,3 @@
-should be accepted (elision should also occur within compound words):
-"Le navire, doublant le cap de Sainte-Hélène"
-
 "pays" and "paysage": "payse", "abbaye"
 
 should be rejected (hemistiche is broken):
