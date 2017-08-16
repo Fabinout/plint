@@ -105,14 +105,23 @@ def about(lang):
   return env.get_template('about.html').render(title=get_title(lang),
       lang=lang, path="about")
 
+MAX_POEM_LEN = 8192
+MAX_LINE_LEN = 512
+
+class TooBigException(Exception):
+    pass
+
+class TooLongLinesException(Exception):
+    pass
+
 def check(poem):
-  if len(poem) > 8192:
-    return None
+  if len(poem) > MAX_POEM_LEN:
+    raise TooBigException
   s = poem.split("\n")
   for x in range(len(s)):
-    if len(s[x]) > 512:
-      return None
-    s[x].strip()
+    if len(s[x]) > MAX_LINE_LEN:
+      raise TooLongLinesException
+    s[x] = s[x].strip()
   return s
 
 @app.route('/<lang>/checkjs', method='POST')
@@ -141,13 +150,29 @@ def q(lang):
   throttle.add((ip, t))
   poem = re.sub(r'<>&', '', request.forms.get('poem'))
   print(poem)
-  poem = check(poem)
-  if not poem:
-    if lang == 'fr':
-      msg = "Le poème est vide, trop long, ou a des lignes trop longues"
-    else:
-      msg = "Poem is empty, too long, or has too long lines"
-    return dumps({'error': msg})
+
+  # default message
+  if lang == 'fr':
+    msg = "Le poème est vide"
+  else:
+    msg = "Poem is empty"
+  
+  try:
+      poem = check(poem)
+  except TooBigException:
+      poem = None
+      if lang == 'fr':
+          msg = "Le poème est trop long (maximum %d caractères)" % MAX_POEM_LEN
+      else:
+          msg = "Poem is too long (maximum %d characters)" % MAX_POEM_LEN
+  except TooLongLinesException:
+      poem = None
+      if lang == 'fr':
+          msg = "Certaines lignes du poème sont trop longues (maximum %d caractères)" % MAX_LINE_LEN
+      else:
+          msg = "Some lines of the poem are too long (maximum %d characters)" % MAX_LINE_LEN
+  if not poem or len(poem) == 0 or (len(poem) == 1 and len(poem[0]) == 0):
+      return dumps({'error': msg})
   templateName = re.sub(r'[^a-z_]', '', request.forms.get('template'))
   print(templateName)
   if templateName == 'custom':
