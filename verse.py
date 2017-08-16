@@ -66,6 +66,9 @@ def elision(word, was_cap):
     if word == "huis":
       # special case, "huis" is elided but "huis clos" isn't
       return [True, False]
+    # TODO: this looks up the simplified word (e.g., "qu" => "q")
+    # whereas the haspirater index knows about the original word
+    # so this should be somehow fixed to look at the original word instead...
     return list(map((lambda s: not s), haspirater.lookup(word)))
   if is_vowels(word[0]):
     return [True]
