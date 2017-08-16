@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -O
+#!/usr/bin/python3 -Ou
 #encoding: utf8
 
 import localization
