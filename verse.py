@@ -325,7 +325,7 @@ class Verse:
         w[-1]['elidable'] = self.chunks[i+1][0]['elision']
 
     # annotate hiatus and ambiguities
-    ambiguous_potential = ["ie", "ée"]
+    ambiguous_potential = ["ie", "ée", "ue"]
     no_hiatus = ["oui"]
     for i, w in enumerate(self.chunks[:-1]):
       if w[-1]['text'] == "s":
