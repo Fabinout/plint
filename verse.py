@@ -514,11 +514,12 @@ class Verse:
     for weight in chunk.get('weights', [0]):
       next_hemistiches = hemistiches
       if (len(hemistiches) > 0 and count + weight == hemistiches[0] and
-          is_vowels(chunk['text']) and (chunk['hemis'] == "ok" or not
-          self.template.options['check_end_hemistiche'] and 
-          chunk['hemis'] != "cut")):
-        # we hemistiche here
-        next_hemistiches = next_hemistiches[1:]
+              is_vowels(chunk['text'])):
+        # need to try to hemistiche
+        if (chunk['hemis'] == "ok" or (chunk['hemis'] == "elid" and weight
+            == 0)):
+          # we hemistiche here
+          next_hemistiches = next_hemistiches[1:]
       current = dict(self.chunks[pos])
       if 'weights' in current:
         current['weight'] = weight
@@ -557,8 +558,9 @@ class Verse:
         return "cut"
       ending += self.chunks[pos+1]['text']
     if (ending in sure_end_fem):
+      ok_if_elid = False
       if True in self.chunks[pos].get('elidable', [False]):
-        return "ok" # elidable final -e
+        ok_if_elid = True
       # check that this isn't a one-syllabe wourd (which is allowed)
       ok = False
       try:
@@ -569,7 +571,10 @@ class Verse:
         pass
       if not ok:
         # hemistiche ends in feminine
-        return "fem"
+        if ok_if_elid:
+          return "elid" # elidable final -e, but only OK if actually elided
+        else:
+          return "fem"
     return "ok"
 
   def problems(self):

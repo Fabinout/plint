@@ -11,12 +11,14 @@ from options import default_options
 
 
 class Pattern:
-  def __init__(self, metric, myid="", femid="", constraint=None):
+  def __init__(self, metric, myid="", femid="", constraint=None, hemistiches=None):
     self.metric = metric
     self.parse_metric()
     self.myid = myid
     self.femid = femid
     self.constraint = constraint
+    if hemistiches:
+        self.hemistiches = hemistiches
 
   def parse_metric(self):
     """Parse from a metric description"""
@@ -43,7 +45,6 @@ class Template:
     'ambiguous_ok': 'forbidden_ok',
     'ambigu_ok': 'forbidden_ok',
     'dierese': 'diaeresis',
-    'verifie_fin_hemistiche': 'check_end_hemistiche',
     'verifie_occurrences': 'check_occurrences',
     'repetition_ok': 'repeat_ok',
     'incomplet_ok': 'incomplete_ok',

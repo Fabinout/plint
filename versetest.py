@@ -80,8 +80,9 @@ class BadChars(unittest.TestCase):
     return False
 
 class Counts(unittest.TestCase):
-  def runCount(self, text, limit=12):
-    v = verse.Verse(text, template.Template(), template.Pattern(str(limit)))
+  def runCount(self, text, limit=12, hemistiches=None):
+    v = verse.Verse(text, template.Template(), template.Pattern(str(limit),
+        hemistiches=hemistiches))
     v.parse()
     return v.possible
 
@@ -158,6 +159,16 @@ class ExceptionCounts(Counts):
     f = self.runCount(text, limit=12)
     self.assertEqual(1, len(f))
     self.assertEqual(self.getWeight(f[0]), 12)
+  
+  def testHemisticheElide(self):
+    # from "Les Trophées", José-Maria de Heredia
+    text1 = "Tatata ta verre un tata tatata"
+    text2 = "Tatata tata verre un tata tatata"
+    f1 = self.runCount(text1, limit=12, hemistiches=[6])
+    self.assertEqual(0, len(f1))
+    f2 = self.runCount(text2, limit=12, hemistiches=[6])
+    self.assertEqual(1, len(f2))
+    self.assertEqual(self.getWeight(f2[0]), 12)
 
 class AspiratedCounts(Counts):
   def testBaudelaire1half(self):

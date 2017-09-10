@@ -7,7 +7,6 @@ default_options = {
   'eye_tolerance_ok': True,
   'repeat_ok': True,
   'incomplete_ok': True,
-  'check_end_hemistiche': True,
   'check_occurrences': True,
   'poor_eye_required': True,
   'poor_eye_supposed_ok': False,
