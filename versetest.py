@@ -286,7 +286,7 @@ class RmAccents(unittest.TestCase):
     v = common.strip_accents(text)
     self.assertEqual(v, "deja")
 
-class SanityCheck(unittest.TestCase):
+class SanityCheck2(unittest.TestCase):
   def testSimple(self):
     text = "Patati patata patata tata vies"
     v = verse.Verse(text, template.Template(), template.Pattern("12"))
