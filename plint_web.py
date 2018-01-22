@@ -35,8 +35,15 @@ def best_match(matches, header):
 
   def parse_one(t):
     parts = t.split(";")
-    d = dict([tuple([s.strip() for s in param.split("=")])
-      for param in parts[1:]])
+    d = {}
+    for param in parts[1:]:
+        spl = param.split("=")
+        if (len(spl) != 2):
+            # this should be formatted as key=value
+            # so ignore it
+            continue
+        k, v = spl
+        d[k.strip().lower()] = v.strip()
     if 'q' not in d.keys():
       d['q'] = "1"
     return (parts[0], d)
@@ -44,7 +51,12 @@ def best_match(matches, header):
   parts = []
   for p in header.split(","):
     parsed = parse_one(p)
-    parts.append((float(parsed[1]['q']), parsed[0].split("-")))
+    try:
+        value = float(parsed[1]['q'])
+    except ValueError:
+        # q value should be a float; set it to 0
+        value = 0
+    parts.append((value, parsed[0].split("-")))
   for lang in [x[1] for x in sorted(parts, reverse=True)]:
     for match in matches:
       if match in lang:
