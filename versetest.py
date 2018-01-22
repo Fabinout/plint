@@ -295,6 +295,12 @@ class SanityCheck2(unittest.TestCase):
     self.assertEqual(1, len(gend))
     self.assertEqual('F', next(iter(gend)))
 
+class TemplateTest(unittest.TestCase):
+  def testSingleHyphens(self):
+    t = template.Template("12")
+    text = "-"
+    t.check(text)
+
 if __name__ == "__main__":
     diaeresis.load_diaeresis('diaeresis.json')
     unittest.main()

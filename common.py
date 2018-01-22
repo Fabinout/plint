@@ -54,6 +54,7 @@ def rm_punct(text, rm_all=False, rm_apostrophe=False, rm_apostrophe_end=True):
   text = re.sub("[‒–—―⁓⸺⸻]", " ", text) # no weird dashes
   text = re.sub("^--*\s", " ", text) # no isolated dashes
   text = re.sub("--*\s", " ", text) # no trailing dashes
+  text = re.sub("^\s*-\s*$", " ", text) # no lone dash
 
   #TODO rather: keep only good chars
   if not rm_all:
