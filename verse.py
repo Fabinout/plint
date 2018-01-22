@@ -123,6 +123,8 @@ class Verse:
       len(normalize(w, rm_all=True)) == 0))) for (b, x) in pre_chunks]
     self.chunks = []
     for (b, chunk) in pre_chunks:
+      if len(chunk) == 0:
+        continue # no empty chunks
       self.chunks.append([{'original': y, 'text': normalize(y, rm_apostrophe=True)}
       for y in chunk])
       if not b:
