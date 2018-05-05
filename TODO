@@ -1,3 +1,6 @@
+- "paon" en 1 mais "chaos" en 2: utiliser la prononciation de lexique comme
+  lower bound ?
+
 - fuzz testing
 - log exceptions separately for plint_web
 
