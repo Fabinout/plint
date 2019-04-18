@@ -1,8 +1,8 @@
 #!/bin/bash
 
-ZIP="Lexique371b.zip"
-URL="http://www.lexique.org/public/$ZIP"
-FILE="Lexique371/Bases+Scripts/Lexique3.txt"
+ZIP="Lexique382.zip"
+URL="http://www.lexique.org/databases/Lexique382/$ZIP"
+FILE="Lexique382.tsv"
 
 cd "$( dirname "$0" )"
 
