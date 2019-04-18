@@ -9,7 +9,6 @@ irc/*
 occurrences
 old/*
 *.pyc
-Lexique371/
 contexts/
 contexts_old/
 contextsm
