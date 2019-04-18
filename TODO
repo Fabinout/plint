@@ -1,3 +1,6 @@
+./train_diaeresis.sh does not correctly handle "oublieux" despite many
+occurrences in additions, what is going on?
+
 - "paon" en 1 mais "chaos" en 2: utiliser la prononciation de lexique comme
   lower bound ?
 
