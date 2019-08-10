@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import common
-from common import apostrophes, consonants, normalize, is_consonants, is_vowels, sure_end_fem, strip_accents_one
+from common import apostrophes, consonants, normalize, is_consonants, is_vowels, sure_end_fem, strip_accents_one, strip_accents
 import re
 import vowels
 import haspirater
@@ -203,10 +203,22 @@ class Verse:
     # remove leading and trailing crap
     for w in self.chunks:
       for p in range(len(w)):
+        seen_space = False
+        seen_hyphen = False
         while len(w[p]['text']) > 0 and w[p]['text'][0] in ' -':
+          if w[p]['text'][0] == ' ':
+            seen_space = True
+          else:
+            seen_hyphen = True
           w[p]['text'] = w[p]['text'][1:]
         while len(w[p]['text']) > 0 and w[p]['text'][-1] in ' -':
+          if w[p]['text'][-1] == ' ':
+            seen_space = True
+          else:
+            seen_hyphen = True
           w[p]['text'] = w[p]['text'][:-1]
+        if seen_hyphen and not seen_space:
+          w[p]['had_hyphen'] = True
 
     # collapse empty chunks created by simplifications
     for i, w in enumerate(self.chunks):
@@ -417,7 +429,7 @@ class Verse:
     self.possible = self.fit(0, 0, self.pattern.hemistiches)
 
   def contains_break(self, chunk):
-    return '-' in chunk['text'] or 'wordend' in chunk
+    return '-' in chunk['text'] or 'wordend' in chunk.keys() or 'had_hyphen' in chunk.keys()
 
   def possible_weights(self, pos):
     if self.template.options['diaeresis'] == "classical":
@@ -455,8 +467,12 @@ class Verse:
         return possible
       return self.possible_weights(pos)
     if (pos == len(self.chunks) - 1 and self.chunks[pos]['text'] == 'e' and
-        pos > 0 and (self.chunks[pos-1]['text'].endswith('-c') or
-          self.chunks[pos-1]['text'].endswith('-j'))):
+        pos > 0 and (self.chunks[pos-1]['text'].endswith('-c')
+            or self.chunks[pos-1]['text'].endswith('-j')
+            or (self.chunks[pos-1]['text'] == 'c'
+                and 'had_hyphen' in self.chunks[pos-1].keys())
+            or (self.chunks[pos-1]['text'] == 'j'
+                and 'had_hyphen' in self.chunks[pos-1].keys()))):
       return [0] # -ce and -je are elided
     if (pos >= len(self.chunks) - 1
         and self.chunks[pos]['text'] in ['ie', 'ée']):
@@ -476,17 +492,26 @@ class Verse:
       if self.text.endswith(a):
         # if vowel before, it must be fem
         try:
-          if self.text[-len(a)-1] in common.vowels:
+          if strip_accents(self.text[-len(a)-1]) in common.vowels:
             return ['F']
         except IndexError:
-          return ['M', 'F']
-        # check that this isn't a one-syllabe word
-        for i in range(4):
-          try:
-            if '-' in self.chunks[-i-1]['text'] or 'wordend' in self.chunks[-i-1]:
-              return ['M', 'F']
-          except IndexError:
-            return ['M', 'F']
+          # too short
+          if self.text == "es":
+            return ['M']
+          else:
+            return ['F']
+        # check that this isn't a one-syllabe word that ends with "es"
+        # => must be masculine as '-es' cannot be mute then
+        # => except if there is another vowel before ("fées")
+        if (self.text.endswith("es") and (len(self.text) == 2 or
+            strip_accents(self.text[-3]) not in common.vowels)):
+            for i in range(4):
+              try:
+                if ('had_hyphen' in self.chunks[-i-1].keys() or 'wordend' in
+                        self.chunks[-i-1].keys()):
+                  return ['M']
+              except IndexError:
+                return ['M']
         return ['F']
     if not self.text.endswith('ent'):
       return ['M']
