@@ -79,6 +79,37 @@ class BadChars(unittest.TestCase):
         return True
     return False
 
+class Hiatus(unittest.TestCase):
+  def testBadVowel(self):
+    v = verse.Verse("patati patata patata arbrisseau", template.Template(), template.Pattern("12"))
+    v.parse()
+    self.assertFalse(v.valid())
+
+  def testBadUnaspirated(self):
+    v = verse.Verse("patati patata patata hirondelle", template.Template(), template.Pattern("12"))
+    v.parse()
+    self.assertFalse(v.valid())
+  
+  def testGoodAspirated(self):
+    v = verse.Verse("patati patata patata tata hache", template.Template(), template.Pattern("12"))
+    v.parse()
+    self.assertTrue(v.valid())
+  
+  def testGoodConsonant(self):
+    v = verse.Verse("patati patata patatah arbrisseau", template.Template(), template.Pattern("12"))
+    v.parse()
+    self.assertTrue(v.valid())
+  
+  def testGoodMuteE(self):
+    v = verse.Verse("patati patata patatue arbrisseau", template.Template(), template.Pattern("12"))
+    v.parse()
+    self.assertTrue(v.valid())
+  
+  def testBadEt(self):
+    v = verse.Verse("patati patata patata et avant", template.Template(), template.Pattern("12"))
+    v.parse()
+    self.assertFalse(v.valid())
+
 class Counts(unittest.TestCase):
   def runCount(self, text, limit=12, hemistiches=None):
     v = verse.Verse(text, template.Template(), template.Pattern(str(limit),
