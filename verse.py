@@ -330,6 +330,7 @@ class Verse:
         w[-1]['elidable'] = self.chunks[i+1][0]['elision']
 
     # annotate hiatus and ambiguities
+    # this forbids essentially all endings with "e" preceded by a vowel
     ambiguous_potential = ["ie", "ée", "ue"]
     for i, w in enumerate(self.chunks[:-1]):
       if w[-1]['text'] == "s":
