@@ -341,11 +341,18 @@ class Verse:
         if 'elision' not in nchunk.keys() or True not in nchunk['elision']:
           w[-1]['error'] = "ambiguous"
           self.chunks[i+1][0]['error'] = "ambiguous"
-      elif ((is_vowels(w[-1]['text']) or w[-1]['text'] == 'Y') and not
-          w[-1]['text'].endswith('e')):
+      # elision concerns words ending with a vowel without a mute 'e'
+      # that have not been marked "no_hiatus"
+      # it also concerns specifically "et"
+      elif (not w[-1]['text'].endswith('e') and 'no_hiatus' not in w[-1].keys()
+              and (is_vowels(w[-1]['text'])
+                  or w[-1]['text'] == 'Y')
+                  or (len(w) == 2
+                      and w[0]['text'] == 'e' and w[1]['text'] == 't')):
+        # it happens if the next word is not marked no_hiatus
+        # and starts with something that causes elision
         if (False not in self.chunks[i+1][0]['elision'] and 
-                'no_hiatus' not in self.chunks[i+1][0].keys() and
-                'no_hiatus' not in w[-1].keys()):
+                'no_hiatus' not in self.chunks[i+1][0].keys()):
           w[-1]['error'] = "hiatus"
           self.chunks[i+1][0]['error'] = "hiatus"
 
