@@ -28,6 +28,12 @@ letters = {
     'z': 'zaide'
 }
 
+def elision_wrap(w):
+  first_letter = common.rm_punct(w[0]['original'].strip())
+  return elision(''.join(x['text'] for x in w),
+            ''.join(x['original'] for x in w),
+            first_letter == first_letter.upper())
+
 def elision(word, original_word, was_cap):
   if word.startswith('y'):
     if word == 'y':
@@ -256,10 +262,7 @@ class Verse:
     # vowel elision problems
     for w in self.chunks:
       if 'elision' not in w[0].keys():
-        first_letter = common.rm_punct(w[0]['original'].strip())
-        w[0]['elision'] = elision(''.join(x['text'] for x in w),
-            ''.join(x['original'] for x in w),
-            first_letter == first_letter.upper())
+        w[0]['elision'] = elision_wrap(w)
 
     # case of 'y'
     ys_regexp = re.compile("(y+)")
