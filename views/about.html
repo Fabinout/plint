@@ -77,7 +77,9 @@ erreurs&nbsp;: cela est documenté <a href="#template">plus bas</a>.</p>
   classiques : plint les signale.</dd>
   <dt id="whatcheck_hiatus">Hiatus</dt>
   <dd>Le hiatus (juxtaposition de sons vocaliques sans 'e' muet intercalaire)
-  est interdit en poésie classique et signalé.</dd>
+  est interdit en poésie classique et signalé. Plus précisément, il y a hiatus
+  lorsqu'un mot se termine par une voyelle (sauf 'e' muet) et que le mot suivant
+  commence par une voyelle ou par un <em>h</em> non-aspiré</dd>
   <dt id="whatcheck_repeated">Mots répétés</dt>
   <dd>On ne doit pas faire rimer un mot avec lui-même (mais on peut faire rimer
   un mot avec des homographes de nature grammaticale différente), ainsi, plint
@@ -326,7 +328,9 @@ source code.</p>
   reported by plint.</dd>
   <dt id="whatcheck_hiatus">Hiatus</dt>
   <dd>Juxtaposition of vowel sounds in two adjacent words with no mute 'e' in
-  the middle is forbidden and reported.</dd>
+  the middle is forbidden and reported. Specifically, it is forbidden to end a
+  word with a vowel (except mute 'e') and have the next word start with a vowel
+  or a non-aspirated <em>h</em>.</dd>
   <dt id="whatcheck_repeated">Repeated words</dt>
   <dd>A word may not rhyme with itself, but may rhyme with a homograph of a
   different grammatical nature, so plint will report as error any multiple
