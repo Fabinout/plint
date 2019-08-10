@@ -28,7 +28,7 @@ letters = {
     'z': 'zaide'
 }
 
-def elision(word, was_cap):
+def elision(word, original_word, was_cap):
   if word.startswith('y'):
     if word == 'y':
       return [True]
@@ -66,10 +66,9 @@ def elision(word, was_cap):
     if word == "huis":
       # special case, "huis" is elided but "huis clos" isn't
       return [True, False]
-    # TODO: this looks up the simplified word (e.g., "qu" => "q")
-    # whereas the haspirater index knows about the original word
-    # so this should be somehow fixed to look at the original word instead...
-    return list(map((lambda s: not s), haspirater.lookup(word)))
+    # look up in haspirater using the original (but normalized) word
+    return list(map((lambda s: not s),
+        haspirater.lookup(normalize(original_word))))
   if is_vowels(word[0]):
     return [True]
   return [False]
@@ -259,6 +258,7 @@ class Verse:
       if 'elision' not in w[0].keys():
         first_letter = common.rm_punct(w[0]['original'].strip())
         w[0]['elision'] = elision(''.join(x['text'] for x in w),
+            ''.join(x['original'] for x in w),
             first_letter == first_letter.upper())
 
     # case of 'y'
