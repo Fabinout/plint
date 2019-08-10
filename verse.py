@@ -331,7 +331,6 @@ class Verse:
 
     # annotate hiatus and ambiguities
     ambiguous_potential = ["ie", "ée", "ue"]
-    no_hiatus = ["oui"]
     for i, w in enumerate(self.chunks[:-1]):
       if w[-1]['text'] == "s":
         if w[-2]['text'] in ambiguous_potential:
@@ -344,13 +343,11 @@ class Verse:
           self.chunks[i+1][0]['error'] = "ambiguous"
       elif ((is_vowels(w[-1]['text']) or w[-1]['text'] == 'Y') and not
           w[-1]['text'].endswith('e')):
-        if (is_vowels(self.chunks[i+1][0]['text']) and 'no_hiatus' not in
-            self.chunks[i+1][0].keys()):
-          if ''.join(x['text'] for x in w) not in no_hiatus:
-            if ''.join(x['text'] for x in self.chunks[i+1]) not in no_hiatus:
-              if 'no_hiatus' not in w[-1].keys():
-                w[-1]['error'] = "hiatus"
-                self.chunks[i+1][0]['error'] = "hiatus"
+        if (False not in self.chunks[i+1][0]['elision'] and 
+                'no_hiatus' not in self.chunks[i+1][0].keys() and
+                'no_hiatus' not in w[-1].keys()):
+          w[-1]['error'] = "hiatus"
+          self.chunks[i+1][0]['error'] = "hiatus"
 
     # annotate word ends
     for w in self.chunks[:-1]:
