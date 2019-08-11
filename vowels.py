@@ -104,6 +104,9 @@ def possible_weights_seed(chunk):
   if (chunk['text'][-1] == 'ï' and len(chunk['text']) >= 3 and not
       chunk['text'][-3:-1] == 'ou'):
     return [3]
+  # antiaérien; but let's play it safe
+  if (chunk['text'].contains("iaé"):
+    return [2, 3]
   if chunk['text'] in ['ai', 'ou', 'eu', 'ei', 'eau', 'au', 'oi']:
     return [1]
   # we can't tell
