@@ -4,11 +4,14 @@ DIR="$( cd "$( dirname "$0" )" && pwd )"
 cd "$DIR"
 
 # prepare the raw addition file
-cut -d ' ' -f1 additions.txt > additions.tpl
-cut -d ' ' -f2- additions.txt > additions
+for a in additions additions_quicherat
+do
+  cut -d ' ' -f1 ${a}.txt > ${a}.tpl
+  cut -d ' ' -f2- ${a}.txt > ${a}
+done
 
 # run the training
-FILES="andromaque mithridate boileau ../additions cyrano$@"
+FILES="andromaque mithridate boileau ../additions ../additions_quicherat cyrano$@"
 mkdir -p contexts
 rm -f contexts/*
 cp diaeresis_empty.json diaeresis0.json;

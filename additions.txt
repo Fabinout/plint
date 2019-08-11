@@ -3,7 +3,6 @@
 2 mentions
 3 mentions
 4 centurion
-1 puent
 2 remuent
 1 joues
 3 taoïste
@@ -29,7 +28,6 @@
 1 paon
 1 guiche
 3 ypréaux
-3 quatrième
 1 hydre 
 1 puent
 3 dioïde
@@ -38,8 +36,6 @@
 3 expier
 4 impatient
 4 impatience
-3 envieux
-3 voudriez
 4 voudriez-vous
 2 fier
 2 fiez
@@ -49,12 +45,8 @@
 3 extasiez
 4 remercier
 4 remerciez
-3 étudier
-3 étudiez
-3 hardiesse
 3 vendriez
 4 vendriez-vous
-4 essentiel
 4 associer
 4 associez
 2 scier
@@ -113,12 +105,10 @@
 4 aérogares
 3 oubliez
 3 oublier
-3 oublieux
 3 concluera
 3 conclueras
 3 excluera
 3 exclueras
-2 ancien
-2 fluide
 1 fluide
 1 yacht
+4 interrogions
