@@ -35,3 +35,8 @@
 - Fuzz testing: try giving random input to plint and check that it behaves
 - Better exception logging for the Web frontend
 
+=== Problems ===
+
+- Loanwords from English ("crumble", "single", etc.) shouldn't be elidable
+- Loadwords from Italian ("ad patres") shouldn't be elidable
+
