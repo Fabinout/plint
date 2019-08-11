@@ -104,11 +104,36 @@ def possible_weights_seed(chunk):
   if (chunk['text'][-1] == 'ï' and len(chunk['text']) >= 3 and not
       chunk['text'][-3:-1] == 'ou'):
     return [3]
+  # ostéoarthrite
+  if "éoa" in chunk['text']:
+    return [3]
   # antiaérien; but let's play it safe
   if "iaé" in chunk['text']:
     return [2, 3]
   # giaour, miaou, niaouli
   if "iaou" in chunk['text']:
+    return [2, 3]
+  # bioélectrique
+  if "ioé" in chunk['text']:
+    return [2, 3]
+  # méiose, nucléion, etc.
+  if "éio" in chunk['text']:
+    return [2, 3]
+  # radioactif, radioamateur, etc.
+  if "ioa" in chunk['text']:
+    return [2, 3]
+  # pléiade
+  if "éio" in chunk['text']:
+    return [2, 3]
+  # pompéien, tarpéien...
+  # in theory the "-ie" should give a diaeresis, so 3 syllabes
+  # let's keep the benefit of the doubt...
+  # => this also gives 3 as a possibility for "obéie"...
+  if "éie" in chunk['text']:
+    return [2, 3]
+  # tolstoïen
+  # same remark
+  if "oïe" in chunk['text']:
     return [2, 3]
   if chunk['text'] in ['ai', 'ou', 'eu', 'ei', 'eau', 'au', 'oi']:
     return [1]
