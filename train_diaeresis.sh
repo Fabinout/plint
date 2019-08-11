@@ -1,7 +1,14 @@
 #!/bin/bash
 
-FILES="andromaque mithridate boileau ../additions cyrano$@"
 DIR="$( cd "$( dirname "$0" )" && pwd )"
+cd "$DIR"
+
+# prepare the raw addition file
+cut -d ' ' -f1 additions.txt > additions.tpl
+cut -d ' ' -f2- additions.txt > additions
+
+# run the training
+FILES="andromaque mithridate boileau ../additions cyrano$@"
 mkdir -p contexts
 rm -f contexts/*
 cp diaeresis_empty.json diaeresis0.json;

@@ -7,7 +7,6 @@ occurrences in additions, what is going on?
 
 - Compare to the latest lexique: in how many cases is our number of syllables
   less than the one indicated in lexique? ("paon" en 1 mais "chaos" en 2)
-- The "additions" file should give the number of syllables of each line
 - Adjust the diaeresis uncertainty threshold to assert that all verses are
   correct (change your opinion about the syllable with least confidence)
 - Document expected errors of test.sh and commit necessary files
