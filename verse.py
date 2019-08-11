@@ -287,7 +287,7 @@ class Verse:
           continue
         must_force = False
         if j > 0:
-          # special cases of "pays", "alcoyle"
+          # special cases of "pays", "alcoyle", "abbayes"
           c_text = chunk['text']
           p_text = w[j-1]['text']
           if j < len(w) - 1:
@@ -296,7 +296,10 @@ class Verse:
                     and n_text.startswith("s"))
               or
                 (c_text == "oy" and p_text.endswith("lc")
-                    and n_text.startswith("l"))):
+                    and n_text.startswith("l"))
+              or
+                (c_text == "aye" and p_text.endswith("bb")
+                    and n_text.startswith("s"))):
               must_force = True
               new_word.append(chunk)
               # force weight
