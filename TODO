@@ -1,42 +1,36 @@
+== Bugs ==
+
 ./train_diaeresis.sh does not correctly handle "oublieux" despite many
 occurrences in additions, what is going on?
 
-- "paon" en 1 mais "chaos" en 2: utiliser la prononciation de lexique comme
-  lower bound ?
+== Ideas ==
 
-- fuzz testing
-- log exceptions separately for plint_web
-
-- change additions to give numerical syllable count for affected syllable
-- adjust the diaeresis uncertainty threshold to assert that all verses are
+- Compare to the latest lexique: in how many cases is our number of syllables
+  less than the one indicated in lexique? ("paon" en 1 mais "chaos" en 2)
+- The "additions" file should give the number of syllables of each line
+- Adjust the diaeresis uncertainty threshold to assert that all verses are
   correct (change your opinion about the syllable with least confidence)
-- document expected errors of test.sh and commit necessary files
+- Document expected errors of test.sh and commit necessary files
 - remove kludge for invalid characters, split them in specific chunks
-- improve performance with profiling
+- Improve performance with profiling
+- Only indicate hemistiche status when there is a problem with hemistiches
 
-== Error reporting ==
+== Low priority ==
 
-- produce error reports first to structured and then to text and json
-- and then from json to html
-- indiquer l'état des hémistiches seulement s'il y a un problème, et seulement
-  pour les syllabes plausibles
-- highlight possible hemistiche positions where an hemistiche could have been placed
+=== Error reporting ===
 
-== Evaluation ==
+- Produce error reports first in a structured format (JSON) and translate that
+  into text or into HTML
+- When reporting hemistiche errors, highlight possible hemistiche positions
+  where an hemistiche could have been placed
 
-- évaluer sur la base de données lexique, sur la qualité de la génération, sur
-  le nombre d'erreurs reconnues en cross-validation
+=== Other approaches ===
 
-== Rules ==
-
-- other examples of "mentions", "notions" ? ...
-
-== Other approaches ==
-
-- learn rhyme and gender agnostically by clustering: prepare an undirected graph
+- Learn rhyme and gender agnostically by clustering: prepare an undirected graph
   of rhyming verses, factor out suffixes, do SCC, prepare a trie
 
-== Notes ==
+=== Misc ===
 
-hiatus malherbe:
-http://books.google.de/books?id=qpQGAAAAQAAJ&pg=PA40&lpg=PA40&dq=Et+que+pour+retarder+une+heure+seulement+%22Pour+ne+mourir+jamais%22,+meure+%C3%A9ternellement&source=bl&ots=G8VEFnXkmB&sig=qzmHRiloQpIp6Ebb-9aJrYOoIM0&hl=en&sa=X&ei=3oL8T9WiJ6aB4gTK8pWPBw&redir_esc=y#v=onepage&q=Et%20que%20pour%20retarder%20une%20heure%20seulement%20%22Pour%20ne%20mourir%20jamais%22%2C%20meure%20%C3%A9ternellement&f=false
+- Fuzz testing: try giving random input to plint and check that it behaves
+- Better exception logging for the Web frontend
+
