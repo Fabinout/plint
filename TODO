@@ -1,8 +1,3 @@
-== Bugs ==
-
-./train_diaeresis.sh does not correctly handle "oublieux" despite many
-occurrences in additions, what is going on?
-
 == Ideas ==
 
 - Compare to the latest lexique: in how many cases is our number of syllables
