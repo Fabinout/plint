@@ -82,6 +82,7 @@
 2 skiable
 3 sucrières
 1 miaule
+2 miaule
 2 navigue
 2 tierçons
 3 onglier
@@ -185,10 +186,10 @@
 3 baïonnettes
 4 bibliographe
 4 bibliographes
-4 bibliographie
-4 bibliographies
-4 bibliographique
-4 bibliographiques
+5 bibliographie
+5 bibliographies
+5 bibliographique
+5 bibliographiques
 5 bioélectrique
 2 bleuet
 2 bleuets
@@ -198,7 +199,7 @@
 2 bleuie
 2 bleuies
 2 bleuir
-2 bleuira
+3 bleuira
 2 bleuit
 2 bleuâtre
 2 bleuît
@@ -259,10 +260,10 @@
 2 coeff
 4 coentreprise
 3 coenzyme
-4 coercicif
-4 coercicifs
-4 coercicive
-4 coercicives
+4 coercitif
+4 coercitifs
+4 coercitive
+4 coercitives
 3 coexiste
 4 coexister
 4 coexistait
@@ -528,7 +529,7 @@
 4 paranoïa
 4 paranoïaque
 4 paranoïaques
-2 paseo
+3 paseo
 3 alguazil
 3 alguazils
 3 peuplier
