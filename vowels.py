@@ -107,6 +107,9 @@ def possible_weights_seed(chunk):
   # antiaérien; but let's play it safe
   if "iaé" in chunk['text']:
     return [2, 3]
+  # giaour, miaou, niaouli
+  if "iaou" in chunk['text']:
+    return [2, 3]
   if chunk['text'] in ['ai', 'ou', 'eu', 'ei', 'eau', 'au', 'oi']:
     return [1]
   # we can't tell
