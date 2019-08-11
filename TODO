@@ -1,9 +1,12 @@
 == Ideas ==
 
-- Compare to the latest lexique: in how many cases is our number of syllables
-  less than the one indicated in lexique? ("paon" en 1 mais "chaos" en 2)
-- Adjust the diaeresis uncertainty threshold to assert that all verses are
-  correct (change your opinion about the syllable with least confidence)
+- Use the latest lexique (with our corrections) to generate a file of known
+  words with their length, and when we have exactly one of these words ensure
+  that we do not allow less syllables than indicated (but it can be more,
+  because of diérèse)
+- Ensure that, on words known in Lexique, frhyme returns exactly the known
+  pronunciation(s); so we can use it confidently, e.g. to predict elision of the
+  ending for rhyme genre and number of syllables
 - remove kludge for invalid characters, split them in specific chunks
 - Improve performance with profiling
 - Only indicate hemistiche status when there is a problem with hemistiches

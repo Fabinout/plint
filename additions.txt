@@ -791,3 +791,7 @@
 3 ubuesques
 2 tuiez
 2 tuions
+3 shanghaien
+3 shanghaiens
+3 shanghaienne
+3 shanghaiennes

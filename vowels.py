@@ -135,6 +135,9 @@ def possible_weights_seed(chunk):
   # same remark
   if "oïe" in chunk['text']:
     return [2, 3]
+  # shanghaïen (diaeresis?), but also "aië"
+  if "aïe" in chunk['text']:
+    return [1, 2, 3]
   if chunk['text'] in ['ai', 'ou', 'eu', 'ei', 'eau', 'au', 'oi']:
     return [1]
   # we can't tell
