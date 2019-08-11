@@ -42,12 +42,9 @@ class ErrorCollection:
     if 'weights' in keys:
       bounds = [0, 0]
       for chunk in self.verse.chunks:
-        weights = chunk.get("weights", [0, 0])
-        bounds[0] += weights[0]
-        if len(weights) == 2:
-          bounds[1] += weights[1]
-        else:
-          bounds[1] += weights[0]
+        weights = chunk.get("weights", [0])
+        bounds[0] += min(weights)
+        bounds[1] += max(weights)
       bounds = [str(x) for x in bounds]
       lines['weights'] += " (total: " + ('-'.join(bounds)
           if bounds[1] > bounds[0] else bounds[0]) + ")"
