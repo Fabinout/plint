@@ -34,7 +34,7 @@ if __name__ == '__main__':
         file=sys.stderr)
     print(_("DFILE is the diaeresis file, OCONTEXT is the context output file"),
         file=sys.stderr)
-    sys.exit(1)
+    sys.exit(2)
 
   template_name = sys.argv[1]
   if len(sys.argv) > 2:
