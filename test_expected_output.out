@@ -1,0 +1,36 @@
+test/albatros.tpl
+test/andromaque.tpl
+stdin:1724: > Andromaque m’attend. Phœnix, garde son fils.
+stdin:1724: Bad rhyme sound for type B (expected "i"/"iz", inferred "is"/"il"/"iss"/"ils"/"ilz"/"isz")
+test/au_lecteur.tpl
+test/boileau.tpl
+stdin:1021: > Entouré à demi d'un vieux parchemin noir,
+stdin:1021: >       HHHH                               
+stdin:1021: Illegal hiatus (see 'H' above)
+stdin:3479: > Va revoir ses billets et compter son argent ;
+stdin:3479: Bad rhyme ending for type B (expected "-nd", inferred "-nt")
+stdin:3741: > Il est vrai. Mais pourtant sans loi et sans police,
+stdin:3741: >                                  HHHH              
+stdin:3741: Illegal hiatus (see 'H' above)
+stdin:4285: > Le vice audacieux des hommes avoué
+stdin:4285: Bad rhyme ending for type B (expected "-oé", inferred "-ué")
+stdin:4423: > Suivre à front découvert Zouzou et Messaline ;
+stdin:4423: >                              HHHH             
+stdin:4423: Illegal hiatus (see 'H' above)
+stdin:5697: > Que de savants plaideurs désormais inutiles !
+stdin:5697: Bad rhyme sound for type A (expected "ijz"/"ijs"/"ij", inferred "il"/"ilz"/"ils")
+stdin:6052: > Wurts... Ah ! quel nom, grand roi, quel Hector que ce Wurts !
+stdin:6052: Bad rhyme sound for type B (expected "yR"/"yRz"/"yRs", inferred "9Rs"/"uRts"/"uRtz"/"9Rz"/"9R"/"uRt"/"uRs"/"uRz"/"uR")
+test/cyrano_full.tpl
+test/cyrano.tpl
+test/desdichado.tpl
+test/fils.tpl
+test/letters.tpl
+test/mithridate.tpl
+test/nez.tpl
+stdin:52: > De la moitié du commencement d'une, car
+stdin:52: Bad rhyme ending for type B (expected "-t", inferred "-ar")
+test/prudhomme.tpl
+stdin:342: > Peu à peu les forçant à croître avec mesure,
+stdin:342: >  HHHHH                                      
+stdin:342: Illegal hiatus (see 'H' above)
