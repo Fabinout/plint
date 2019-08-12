@@ -1,5 +1,7 @@
 == Ideas ==
 
+- take all relevant verbal forms (imperfect, conditional, etc.) from
+  french-conjugator and check that the last chunk always gets the correct status
 - add option to disable hiatus check on "et"
 - add option to configure the diaeresis tolerance threshold
 - check for duplicates in additions.txt
