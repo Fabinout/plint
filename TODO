@@ -1,5 +1,6 @@
 == Ideas ==
 
+- check for duplicates in additions.txt
 - Use the latest lexique (with our corrections) to generate a file of known
   words with their length, and when we have exactly one of these words ensure
   that we do not allow less syllables than indicated (but it can be more,
@@ -10,6 +11,7 @@
 - remove kludge for invalid characters, split them in specific chunks
 - Improve performance with profiling
 - Only indicate hemistiche status when there is a problem with hemistiches
+- Clean up the code to the extent possible
 
 == Low priority ==
 
