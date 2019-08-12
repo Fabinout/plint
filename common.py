@@ -46,7 +46,6 @@ def norm_spaces(text):
 def rm_punct(text, rm_all=False, rm_apostrophe=False, rm_apostrophe_end=True):
   """Remove punctuation from text"""
   text = re.sub("[" + apostrophes + "]", "'", text) # no weird apostrophes
-  text = re.sub("' *", "'", text) # space after apostrophes
   if rm_apostrophe:
     text = re.sub("'", "", text)
   if rm_apostrophe_end:
