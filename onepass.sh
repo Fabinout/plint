@@ -10,6 +10,14 @@ shift
 shift
 
 mkdir -p contexts
+
+# use the verb diaeresis files if they exist
+if [ -f diaeresis_verbs/final_syneresis -a -f diaeresis_verbs/final_diaeresis ]
+then
+  cp final_syneresis.ctx "contexts/final_syneresis.$NUM"
+  cp final_diaeresis.ctx "contexts/final_diaeresis.$NUM"
+fi
+
 for f in "$@"
 do
   DEST=$(echo "contexts/$f.$NUM" | sed 's!/\.\.!!g')

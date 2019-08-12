@@ -9,15 +9,21 @@ import error
 def run():
   ok = True
   f2 = None
-  if len(sys.argv) == 4:
+  nsyl = None
+  offset = 0
+  if len(sys.argv) >= 4:
     f2 = open(sys.argv[3], 'w')
+  if len(sys.argv) >= 5:
+    nsyl = int(sys.argv[4])
+  if len(sys.argv) == 6:
+    offset = int(sys.argv[5])
   should_end = False
   while True:
     line = sys.stdin.readline()
     if not line:
       should_end = True
       line = ""
-    errors = template.check(line, f2, last=should_end)
+    errors = template.check(line, f2, last=should_end, nsyl=nsyl, offset=offset)
     if errors:
       print(errors.report(), file=sys.stderr)
       ok = False
@@ -27,12 +33,18 @@ def run():
 
 if __name__ == '__main__':
   localization.init_locale()
-  if len(sys.argv) < 2 or len(sys.argv) > 4:
-    print(_("Usage: %s TEMPLATE [DFILE [OCONTEXT]]") % sys.argv[0],
+  if len(sys.argv) < 2 or len(sys.argv) > 6:
+    print(_("Usage: %s TEMPLATE [DFILE [OCONTEXT [NSYL [OFFSET]]]]") % sys.argv[0],
         file=sys.stderr)
     print(_("Check stdin according to TEMPLATE, report errors on stdout"),
         file=sys.stderr)
+    print(_("For internal use:"),
+        file=sys.stderr)
     print(_("DFILE is the diaeresis file, OCONTEXT is the context output file"),
+        file=sys.stderr)
+    print(_("NSYL is the assigned weight to the last chunk (diaeresis training)"),
+        file=sys.stderr)
+    print(_("OFFSET is to add after the last chunk (diaeresis training)"),
         file=sys.stderr)
     sys.exit(2)
 

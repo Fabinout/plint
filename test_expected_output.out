@@ -1,7 +1,6 @@
-test/albatros.tpl
 test/andromaque.tpl
 stdin:1724: > Andromaque m’attend. Phœnix, garde son fils.
-stdin:1724: Bad rhyme sound for type B (expected "i"/"iz", inferred "is"/"il"/"iss"/"ils"/"ilz"/"isz")
+stdin:1724: Bad rhyme sound for type B (expected "iz"/"i", inferred "is"/"iss"/"ilz"/"ils"/"isz"/"il")
 test/au_lecteur.tpl
 test/boileau.tpl
 stdin:1021: > Entouré à demi d'un vieux parchemin noir,
@@ -18,18 +17,16 @@ stdin:4423: > Suivre à front découvert Zouzou et Messaline ;
 stdin:4423: >                              HHHH             
 stdin:4423: Illegal hiatus (see 'H' above)
 stdin:5697: > Que de savants plaideurs désormais inutiles !
-stdin:5697: Bad rhyme sound for type A (expected "ijz"/"ijs"/"ij", inferred "il"/"ilz"/"ils")
+stdin:5697: Bad rhyme sound for type A (expected "ijs"/"ijz"/"ij", inferred "il"/"ilz"/"ils")
 stdin:6052: > Wurts... Ah ! quel nom, grand roi, quel Hector que ce Wurts !
-stdin:6052: Bad rhyme sound for type B (expected "yR"/"yRz"/"yRs", inferred "9Rs"/"uRts"/"uRtz"/"9Rz"/"9R"/"uRt"/"uRs"/"uRz"/"uR")
+stdin:6052: Bad rhyme sound for type B (expected "yR"/"yRs"/"yRz", inferred "uRts"/"uRz"/"uR"/"uRtz"/"9Rz"/"uRs"/"uRt"/"9Rs"/"9R")
 test/cyrano_full.tpl
 test/cyrano.tpl
-test/desdichado.tpl
-test/fils.tpl
+stdin:1045: > Dis, veux-tu qu'à nous deux nous la séduisions ?
+stdin:1045: >  1    1    1    1  1    1    1    1  1 1  1      (total: 11)
+stdin:1045: Illegal metric: expected 12 syllables
 test/letters.tpl
 test/mithridate.tpl
-test/nez.tpl
-stdin:52: > De la moitié du commencement d'une, car
-stdin:52: Bad rhyme ending for type B (expected "-t", inferred "-ar")
 test/prudhomme.tpl
 stdin:342: > Peu à peu les forçant à croître avec mesure,
 stdin:342: >  HHHHH                                      
