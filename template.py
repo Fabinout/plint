@@ -235,7 +235,7 @@ class Template:
     return Pattern(metric, myid, femid, rhyme.Constraint(*constraint))
 
   def reset_conditional(self, d):
-    return dict((k, v) for k, v in d.items() if k[0] == '!')
+    return dict((k, v) for k, v in d.items() if len(k) > 0 and k[0] == '!')
 
   def reset_state(self, with_femenv=False):
     """Reset our state, except ids starting with '!'"""
