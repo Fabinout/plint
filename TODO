@@ -1,9 +1,15 @@
-== Ideas ==
+== Ongoing ==
 
-- expand the corpus of classical poetry
+- expand the corpus of classical poetry: more Racine, more other authors
+  (Boileau, Corneille, Prudhomme, etc.)
+- fix problems in the new works
+- Train diaresesis.json on new works
 - add option to disable hiatus check on "et"
 - add option to configure the diaeresis tolerance threshold
 - check for duplicates in additions.txt
+
+== Ideas ==
+
 - Use the latest lexique (with our corrections) to generate a file of known
   words with their length, and when we have exactly one of these words ensure
   that we do not allow less syllables than indicated (but it can be more,
