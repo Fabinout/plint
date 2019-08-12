@@ -1,5 +1,7 @@
 == Ideas ==
 
+- add option to disable hiatus check on "et"
+- add option to configure the diaeresis tolerance threshold
 - check for duplicates in additions.txt
 - Use the latest lexique (with our corrections) to generate a file of known
   words with their length, and when we have exactly one of these words ensure

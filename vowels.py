@@ -24,7 +24,7 @@ def contains_trema(chunk):
       return True
   return False
 
-default_threshold = 12
+default_threshold = 3
 
 def make_query(chunks, pos):
   cleared = [clear(x) for x in chunks]
