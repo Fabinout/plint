@@ -8,14 +8,14 @@ class Eliminate(unittest.TestCase):
         text = "gue"
         v = verse.Verse(text, template.Template(), template.Pattern("12"))
         v.parse()
-        c = ''.join([x['text'] for x in v.chunks])
+        c = ''.join([x.text for x in v.chunks.chunks])
         self.assertFalse("gue" in c)
 
     def testEliminateGue(self):
         text = "gue gue GUE ogues longuement la guerre"
         v = verse.Verse(text, template.Template(), template.Pattern("12"))
         v.parse()
-        c = ''.join([x['text'] for x in v.chunks])
+        c = ''.join([x.text for x in v.chunks.chunks])
         self.assertFalse("gue" in c)
 
 if __name__ == "__main__":

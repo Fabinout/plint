@@ -1,4 +1,4 @@
-from _pytest import unittest
+import unittest
 
 from plint.tests.test_counts import Counts
 

@@ -26,7 +26,7 @@ def make_query(chunks, pos):
     cleared = [clear(chunk) for chunk in chunks]
     if cleared[pos].endswith(' '):
         cleared[pos] = cleared[pos].rstrip()
-        if pos + 1 <= len(cleared):
+        if pos + 1 < len(cleared):
             cleared[pos + 1] = " " + cleared[pos + 1]
         else:
             cleared.append(' ')
@@ -36,7 +36,7 @@ def make_query(chunks, pos):
 
 
 def clear(chunk):
-    return (chunk['text'] + ' ') if 'wordend' in chunk else chunk['text']
+    return (chunk.text + ' ') if chunk.word_end is not None else chunk.text
 
 
 def intersperse(left, right):
@@ -100,47 +100,47 @@ def contains_trema(chunk):
 
 def possible_weights_seed(chunk):
     """Return the possible number of syllabes taken by a vowel chunk"""
-    if len(chunk['text']) == 1:
+    if len(chunk.text) == 1:
         return [1]
     # dioïde, maoïste, taoïste
-    if (chunk['text'][-1] == 'ï' and len(chunk['text']) >= 3 and not
-    chunk['text'][-3:-1] == 'ou'):
+    if (chunk.text[-1] == 'ï' and len(chunk.text) >= 3 and not
+    chunk.text[-3:-1] == 'ou'):
         return [3]
     # ostéoarthrite
-    if "éoa" in chunk['text']:
+    if "éoa" in chunk.text:
         return [3]
     # antiaérien; but let's play it safe
-    if "iaé" in chunk['text']:
+    if "iaé" in chunk.text:
         return [2, 3]
     # giaour, miaou, niaouli
-    if "iaou" in chunk['text']:
+    if "iaou" in chunk.text:
         return [2, 3]
     # bioélectrique
-    if "ioé" in chunk['text']:
+    if "ioé" in chunk.text:
         return [2, 3]
     # méiose, nucléion, etc.
-    if "éio" in chunk['text']:
+    if "éio" in chunk.text:
         return [2, 3]
     # radioactif, radioamateur, etc.
-    if "ioa" in chunk['text']:
+    if "ioa" in chunk.text:
         return [2, 3]
     # pléiade
-    if "éio" in chunk['text']:
+    if "éio" in chunk.text:
         return [2, 3]
     # pompéien, tarpéien...
     # in theory the "-ie" should give a diaeresis, so 3 syllabes
     # let's keep the benefit of the doubt...
     # => this also gives 3 as a possibility for "obéie"...
-    if "éie" in chunk['text']:
+    if "éie" in chunk.text:
         return [2, 3]
     # tolstoïen
     # same remark
-    if "oïe" in chunk['text']:
+    if "oïe" in chunk.text:
         return [2, 3]
     # shanghaïen (diaeresis?), but also "aië"
-    if "aïe" in chunk['text']:
+    if "aïe" in chunk.text:
         return [1, 2, 3]
-    if chunk['text'] in ['ai', 'ou', 'eu', 'ei', 'eau', 'au', 'oi']:
+    if chunk.text in ['ai', 'ou', 'eu', 'ei', 'eau', 'au', 'oi']:
         return [1]
     # we can't tell
     return [1, 2]
