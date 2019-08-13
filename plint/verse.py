@@ -114,168 +114,86 @@ class Verse:
         self.template = template
         self.pattern = pattern
         self.threshold = threshold
-
-        # will be updated later, used in parse and feminine
         self.phon = None
         self.possible = None
-
         self._line = input_line
+        self.create_chunks()
 
-        word_tokens = self.get_word_tokens()
-        consonants_regexp = self.get_consonants_regex()
-        pre_chunks = [(b, re.split(consonants_regexp, word)) for (b, word) in word_tokens]
-        pre_chunks = [(b, remove_trivial(x, (self.is_empty_word))) for (b, x) in pre_chunks]
-        self.chunks = []
-        for (b, chunk) in pre_chunks:
-            if len(chunk) == 0:
-                continue  # no empty chunks
-            self.chunks.append([{'original': y, 'text': normalize(y, rm_apostrophe=True)}
-                                for y in chunk])
-            if not b:
-                # word end is a fake word end
-                for y in self.chunks[-1]:
-                    y['hemis'] = 'cut'
+    def create_chunks(self):
+        self.initialize_chunks()
+        self.collapse_apostrophes()
+        self.check_forbidden_characters()
+        self.simplify_gu_qu()
+        self.elide_inside_words()
+        self.remove_leading_and_trailing_crap()
+        self.collapse_empty_chunks_from_simplifications()
+        self.create_sigles()
+        self.elide_vowel_problems()
+        self.process_y_cases()
+        self.annotate_final_mute_e()
+        self.annotate_hiatus()
+        self.annotate_word_ends()
+        self.merge_chunks_words()
+        self.print_new_line_if_changed()
 
-        # collapse apostrophes
-        self.chunks2 = []
-        acc = []
-        for w in self.chunks:
-            if re.search("[" + APOSTROPHES + "]$", w[-1]['original']):
-                acc += w
-            else:
-                self.chunks2.append(acc + w)
-                acc = []
-        if len(acc) > 0:
-            self.chunks2.append(acc)
-        self.chunks = self.chunks2
+    def print_new_line_if_changed(self):
+        now_line = ''.join(x['original'] for x in self.chunks)
+        if now_line != self._line:
+            print("%s became %s" % (self._line, now_line), file=sys.stderr)
+            pprint(self.chunks, stream=sys.stderr)
 
-        # check forbidden characters
-        for w in self.chunks:
-            for y in w:
-                es = ""
-                for x in y['text']:
-                    if not common.remove_punctuation(strip_accents_one(x)[0].lower()) in common.LEGAL:
-                        es += 'I'
-                        y['error'] = "illegal"
-                    else:
-                        es += ' '
-                if 'error' in y.keys() and y['error'] == "illegal":
-                    y['illegal_str'] = es
+    def merge_chunks_words(self):
+        self.chunks = sum(self.chunks, [])
 
-        # gu- and qu- simplifications
-        for w in self.chunks:
-            if len(w) < 2:
+    def annotate_word_ends(self):
+        for w in self.chunks[:-1]:
+            w[-1]['wordend'] = True
+
+    def annotate_hiatus(self):
+        ambiguous_potential = ["ie", "ée", "ue"]
+        for i, w in enumerate(self.chunks[:-1]):
+            if w[-1]['text'] == "s":
+                if w[-2]['text'] in ambiguous_potential:
+                    w[-2]['error'] = "ambiguous"
+                    w[-1]['error'] = "ambiguous"
+            if len(w[-1]['text']) >= 2 and w[-1]['text'][-2:] in ambiguous_potential:
+                nchunk = self.chunks[i + 1][0]
+                if 'elision' not in nchunk.keys() or True not in nchunk['elision']:
+                    w[-1]['error'] = "ambiguous"
+                    self.chunks[i + 1][0]['error'] = "ambiguous"
+            # elision concerns words ending with a vowel without a mute 'e'
+            # that have not been marked "no_hiatus"
+            # it also concerns specifically "et"
+            elif (not w[-1]['text'].endswith('e') and 'no_hiatus' not in w[-1].keys()
+                  and (is_vowels(w[-1]['text'])
+                       or w[-1]['text'] == 'Y')
+                  or (len(w) == 2
+                      and w[0]['text'] == 'e' and w[1]['text'] == 't')):
+                # it happens if the next word is not marked no_hiatus
+                # and starts with something that causes elision
+                if (False not in self.chunks[i + 1][0]['elision'] and
+                        'no_hiatus' not in self.chunks[i + 1][0].keys()):
+                    w[-1]['error'] = "hiatus"
+                    self.chunks[i + 1][0]['error'] = "hiatus"
+
+    def annotate_final_mute_e(self):
+        for i, w in enumerate(self.chunks[:-1]):
+            if w[-1]['text'] != "e":
                 continue
-            for i, x in enumerate(w[:-1]):
-                if not w[i + 1]['text'].startswith('u'):
-                    continue
-                if w[i]['text'].endswith('q'):
-                    w[i + 1]['text'] = w[i + 1]['text'][1:]
-                    if w[i + 1]['text'] == '':
-                        w[i]['original'] += w[i + 1]['original']
-                        w[i + 1]['original'] = ''
-                if w[i]['text'].endswith('g') and len(w[i + 1]['text']) >= 2:
-                    if w[i + 1]['text'][1] in "eéèa":
-                        w[i + 1]['text'] = w[i + 1]['text'][1:]
+            nweight = 0
+            for chunk in w[::-1]:
+                if is_vowels(chunk['text']):
+                    nweight += 1
+                # "fais-le" not elidable, but "suis-je" and "est-ce" is
+                if ('-' in chunk['text'] and not chunk['text'].endswith('-j') and not
+                chunk['text'].endswith('-c')):
+                    break
+            if nweight == 1:
+                continue
+            if 'elidable' not in w[-1].keys():
+                w[-1]['elidable'] = self.chunks[i + 1][0]['elision']
 
-        # elide inside words ("porte-avions")
-        for word in self.chunks:
-            for i, w in enumerate(word[:-1]):
-                if w['text'] == "e-":
-                    w['weights'] = [0]  # force elision
-                if (w['text'] == "e" and i < len(word) - 1 and
-                        word[i + 1]['text'].startswith("-h")):
-                    # collect what follows until the next hyphen or end
-                    flw = word[i + 1]['original'].split('-')[1]
-                    ii = i + 2
-                    while ii < len(word):
-                        flw += word[ii]['original'].split('-')[0]
-                        if '-' in word[ii]['original']:
-                            break
-                        ii += 1
-                    # TODO: not sure if this reconstruction of the original word is bulletproof...
-                    if haspirater.lookup(normalize(flw)):
-                        w['weights'] = [0]
-                    else:
-                        w['weights'] = [1]
-
-        # remove leading and trailing crap
-        for w in self.chunks:
-            for p in range(len(w)):
-                seen_space = False
-                seen_hyphen = False
-                while len(w[p]['text']) > 0 and w[p]['text'][0] in ' -':
-                    if w[p]['text'][0] == ' ':
-                        seen_space = True
-                    else:
-                        seen_hyphen = True
-                    w[p]['text'] = w[p]['text'][1:]
-                while len(w[p]['text']) > 0 and w[p]['text'][-1] in ' -':
-                    if w[p]['text'][-1] == ' ':
-                        seen_space = True
-                    else:
-                        seen_hyphen = True
-                    w[p]['text'] = w[p]['text'][:-1]
-                if seen_hyphen and not seen_space:
-                    w[p]['had_hyphen'] = True
-
-        # collapse empty chunks created by simplifications
-        for i, w in enumerate(self.chunks):
-            new_chunks = []
-            for x in self.chunks[i]:
-                if len(x['text']) > 0:
-                    new_chunks.append(x)
-                else:
-                    # propagate the original text
-                    # newly empty chunks cannot be the first ones
-                    new_chunks[-1]['original'] += x['original']
-            self.chunks[i] = new_chunks
-
-        # sigles
-        for i, w in enumerate(self.chunks):
-            if len(w) == 1 and is_consonants(w[0]['text']):
-                new_chunks = []
-                for j, x in enumerate(w[0]['text']):
-                    try:
-                        nc = LETTERS[x]
-                        # hack: the final 'e's in letters are just to help pronunciation
-                        # inference and are only needed at end of word, otherwise they will
-                        # mess syllable count up
-                        if j < len(w[0]['text']) - 1 and nc[-1] == 'e':
-                            nc = nc[:-1]
-                    except KeyError:
-                        nc = x + 'é'
-                    new_chunks += [(j, x) for x in re.split(consonants_regexp, nc)]
-                new_chunks = [x for x in new_chunks if len(x[1]) > 0]
-                new_word = []
-                last_opos = -1
-                for j, (opos, x) in enumerate(new_chunks):
-                    part = ""
-                    if j == len(new_chunks) - 1:
-                        # don't miss final spaces
-                        part = w[0]['original'][last_opos + 1:]
-                    elif last_opos < opos:
-                        part = w[0]['original'][last_opos + 1:opos + 1]
-                        last_opos = opos
-                    # allow or forbid elision because of possible ending '-e' before
-                    # forbid hiatus both for this and for preceding
-                    # instruct that we must use text for the pronunciation
-                    new_word.append({'original': part, 'text': x, 'text_pron': True,
-                                     'elision': [False, True], 'no_hiatus': True})
-                    # propagate information from splithyph
-                    if 'hemis' in w[0].keys():
-                        new_word[-1]['hemis'] = w[0]['hemis']
-                self.chunks[i] = new_word
-                # the last one is also elidable
-                if self.chunks[i][-1]['text'] == 'e':
-                    self.chunks[i][-1]['elidable'] = [True]
-
-        # vowel elision problems
-        for w in self.chunks:
-            if 'elision' not in w[0].keys():
-                w[0]['elision'] = elision_wrap(w)
-
-        # case of 'y'
+    def process_y_cases(self):
         ys_regexp = re.compile("(y+)")
         for i, w in enumerate(self.chunks):
             new_word = []
@@ -326,62 +244,165 @@ class Verse:
                     new_word.append(new_subchunk)
             self.chunks[i] = new_word
 
-        # annotate final mute 'e'
-        for i, w in enumerate(self.chunks[:-1]):
-            if w[-1]['text'] != "e":
+    def elide_vowel_problems(self):
+        for w in self.chunks:
+            if 'elision' not in w[0].keys():
+                w[0]['elision'] = elision_wrap(w)
+
+    def collapse_apostrophes(self):
+        self.chunks2 = []
+        acc = []
+        for w in self.chunks:
+            if re.search("[" + APOSTROPHES + "]$", w[-1]['original']):
+                acc += w
+            else:
+                self.chunks2.append(acc + w)
+                acc = []
+        if len(acc) > 0:
+            self.chunks2.append(acc)
+        self.chunks = self.chunks2
+
+    def create_sigles(self):
+        consonants_regexp = self.get_consonants_regex()
+        for i, w in enumerate(self.chunks):
+            if len(w) == 1 and is_consonants(w[0]['text']):
+                new_chunks = []
+                for j, x in enumerate(w[0]['text']):
+                    try:
+                        nc = LETTERS[x]
+                        # hack: the final 'e's in letters are just to help pronunciation
+                        # inference and are only needed at end of word, otherwise they will
+                        # mess syllable count up
+                        if j < len(w[0]['text']) - 1 and nc[-1] == 'e':
+                            nc = nc[:-1]
+                    except KeyError:
+                        nc = x + 'é'
+                    new_chunks += [(j, x) for x in re.split(consonants_regexp, nc)]
+                new_chunks = [x for x in new_chunks if len(x[1]) > 0]
+                new_word = []
+                last_opos = -1
+                for j, (opos, x) in enumerate(new_chunks):
+                    part = ""
+                    if j == len(new_chunks) - 1:
+                        # don't miss final spaces
+                        part = w[0]['original'][last_opos + 1:]
+                    elif last_opos < opos:
+                        part = w[0]['original'][last_opos + 1:opos + 1]
+                        last_opos = opos
+                    # allow or forbid elision because of possible ending '-e' before
+                    # forbid hiatus both for this and for preceding
+                    # instruct that we must use text for the pronunciation
+                    new_word.append({'original': part, 'text': x, 'text_pron': True,
+                                     'elision': [False, True], 'no_hiatus': True})
+                    # propagate information from splithyph
+                    if 'hemis' in w[0].keys():
+                        new_word[-1]['hemis'] = w[0]['hemis']
+                self.chunks[i] = new_word
+                # the last one is also elidable
+                if self.chunks[i][-1]['text'] == 'e':
+                    self.chunks[i][-1]['elidable'] = [True]
+
+    def collapse_empty_chunks_from_simplifications(self):
+        for i, w in enumerate(self.chunks):
+            new_chunks = []
+            for x in self.chunks[i]:
+                if len(x['text']) > 0:
+                    new_chunks.append(x)
+                else:
+                    # propagate the original text
+                    # newly empty chunks cannot be the first ones
+                    new_chunks[-1]['original'] += x['original']
+            self.chunks[i] = new_chunks
+
+    def remove_leading_and_trailing_crap(self):
+        for w in self.chunks:
+            for p in range(len(w)):
+                seen_space = False
+                seen_hyphen = False
+                while len(w[p]['text']) > 0 and w[p]['text'][0] in ' -':
+                    if w[p]['text'][0] == ' ':
+                        seen_space = True
+                    else:
+                        seen_hyphen = True
+                    w[p]['text'] = w[p]['text'][1:]
+                while len(w[p]['text']) > 0 and w[p]['text'][-1] in ' -':
+                    if w[p]['text'][-1] == ' ':
+                        seen_space = True
+                    else:
+                        seen_hyphen = True
+                    w[p]['text'] = w[p]['text'][:-1]
+                if seen_hyphen and not seen_space:
+                    w[p]['had_hyphen'] = True
+
+    def elide_inside_words(self):
+        for word in self.chunks:
+            for i, w in enumerate(word[:-1]):
+                if w['text'] == "e-":
+                    w['weights'] = [0]  # force elision
+                if (w['text'] == "e" and i < len(word) - 1 and
+                        word[i + 1]['text'].startswith("-h")):
+                    # collect what follows until the next hyphen or end
+                    flw = word[i + 1]['original'].split('-')[1]
+                    ii = i + 2
+                    while ii < len(word):
+                        flw += word[ii]['original'].split('-')[0]
+                        if '-' in word[ii]['original']:
+                            break
+                        ii += 1
+                    # TODO: not sure if this reconstruction of the original word is bulletproof...
+                    if haspirater.lookup(normalize(flw)):
+                        w['weights'] = [0]
+                    else:
+                        w['weights'] = [1]
+
+    def simplify_gu_qu(self):
+        for w in self.chunks:
+            if len(w) < 2:
                 continue
-            nweight = 0
-            for chunk in w[::-1]:
-                if is_vowels(chunk['text']):
-                    nweight += 1
-                # "fais-le" not elidable, but "suis-je" and "est-ce" is
-                if ('-' in chunk['text'] and not chunk['text'].endswith('-j') and not
-                chunk['text'].endswith('-c')):
-                    break
-            if nweight == 1:
-                continue
-            if 'elidable' not in w[-1].keys():
-                w[-1]['elidable'] = self.chunks[i + 1][0]['elision']
+            for i, x in enumerate(w[:-1]):
+                if not w[i + 1]['text'].startswith('u'):
+                    continue
+                if w[i]['text'].endswith('q'):
+                    w[i + 1]['text'] = w[i + 1]['text'][1:]
+                    if w[i + 1]['text'] == '':
+                        w[i]['original'] += w[i + 1]['original']
+                        w[i + 1]['original'] = ''
+                if w[i]['text'].endswith('g') and len(w[i + 1]['text']) >= 2:
+                    if w[i + 1]['text'][1] in "eéèa":
+                        w[i + 1]['text'] = w[i + 1]['text'][1:]
 
-        # annotate hiatus and ambiguities
-        # this forbids essentially all endings with "e" preceded by a vowel
-        ambiguous_potential = ["ie", "ée", "ue"]
-        for i, w in enumerate(self.chunks[:-1]):
-            if w[-1]['text'] == "s":
-                if w[-2]['text'] in ambiguous_potential:
-                    w[-2]['error'] = "ambiguous"
-                    w[-1]['error'] = "ambiguous"
-            if len(w[-1]['text']) >= 2 and w[-1]['text'][-2:] in ambiguous_potential:
-                nchunk = self.chunks[i + 1][0]
-                if 'elision' not in nchunk.keys() or True not in nchunk['elision']:
-                    w[-1]['error'] = "ambiguous"
-                    self.chunks[i + 1][0]['error'] = "ambiguous"
-            # elision concerns words ending with a vowel without a mute 'e'
-            # that have not been marked "no_hiatus"
-            # it also concerns specifically "et"
-            elif (not w[-1]['text'].endswith('e') and 'no_hiatus' not in w[-1].keys()
-                  and (is_vowels(w[-1]['text'])
-                       or w[-1]['text'] == 'Y')
-                  or (len(w) == 2
-                      and w[0]['text'] == 'e' and w[1]['text'] == 't')):
-                # it happens if the next word is not marked no_hiatus
-                # and starts with something that causes elision
-                if (False not in self.chunks[i + 1][0]['elision'] and
-                        'no_hiatus' not in self.chunks[i + 1][0].keys()):
-                    w[-1]['error'] = "hiatus"
-                    self.chunks[i + 1][0]['error'] = "hiatus"
+    def check_forbidden_characters(self):
+        for w in self.chunks:
+            for y in w:
+                es = ""
+                for x in y['text']:
+                    if not common.remove_punctuation(strip_accents_one(x)[0].lower()) in common.LEGAL:
+                        es += 'I'
+                        y['error'] = "illegal"
+                    else:
+                        es += ' '
+                if 'error' in y.keys() and y['error'] == "illegal":
+                    y['illegal_str'] = es
 
-        # annotate word ends
-        for w in self.chunks[:-1]:
-            w[-1]['wordend'] = True
+    def initialize_chunks(self):
+        word_bi_tokens = self.get_word_tokens()
+        pre_chunks = self.preprocess_bi_tokens(word_bi_tokens)
+        self.chunks = []
+        for (b, chunk) in pre_chunks:
+            if len(chunk) == 0:
+                continue  # no empty chunks
+            self.chunks.append([{'original': y, 'text': normalize(y, rm_apostrophe=True)}
+                                for y in chunk])
+            if not b:
+                # word end is a fake word end
+                for y in self.chunks[-1]:
+                    y['hemis'] = 'cut'
 
-        # collapse words
-        self.chunks = sum(self.chunks, [])
-
-        now_line = ''.join(x['original'] for x in self.chunks)
-        if now_line != self._line:
-            print("%s became %s" % (self._line, now_line), file=sys.stderr)
-            pprint(self.chunks, stream=sys.stderr)
+    def preprocess_bi_tokens(self, word_bi_tokens):
+        consonants_regexp = self.get_consonants_regex()
+        pre_chunks = [(b, re.split(consonants_regexp, word)) for (b, word) in word_bi_tokens]
+        pre_chunks = [(b, remove_trivial(x, (self.is_empty_word))) for (b, x) in pre_chunks]
+        return pre_chunks
 
     def get_word_tokens(self):
         words = self.split_input_line_by_whitespace()
