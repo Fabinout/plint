@@ -39,6 +39,10 @@ class SanityCheck(unittest.TestCase):
         text = " - - -- --   - -  - --"
         self.assertEqual(common.normalize(text), "")
 
+    def testOnlyHyphens(self):
+        text = "-----"
+        self.assertEqual(common.normalize(text), "")
+
 
 if __name__ == "__main__":
     unittest.main()

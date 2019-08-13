@@ -140,7 +140,7 @@ class Verse:
         self.chunks2 = []
         acc = []
         for w in self.chunks:
-            if re.search("[" + APOSTROPHES + "]\s*$", w[-1]['original']):
+            if re.search("[" + APOSTROPHES + "]$", w[-1]['original']):
                 acc += w
             else:
                 self.chunks2.append(acc + w)

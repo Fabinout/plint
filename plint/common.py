@@ -50,7 +50,6 @@ def normalize_spaces(text):
 def remove_punctuation(text, rm_all=False, rm_apostrophe=False, rm_apostrophe_end=True):
     """Remove punctuation from text"""
     text = re.sub("[" + APOSTROPHES + "]", "'", text)  # no weird apostrophes
-    text = re.sub("' *", "'", text)  # space after apostrophes
     if rm_apostrophe:
         text = re.sub("'", "", text)
     if rm_apostrophe_end:
@@ -59,6 +58,7 @@ def remove_punctuation(text, rm_all=False, rm_apostrophe=False, rm_apostrophe_en
     text = re.sub("^--*\s", " ", text)  # no isolated dashes
     text = re.sub("--*\s", " ", text)  # no trailing dashes
     text = re.sub("^\s*-\s*$", " ", text)  # no lone dash
+    text = re.sub("^--*$", "", text)  # no only dashes
 
     # TODO rather: keep only good chars
     if not rm_all:

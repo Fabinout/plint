@@ -10,9 +10,9 @@ class ExceptionCounts(Counts):
         self.assertEqual(self.getWeight(f[0]), 8)
 
     def testPorteAvions(self):
-        f = self.runCount("porte-avions porte-avions", limit=6)
+        f = self.runCount("porte-avions porte-avions", limit=8)
         self.assertEqual(1, len(f))
-        self.assertEqual(self.getWeight(f[0]), 6)
+        self.assertEqual(self.getWeight(f[0]), 8)
 
     def testSainteHelene(self):
         # from "Les Trophées", José-Maria de Heredia
