@@ -106,7 +106,8 @@ class Template:
     if len(self.template) == 0:
       raise error.TemplateLoadError(("Template is empty"))
 
-  def match(self, line, ofile=None, quiet=False, last=False):
+  def match(self, line, ofile=None, quiet=False, last=False, nsyl=None,
+          offset=0):
     """Check a line against current pattern, return errors"""
 
     was_incomplete = last and not self.beyond
@@ -117,6 +118,21 @@ class Template:
     line_with_case = normalize(line, downcase=False)
 
     v = Verse(line, self, pattern)
+    
+    if nsyl:
+      v.annotate()
+      count = 0
+      # only generate a context with the prescribed final weight
+      # where "final" is the offset-th chunk with a weight from the end
+      for i, p in enumerate(v.chunks[::-1]):
+        if ('weights' in p.keys()):
+          if count < offset:
+            count += 1
+            continue
+          print(str(nsyl) + ' '
+              + ' '.join(make_query(v.chunks, len(v.chunks)-i-1)), file=ofile)
+          break
+      return errors, pattern, v
 
     if last:
       if was_incomplete and not self.options['incomplete_ok'] and not self.overflowed:
@@ -232,7 +248,7 @@ class Template:
     return Pattern(metric, myid, femid, rhyme.Constraint(*constraint))
 
   def reset_conditional(self, d):
-    return dict((k, v) for k, v in d.items() if k[0] == '!')
+    return dict((k, v) for k, v in d.items() if len(k) > 0 and k[0] == '!')
 
   def reset_state(self, with_femenv=False):
     """Reset our state, except ids starting with '!'"""
@@ -266,7 +282,8 @@ class Template:
     self.femenv = copy.deepcopy(self.old_femenv)
     self.occenv = copy.deepcopy(self.old_occenv)
 
-  def check(self, line, ofile=None, quiet=False, last=False):
+  def check(self, line, ofile=None, quiet=False, last=False, nsyl=None,
+          offset=0):
     """Check line (wrapper)"""
     self.line_no += 1
     line = line.rstrip()
@@ -274,7 +291,8 @@ class Template:
       return None
     #possible = [compute(p) for p in possible]
     #possible = sorted(possible, key=rate)
-    errors, pattern, verse = self.match(line, ofile, quiet=quiet, last=last)
+    errors, pattern, verse = self.match(line, ofile, quiet=quiet, last=last,
+            nsyl=nsyl, offset=offset)
     if len(errors) > 0:
       if self.reject_errors:
         self.back()

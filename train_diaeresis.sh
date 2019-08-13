@@ -3,6 +3,21 @@
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 cd "$DIR"
 
+# use the verb diaeresis files if they exist
+if [ -f diaeresis_verbs/final_syneresis -a -f diaeresis_verbs/final_diaeresis ]
+then
+  cat diaeresis_verbs/final_syneresis | grep -vE -- '-vous$|-nous$' |
+    ./plint.py <(echo 12) diaeresis_empty.json final_syneresis.ctx 1 0
+  cat diaeresis_verbs/final_syneresis | grep -E -- '-vous$|-nous$' |
+    ./plint.py <(echo 12) diaeresis_empty.json final_syneresis2.ctx 1 1
+  cat final_syneresis.ctx final_syneresis2.ctx | sponge final_syneresis.ctx
+  cat diaeresis_verbs/final_diaeresis | grep -vE -- '-vous$|-nous$' |
+    ./plint.py <(echo 12) diaeresis_empty.json final_diaeresis.ctx 2 0
+  cat diaeresis_verbs/final_diaeresis | grep -E -- '-vous$|-nous$' |
+    ./plint.py <(echo 12) diaeresis_empty.json final_diaeresis2.ctx 2 1
+  cat final_diaeresis.ctx final_diaeresis2.ctx | sponge final_diaeresis.ctx
+fi
+
 # prepare the raw addition file
 for a in additions additions_quicherat
 do

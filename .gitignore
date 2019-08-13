@@ -28,3 +28,9 @@ additions.tpl
 additions
 additions_quicherat.tpl
 additions_quicherat
+diaeresis_verbs/verbs*
+diaeresis_verbs/add
+final_diaeresis.ctx
+final_syneresis.ctx
+final_diaeresis2.ctx
+final_syneresis2.ctx

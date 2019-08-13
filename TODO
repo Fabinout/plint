@@ -1,15 +1,16 @@
-== Bugs ==
+== Ongoing ==
 
-- "Tatata tatatat' atata tatata", should not complain of a cut hemistiche
-
-== Ideas ==
-
-- expand the corpus of classical poetry
-- take all relevant verbal forms (imperfect, conditional, etc.) from
-  french-conjugator and check that the last chunk always gets the correct status
+- sort the "expected"/"inferred" lists to make the output deterministic
+- expand the corpus of classical poetry: more Racine, more other authors
+  (Boileau, Corneille, Prudhomme, etc.)
+- fix problems in the new works
+- Train diaresesis.json on new works
 - add option to disable hiatus check on "et"
 - add option to configure the diaeresis tolerance threshold
 - check for duplicates in additions.txt
+
+== Ideas ==
+
 - Use the latest lexique (with our corrections) to generate a file of known
   words with their length, and when we have exactly one of these words ensure
   that we do not allow less syllables than indicated (but it can be more,
@@ -53,4 +54,9 @@
 
 - Loanwords from English ("crumble", "single", etc.) shouldn't be elidable
 - Loadwords from Italian ("ad patres") shouldn't be elidable
+
+== Other possible sources ==
+
+- https://fr.wikisource.org/wiki/Imitation_de_J%C3%A9sus-Christ/Texte_entier
+- https://fr.wikisource.org/wiki/Po%C3%A9sies_diverses_(Corneille)
 
