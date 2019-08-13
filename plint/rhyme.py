@@ -7,8 +7,8 @@ import sys
 from pprint import pprint
 import frhyme
 import functools
-from options import default_options
-from common import is_vowels, normalize
+from plint.options import default_options
+from plint.common import is_vowels, normalize
 
 # number of possible rhymes to consider
 NBEST = 5

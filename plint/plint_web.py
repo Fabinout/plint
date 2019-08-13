@@ -1,12 +1,9 @@
 #!/usr/bin/python3 -Ou
 #encoding: utf8
 
-import localization
+from plint import localization, error, template, diaeresis
 import re
-import template
-import error
-import diaeresis
-from bottle import run, Bottle, request, static_file, redirect, response
+from plint.bottle import run, Bottle, request, static_file, redirect, response
 from jinja2 import Environment, PackageLoader
 from json import dumps
 import time
@@ -230,6 +227,5 @@ def q(lang):
   return dumps(d)
 
 if __name__ == '__main__':
-  diaeresis.load_diaeresis('diaeresis.json')
   run(app, port='5000', server="cherrypy", host="::")
 
