@@ -98,25 +98,11 @@ def remove_trivial(chunks, predicate):
     return new_chunks
 
 
-class Verse:
+class Chunks:
 
-    @property
-    def line(self):
-        return ''.join(x['original'] for x in self.chunks)
-
-    @property
-    def normalized(self):
-        return ''.join(normalize(x['original'], strip=False, rm_apostrophe_end=False)
-                       if 'text_pron' not in x.keys() else x['text']
-                       for x in self.chunks).lstrip().rstrip()
-
-    def __init__(self, input_line, template, pattern, threshold=None):
-        self.template = template
-        self.pattern = pattern
-        self.threshold = threshold
-        self.phon = None
-        self.possible = None
-        self._line = input_line
+    def __init__(self, line):
+        self._line = line
+        self.chunks = []
         self.create_chunks()
 
     def create_chunks(self):
@@ -391,8 +377,7 @@ class Verse:
         for (b, chunk) in pre_chunks:
             if len(chunk) == 0:
                 continue  # no empty chunks
-            self.chunks.append([{'original': y, 'text': normalize(y, rm_apostrophe=True)}
-                                for y in chunk])
+            self.chunks.append([{'original': y, 'text': normalize(y, rm_apostrophe=True)} for y in chunk])
             if not b:
                 # word end is a fake word end
                 for y in self.chunks[-1]:
@@ -425,6 +410,29 @@ class Verse:
         all_consonants = CONSONANTS + CONSONANTS.upper()
         consonants_regexp = re.compile('([^' + all_consonants + '*-]+)', re.UNICODE)
         return consonants_regexp
+
+
+class Verse:
+
+    @property
+    def line(self):
+        return ''.join(x['original'] for x in self.chunks)
+
+    @property
+    def normalized(self):
+        return ''.join(normalize(x['original'], strip=False, rm_apostrophe_end=False)
+                       if 'text_pron' not in x.keys() else x['text']
+                       for x in self.chunks).lstrip().rstrip()
+
+    def __init__(self, input_line, template, pattern, threshold=None):
+        self.template = template
+        self.pattern = pattern
+        self.threshold = threshold
+        self.phon = None
+        self.possible = None
+        self._line = input_line
+        self.chunks = Chunks(input_line).chunks
+
 
     def annotate(self):
         # annotate weights
