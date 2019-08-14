@@ -8,5 +8,5 @@ LANG=plint/res/messages_fr.mo
 all: ${LANG}
 
 test:
-	python3 versetest.py
+	pytest-3 plint
 
