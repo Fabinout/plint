@@ -142,7 +142,18 @@ You can also train a specific pattern for _Cyrano de Bergerac_ with:
 This is currently undocumented. The plint folder should contain a copy of the
 haspirater code (possibly as a symlink) in "haspirater/".
 
-== 5. Related work ==
+== 5. Updating the localization ==
+
+When the code is changed, to update the localization information to French, do:
+
+  cd plint
+  pygettext *.py ../plint.py
+  msgmerge -U res/messages_fr.po messages.pot
+  poedit res/messages_fr.po
+  cd ..
+  make
+
+== 6. Related work ==
 
 * http://pentametron.com/
 * http://virga.org/cvf/alexanql.php
