@@ -1,13 +1,12 @@
-import error
 import copy
 import re
-import rhyme
-from verse import Verse
-from common import normalize, legal, strip_accents_one, rm_punct
-from nature import nature_count
-from vowels import possible_weights_ctx, make_query
-from pprint import pprint
-from options import default_options
+
+from plint import error, rhyme
+from plint.common import normalize
+from plint.nature import nature_count
+from plint.options import default_options
+from plint.verse import Verse
+from plint.vowels import make_query
 
 
 class Pattern:
@@ -28,10 +27,9 @@ class Pattern:
         if i < 1:
           raise ValueError
     except ValueError:
-      raise error.TemplateLoadError(
-          _("Metric description should only contain positive integers"))
+      raise error.TemplateLoadError(("Metric description should only contain positive integers"))
     if sum(verse) > 16:
-      raise error.TemplateLoadError(_("Metric length limit exceeded"))
+      raise error.TemplateLoadError(("Metric length limit exceeded"))
     self.hemistiches = []
     self.length = 0
     for v in verse:
@@ -77,8 +75,7 @@ class Template:
     try:
       key, value = x.split(':')
     except ValueError:
-      raise error.TemplateLoadError(
-        _("Global options must be provided as key-value pairs"))
+      raise error.TemplateLoadError(("Global options must be provided as key-value pairs"))
     if key in self.option_aliases.keys():
       key = self.option_aliases[key]
     if key == 'merge':
@@ -87,12 +84,12 @@ class Template:
       if value == "classique":
         value = "classical"
       if value not in ["permissive", "classical"]:
-        raise error.TemplateLoadError(_("Bad value for global option %s") % key)
+        raise error.TemplateLoadError(("Bad value for global option %s") % key)
       self.options['diaeresis'] = value
     elif key in self.options.keys():
       self.options[key] = str2bool(value)
     else:
-      raise error.TemplateLoadError(_("Unknown global option"))
+      raise error.TemplateLoadError(("Unknown global option"))
 
   def load(self, s):
     """Load from a string"""
@@ -107,7 +104,7 @@ class Template:
         else:
           self.template.append(self.parse_line(line.strip()))
     if len(self.template) == 0:
-      raise error.TemplateLoadError(_("Template is empty"))
+      raise error.TemplateLoadError(("Template is empty"))
 
   def match(self, line, ofile=None, quiet=False, last=False, nsyl=None,
           offset=0):
@@ -151,7 +148,7 @@ class Template:
       # initialize the rhyme
       # last_count is passed later
       self.env[pattern.myid] = rhyme.Rhyme(v.normalized,
-              pattern.constraint, self.mergers, self.options)
+                                           pattern.constraint, self.mergers, self.options)
     else:
       # update the rhyme
       self.env[pattern.myid].feed(v.normalized, pattern.constraint)
@@ -160,7 +157,7 @@ class Template:
         self.env[pattern.myid].rollback()
         rhyme_failed = True
         errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid],
-          self.env[pattern.myid].new_rhyme))
+                                               self.env[pattern.myid].new_rhyme))
 
     # occurrences
     if self.options['check_occurrences']:
@@ -172,7 +169,7 @@ class Template:
       self.occenv[pattern.myid][last_word] += 1
       if self.occenv[pattern.myid][last_word] > nature_count(last_word):
         errors.insert(0, error.ErrorMultipleWordOccurrence(last_word,
-          self.occenv[pattern.myid][last_word]))
+                                                           self.occenv[pattern.myid][last_word]))
 
     v.phon = self.env[pattern.myid].phon
     v.parse()
@@ -180,12 +177,12 @@ class Template:
     # now that we have parsed, adjust rhyme to reflect last word length
     # and check eye
     if not rhyme_failed:
-      self.env[pattern.myid].adjustLastCount(v.lastCount())
+      self.env[pattern.myid].adjustLastCount(v.last_count())
       if not self.env[pattern.myid].satisfied_eye():
         old_phon = len(self.env[pattern.myid].phon)
         self.env[pattern.myid].rollback()
         errors.append(error.ErrorBadRhymeEye(self.env[pattern.myid],
-          self.env[pattern.myid].new_rhyme, old_phon))
+                                             self.env[pattern.myid].new_rhyme, old_phon))
    
     rhyme_failed = False
 
@@ -308,5 +305,5 @@ def str2bool(x):
     return True
   if x.lower() in ["no", "non", "n", "false", "faux", "f"]:
     return False
-  raise error.TemplateLoadError(_("Bad value in global option"))
+  raise error.TemplateLoadError(("Bad value in global option"))
 

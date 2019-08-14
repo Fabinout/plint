@@ -1,10 +1,8 @@
 #!/usr/bin/python3 -uO
 
-import diaeresis
-import localization
+from plint import localization, error, template, diaeresis
 import sys
-import template
-import error
+
 
 def run():
   ok = True
@@ -53,8 +51,6 @@ if __name__ == '__main__':
     diaeresis_name = sys.argv[2]
   else:
     diaeresis_name = "diaeresis.json"
-
-  diaeresis.load_diaeresis(diaeresis_name)
 
   f = open(template_name)
   x = f.read()

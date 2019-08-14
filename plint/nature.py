@@ -12,8 +12,7 @@ def nature_count(x):
 
 count = {}
 
-f = open(os.path.join(os.path.dirname(
-  os.path.realpath(__file__)), 'occurrences'))
+f = open(os.path.join(os.path.dirname(os.path.realpath(__file__)), '../data/occurrences'))
 
 while True:
   l = f.readline()
