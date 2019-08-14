@@ -11,6 +11,6 @@ for a in plint/test_data/*.tpl; do
   then
     ./plint.py $(pwd)/$a ../data/diaeresis_cyrano.json < $(pwd)/${a%.tpl}
   else
-    ./plint.py $a < $(pwd)/${a%.tpl}
+    ./test_one.sh $(basename "${a%.tpl}")
   fi
 done
