@@ -34,3 +34,5 @@ final_diaeresis.ctx
 final_syneresis.ctx
 final_diaeresis2.ctx
 final_syneresis2.ctx
+coverage
+.coverage
