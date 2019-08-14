@@ -64,28 +64,19 @@ Run:
   ./make.sh 4 lexique.txt additions > frhyme.json
   cd ..
 
-4. Link the missing files
-
-Run:
-
-  ln -s frhyme/frhyme.py
-  ln -s frhyme/frhyme.json
-  ln -s haspirater/haspirater.py
-  ln -s haspirater/haspirater.json
-
-5. Generate the occurrences file
+4. Generate the occurrences file
 
 Run:
 
   ./lexique_occurrences_retrieve.sh > data/occurrences
 
-6. Locales
+5. Locales
 
 For locale support, install gettext (Debian package: gettext) and run:
 
   make
 
-7. Running plint
+6. Running plint
 
 If you want to check a poem that consists of classical alexandrines with flat
 rhyme (like the file test/mithridate), write the contents of the poem to check
@@ -95,7 +86,7 @@ into a file poem.txt. Then run:
 
 Plint will display the errors (if any) and exit.
 
-8. Customizing the template
+7. Customizing the template
 
 If you want to customize the template of the poem, you can look at examples on
 the online tool (https://plint.a3nm.net/fr/) or files ending in ".tpl" in the
