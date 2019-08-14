@@ -25,8 +25,8 @@ class Verse:
         self.threshold = threshold
         self.phon = None
         self.possible = None
-        self._line = input_line
-        self.chunks = Chunks(input_line)
+        self.input_line = input_line
+        self.chunks = Chunks(self)
         self.text = None
 
     def annotate(self):

@@ -1,13 +1,18 @@
 import re
 
 from haspirater import haspirater
-from plint import common
-from plint.common import normalize, strip_accents_one, is_consonants, APOSTROPHES, is_vowels, get_consonants_regex
+from plint import common, diaeresis
+from plint.common import normalize, strip_accents_one, is_consonants, APOSTROPHES, is_vowels, get_consonants_regex, \
+    strip_accents
+from plint.vowels import contains_trema, intersperse
+
+
+DEFAULT_THRESHOLD = 3
 
 
 class Chunk:
 
-    def __init__(self, word):
+    def __init__(self, word, verse):
         self.original = word
         self.text = normalize(word, rm_apostrophe=True)
         self.hemistiche = None
@@ -22,6 +27,7 @@ class Chunk:
         self.word_end = False
         # TODO What is a weight without s?
         self.weight = None
+        self.verse = verse
 
     def __repr__(self):
         return "Chunk(" \
@@ -41,7 +47,7 @@ class Chunk:
                + ")" + "\n"
 
     def copy(self):
-        new_chunk = Chunk(self.original)
+        new_chunk = Chunk(self.original, self.verse)
         new_chunk.original = self.original
         new_chunk.text = self.text
         new_chunk.hemistiche = self.hemistiche
@@ -123,7 +129,7 @@ class Chunk:
     def add_original(self, other_chunk):
         self.original += other_chunk.original
 
-    def create_sigles(self):
+    def create_acronym(self):
         new_chunks = []
         for j, character in enumerate(self.text):
             try:
@@ -150,7 +156,7 @@ class Chunk:
             # allow or forbid elision because of possible ending '-e' before
             # forbid hiatus both for this and for preceding
             # instruct that we must use text for the pronunciation
-            new_chunk = Chunk(part)
+            new_chunk = Chunk(part, self.verse)
             new_chunk.original = part
             new_chunk.text = character
             new_chunk.text_pron = True
@@ -276,6 +282,193 @@ class Chunk:
 
     def is_e(self):
         return self.text == "e"
+
+    def possible_weights_approx(self):
+        """Return the possible number of syllabes taken by a vowel chunk (permissive approximation)"""
+        chunk_text = self.text
+        if len(chunk_text) == 1:
+            return [1]
+        # old spelling and weird exceptions
+        if chunk_text in ['ouï']:
+            return [1, 2]  # TODO unsure about that
+        if chunk_text in ['eüi', 'aoû', 'uë']:
+            return [1]
+        if chunk_text in ['aïe', 'oë', 'ouü']:
+            return [1, 2]
+        if contains_trema(chunk_text):
+            return [2]
+        chunk_text = strip_accents(chunk_text, True)
+        if chunk_text in ['ai', 'ou', 'eu', 'ei', 'eau', 'eoi', 'eui', 'au', 'oi',
+                          'oie', 'œi', 'œu', 'eaie', 'aie', 'oei', 'oeu', 'ea', 'ae', 'eo',
+                          'eoie', 'oe', 'eai', 'eue', 'aa', 'oo', 'ee', 'ii', 'aii',
+                          'yeu', 'ye', 'you']:
+            return [1]
+        if chunk_text == "oua":
+            return [1, 2]  # "pouah"
+        if chunk_text == "ao":
+            return [1, 2]  # "paon"
+        for x in ['oa', 'ea', 'eua', 'euo', 'ua', 'uo', 'yau']:
+            if x in chunk_text:
+                return [2]
+        # beware of "déesse"
+        if chunk_text == 'ée':
+            return [1, 2]
+        if chunk_text[0] == 'i':
+            return [1, 2]
+        if chunk_text[0] == 'u' and (strip_accents(chunk_text[1]) in ['i', 'e']):
+            return [1, 2]
+        if chunk_text[0] == 'o' and chunk_text[1] == 'u' and len(chunk_text) >= 3 and\
+                strip_accents(chunk_text[2]) in ['i', 'e']:
+            return [1, 2]
+        if 'é' in chunk_text or 'è' in chunk_text:
+            return [2]
+        # we can't tell
+        return [1, 2]
+
+    def clear(self):
+        if self.word_end is None or not self.word_end:
+            return self.text
+        return self.text + ' '
+
+    def possible_weights_context(self, chunks_before, chunks_after, template, threshold):
+        if len(chunks_after) > 0:
+            next_chunk = chunks_after[0]
+        else:
+            next_chunk = None
+
+        if len(chunks_before) > 0:
+            previous_chunk = chunks_before[-1]
+        else:
+            previous_chunk = None
+
+        if len(chunks_before) > 1:
+            previous_previous_chunk = chunks_before[-2]
+        else:
+            previous_previous_chunk = None
+
+        if ((len(chunks_after) <= 1 and self.is_e())
+                and not (next_chunk is not None and next_chunk.is_vowels())
+                and not (previous_chunk is None or previous_chunk.contains_break())
+                and not (previous_previous_chunk is None or previous_previous_chunk.contains_break())):
+            # special case for verse endings, which can get elided (or not)
+            # but we don't elide lone syllables ("prends-le", etc.)
+
+            if next_chunk is None:
+                return [0]  # ending 'e' is elided
+            if next_chunk.text == 's':
+                return [0]  # ending 'es' is elided
+            if next_chunk.text == 'nt':
+                # ending 'ent' is sometimes elided, try to use pronunciation
+                # actually, this will have an influence on the rhyme's gender
+                # see feminine
+                possible = []
+                if not self.verse.phon or len(self.verse.phon) == 0:
+                    return [0, 1]  # do something reasonable without pron
+                for possible_phon in self.verse.phon:
+                    if possible_phon.endswith(')') or possible_phon.endswith('#'):
+                        possible.append(1)
+                    else:
+                        possible.append(0)
+                return possible
+            return self.possible_weights(chunks_before, chunks_after, template, threshold)
+
+        if (next_chunk is None and self.text == 'e' and
+                previous_chunk is not None and (previous_chunk.text.endswith('-c')
+                                                or previous_chunk.text.endswith('-j')
+                                                or (previous_chunk.text == 'c'
+                                                    and previous_chunk.had_hyphen is not None)
+                                                or (previous_chunk.text == 'j'
+                                                    and previous_chunk.had_hyphen is not None))):
+            return [0]  # -ce and -je are elided
+        if next_chunk is None and self.text in ['ie', 'ée']:
+            return [1]
+        # elide "-ée" and "-ées", but be specific (beware of e.g. "réel")
+        if (len(chunks_after) <= 1
+                and self.text == 'ée'
+                and (next_chunk is None or chunks_after[-1].text == 's')):
+            return [1]
+        if self.elidable is not None:
+            return [int(not x) for x in self.elidable]
+        return self.possible_weights(chunks_before, chunks_after, template, threshold)
+
+    def possible_weights(self, chunks_before, chunks_after, template, threshold):
+        if template.options['diaeresis'] == "classical":
+            return self.possible_weights_ctx(chunks_before, chunks_after, threshold=threshold)
+        elif template.options['diaeresis'] == "permissive":
+            return self.possible_weights_approx()
+
+    def possible_weights_ctx(self, chunks_before, chunks_after, threshold=None):
+        if not threshold:
+            threshold = DEFAULT_THRESHOLD
+        q = self.make_query(chunks_before, chunks_after)
+        v = diaeresis.diaeresis_finder.lookup(q)
+        if len(v.keys()) == 1 and v[list(v.keys())[0]] > threshold:
+            return [int(list(v.keys())[0])]
+        else:
+            return self.possible_weights_seed()
+
+    def make_query(self, chunks_before, chunks_after):
+        cleaned_before = [chunk.clear() for chunk in chunks_before]
+        cleaned_after = [chunk.clear() for chunk in chunks_after]
+        current_clear = self.clear()
+        if current_clear.endswith(' '):
+            current_clear = current_clear.rstrip()
+            if len(cleaned_after) > 0:
+                cleaned_after[0] = " " + cleaned_after[0]
+            else:
+                cleaned_after.append(' ')
+        ret2 = intersperse(
+            ''.join(cleaned_after),
+            ''.join([x[::-1] for x in cleaned_before[::-1]]))
+        ret = [current_clear] + ret2
+        return ret
+
+    def possible_weights_seed(self):
+        """Return the possible number of syllabes taken by a vowel chunk"""
+        if len(self.text) == 1:
+            return [1]
+        # dioïde, maoïste, taoïste
+        if (self.text[-1] == 'ï' and len(self.text) >= 3 and not
+                self.text[-3:-1] == 'ou'):
+            return [3]
+        # ostéoarthrite
+        if "éoa" in self.text:
+            return [3]
+        # antiaérien; but let's play it safe
+        if "iaé" in self.text:
+            return [2, 3]
+        # giaour, miaou, niaouli
+        if "iaou" in self.text:
+            return [2, 3]
+        # bioélectrique
+        if "ioé" in self.text:
+            return [2, 3]
+        # méiose, nucléion, etc.
+        if "éio" in self.text:
+            return [2, 3]
+        # radioactif, radioamateur, etc.
+        if "ioa" in self.text:
+            return [2, 3]
+        # pléiade
+        if "éio" in self.text:
+            return [2, 3]
+        # pompéien, tarpéien...
+        # in theory the "-ie" should give a diaeresis, so 3 syllabes
+        # let's keep the benefit of the doubt...
+        # => this also gives 3 as a possibility for "obéie"...
+        if "éie" in self.text:
+            return [2, 3]
+        # tolstoïen
+        # same remark
+        if "oïe" in self.text:
+            return [2, 3]
+        # shanghaïen (diaeresis?), but also "aië"
+        if "aïe" in self.text:
+            return [1, 2, 3]
+        if self.text in ['ai', 'ou', 'eu', 'ei', 'eau', 'au', 'oi']:
+            return [1]
+        # we can't tell
+        return [1, 2]
 
 
 LETTERS = {
