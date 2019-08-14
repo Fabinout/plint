@@ -1,5 +1,6 @@
 plint -- a French poetry validator
-Copyright (C) 2011-2012 by Antoine Amarilli
+Copyright (C) 2011-2019 by Antoine Amarilli
+Repository URL: https://gitlab.com/a3nm/plint
 
 == 0. Licence ==
 
@@ -25,8 +26,8 @@ domain.
 plint is a tool to check French poetry. Specifically, it validates metric,
 rhymes and rhyme genres against an unexpressive template language. It features a
 command-line interface, an IRC wrapper (for use with irctk) and a web interface.
-It depends on haspirater <https://a3nm.net/git/haspirater> and frhyme
-<https://a3nm.net/git/frhyme>, and the web interface requires CherryPy.
+It depends on haspirater <https://gitlab.com/a3nm/haspirater> and frhyme
+<https://gitlab.com/a3nm/frhyme>, and the web interface requires CherryPy.
 
 The full documentation of plint's features is available in views/about.html.
 
@@ -44,15 +45,15 @@ Make sure that you have a working python3 installation and that you have unzip
 
 If you haven't done so already:
 
-  git clone https://a3nm.net/git/plint/
+  git clone https://gitlab.com/a3nm/plint.git
   cd plint
 
 2. Retrieve the dependencies
 
 In the directory where plint has been cloned, run:
 
-  git clone https://a3nm.net/git/haspirater/
-  git clone https://a3nm.net/git/frhyme/
+  git clone https://gitlab.com/a3nm/plint.git
+  git clone https://gitlab.com/a3nm/haspirater.git
 
 3. Generate frhyme.json
 
