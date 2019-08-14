@@ -3,7 +3,7 @@ import re
 from haspirater import haspirater
 from plint import common, diaeresis
 from plint.common import normalize, strip_accents_one, is_consonants, APOSTROPHES, is_vowels, get_consonants_regex, \
-    strip_accents
+    strip_accents, SURE_END_FEM
 from plint.vowels import contains_trema, intersperse
 
 
@@ -330,7 +330,9 @@ class Chunk:
             return self.text
         return self.text + ' '
 
-    def possible_weights_context(self, chunks_before, chunks_after, template, threshold):
+    def set_possible_weights_from_context(self, chunks_before, chunks_after, template, threshold):
+        if self.weights is not None:
+            return
         if len(chunks_after) > 0:
             next_chunk = chunks_after[0]
         else:
@@ -354,42 +356,44 @@ class Chunk:
             # but we don't elide lone syllables ("prends-le", etc.)
 
             if next_chunk is None:
-                return [0]  # ending 'e' is elided
-            if next_chunk.text == 's':
-                return [0]  # ending 'es' is elided
-            if next_chunk.text == 'nt':
+                self.weights = [0]  # ending 'e' is elided
+            elif next_chunk.text == 's':
+                self.weights = [0]  # ending 'es' is elided
+            elif next_chunk.text == 'nt':
                 # ending 'ent' is sometimes elided, try to use pronunciation
                 # actually, this will have an influence on the rhyme's gender
                 # see feminine
                 possible = []
                 if not self.verse.phon or len(self.verse.phon) == 0:
-                    return [0, 1]  # do something reasonable without pron
-                for possible_phon in self.verse.phon:
-                    if possible_phon.endswith(')') or possible_phon.endswith('#'):
-                        possible.append(1)
-                    else:
-                        possible.append(0)
-                return possible
-            return self.possible_weights(chunks_before, chunks_after, template, threshold)
-
-        if (next_chunk is None and self.text == 'e' and
+                    self.weights = [0, 1]  # do something reasonable without pron
+                else:
+                    for possible_phon in self.verse.phon:
+                        if possible_phon.endswith(')') or possible_phon.endswith('#'):
+                            possible.append(1)
+                        else:
+                            possible.append(0)
+                    self.weights = possible
+            else:
+                self.weights = self.possible_weights(chunks_before, chunks_after, template, threshold)
+        elif (next_chunk is None and self.text == 'e' and
                 previous_chunk is not None and (previous_chunk.text.endswith('-c')
                                                 or previous_chunk.text.endswith('-j')
                                                 or (previous_chunk.text == 'c'
                                                     and previous_chunk.had_hyphen is not None)
                                                 or (previous_chunk.text == 'j'
                                                     and previous_chunk.had_hyphen is not None))):
-            return [0]  # -ce and -je are elided
-        if next_chunk is None and self.text in ['ie', 'ée']:
-            return [1]
+            self.weights = [0]  # -ce and -je are elided
+        elif next_chunk is None and self.text in ['ie', 'ée']:
+            self.weights = [1]
         # elide "-ée" and "-ées", but be specific (beware of e.g. "réel")
-        if (len(chunks_after) <= 1
+        elif (len(chunks_after) <= 1
                 and self.text == 'ée'
                 and (next_chunk is None or chunks_after[-1].text == 's')):
-            return [1]
-        if self.elidable is not None:
-            return [int(not x) for x in self.elidable]
-        return self.possible_weights(chunks_before, chunks_after, template, threshold)
+            self.weights = [1]
+        elif self.elidable is not None:
+            self.weights = [int(not x) for x in self.elidable]
+        else:
+            self.weights = self.possible_weights(chunks_before, chunks_after, template, threshold)
 
     def possible_weights(self, chunks_before, chunks_after, template, threshold):
         if template.options['diaeresis'] == "classical":
@@ -469,6 +473,35 @@ class Chunk:
             return [1]
         # we can't tell
         return [1, 2]
+
+    def set_hemistiche_from_context(self, previous_previous_chunk, previous_chunk, next_chunk):
+        if self.hemistiche is not None:
+            return
+        ending = self.text
+        if not (self.word_end or False) and next_chunk is not None:
+            if not (next_chunk.word_end or False):
+                self.hemistiche = "cut"
+                return
+            ending += next_chunk.text
+        if ending in SURE_END_FEM and previous_previous_chunk is not None and previous_chunk is not None:
+            # check that this isn't a one-syllabe wourd (which is allowed)
+            ok = False
+            try:
+                if '-' in previous_chunk.original or (previous_chunk.word_end or False):
+                    ok = True
+                if '-' in previous_previous_chunk.original or (previous_previous_chunk.word_end or False):
+                    ok = True
+            except IndexError:
+                pass
+            if not ok:
+                # hemistiche ends in feminine
+                if any(self.elidable or [False]):
+                    self.hemistiche = "elid"  # elidable final -e, but only OK if actually elided
+                    return
+                else:
+                    self.hemistiche = "fem"
+                    return
+        self.hemistiche = "ok"
 
 
 LETTERS = {

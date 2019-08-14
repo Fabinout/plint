@@ -3,7 +3,7 @@ import sys
 from pprint import pprint
 
 from plint.chunk import Chunk
-from plint.common import normalize, SURE_END_FEM, get_consonants_regex
+from plint.common import normalize, get_consonants_regex
 from plint.hyphen_splitter import HyphenSplitter
 
 
@@ -179,35 +179,12 @@ class Chunks:
             chunks_before = self.chunks[:i]
             chunks_after = self.chunks[i + 1:]
             # for the case of "pays" and related words
-            if chunk.weights is None:
-                chunk.weights = chunk.possible_weights_context(chunks_before, chunks_after, template, threshold)
-            if chunk.hemistiche is None:
-                chunk.set_hemistiche(self.hemistiche(i))
+            chunk.set_possible_weights_from_context(chunks_before, chunks_after, template, threshold)
+            next_chunk = self.chunks[i + 1] if i < len(self.chunks) - 1 else None
+            previous_chunk = self.chunks[i - 1] if i > 0 else None
+            previous_previous_chunk = self.chunks[i - 2] if i > 1 else None
+            chunk.set_hemistiche_from_context(previous_previous_chunk, previous_chunk, next_chunk)
         return self.align2str()
-
-    def hemistiche(self, pos):
-        current_chunk = self.chunks[pos]
-        ending = current_chunk.text
-        if not (current_chunk.word_end or False) and pos < len(self.chunks) - 1:
-            if not (self.chunks[pos + 1].word_end or False):
-                return "cut"
-            ending += self.chunks[pos + 1].text
-        if ending in SURE_END_FEM:
-            # check that this isn't a one-syllabe wourd (which is allowed)
-            ok = False
-            try:
-                for i in range(2):
-                    if '-' in self.chunks[pos - i - 1].original or (self.chunks[pos - i - 1].word_end or False):
-                        ok = True
-            except IndexError:
-                pass
-            if not ok:
-                # hemistiche ends in feminine
-                if any(current_chunk.elidable or [False]):
-                    return "elid"  # elidable final -e, but only OK if actually elided
-                else:
-                    return "fem"
-        return "ok"
 
     def align2str(self):
         return ''.join([x.text for x in self.chunks])
