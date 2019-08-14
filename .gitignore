@@ -1,4 +1,6 @@
 __pycache__/*
+.idea
+Lexique382.tsv
 frhyme/*
 frhyme.py
 frhyme.json
