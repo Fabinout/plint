@@ -562,8 +562,6 @@ class Chunks:
                     return "elid"  # elidable final -e, but only OK if actually elided
                 else:
                     return "fem"
-            else:
-                print("IT IS OK", current_chunk)
         return "ok"
 
     def align2str(self):

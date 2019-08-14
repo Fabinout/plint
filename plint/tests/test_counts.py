@@ -11,8 +11,6 @@ class Counts(unittest.TestCase):
         return v.possible
 
     def getWeight(self, align):
-        print([x.weight for x in align])
-        print(sum([x.weight or 0 for x in align]))
         return sum([x.weight or 0 for x in align])
 
     def achievesPossibility(self, aligns, target):

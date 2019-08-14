@@ -31,7 +31,6 @@ class SigleCounts(Counts):
 
     def testResplit2(self):
         f = self.runCount("sp-algèbre", limit=4)
-        print(f)
         self.assertEqual(1, len(f))
         self.assertEqual(self.getWeight(f[0]), 4)
 
