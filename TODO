@@ -1,7 +1,6 @@
 == Ongoing ==
 
 - check again xmllitre
-- fix problems with locale
 - turn should_be_accepted into a test
 - sort the "expected"/"inferred" lists to make the output deterministic
 - expand the corpus of classical poetry: more Racine, more other authors
