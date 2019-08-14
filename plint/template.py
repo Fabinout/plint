@@ -124,13 +124,13 @@ class Template:
       count = 0
       # only generate a context with the prescribed final weight
       # where "final" is the offset-th chunk with a weight from the end
-      for i, p in enumerate(v.chunks[::-1]):
-        if ('weights' in p.keys()):
+      for i, p in enumerate(v.chunks.chunks[::-1]):
+        if (p.weights is not None):
           if count < offset:
             count += 1
             continue
           print(str(nsyl) + ' '
-              + ' '.join(make_query(v.chunks, len(v.chunks)-i-1)), file=ofile)
+              + ' '.join(make_query(v.chunks.chunks, len(v.chunks.chunks)-i-1)), file=ofile)
           break
       return errors, pattern, v
 
@@ -192,9 +192,9 @@ class Template:
       possible = v.possible
       if len(possible) == 1:
         for i, p in enumerate(possible[0]):
-          if ('weight' in p.keys() and len(p['weights']) > 1
-              and p['weight'] > 0):
-            print(str(p['weight']) + ' '
+          if (p.weights is not None and len(p.weights) > 1
+              and p.weight is not None and p.weight > 0):
+            print(str(p.weight) + ' '
                 + ' '.join(make_query(possible[0], i)), file=ofile)
 
     # rhyme genres

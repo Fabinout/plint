@@ -7,15 +7,18 @@ import json
 import sys
 
 
-class DiaresisFinder(object):
+class DiaeresisFinder(object):
 
-    def __init__(self, diaresis_file="../data/diaeresis.json"):
+    def __init__(self, diaeresis_file="../data/diaeresis.json"):
         self._trie = None
-        self._diaresis_file = diaresis_file
-        self._load_diaeresis()
+        self._diaeresis_file = diaeresis_file
+        try:
+            self._load_diaeresis()
+        except json.JSONDecodeError:
+            pass # cannot read the file, we assume that another file will be loaded later
 
     def _load_diaeresis(self):
-        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), self._diaresis_file)) as f:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), self._diaeresis_file)) as f:
             self._trie = json.load(f)
 
     def do_lookup_sub(self, trie, key):
@@ -34,19 +37,24 @@ class DiaresisFinder(object):
         return self.do_lookup_sub(self._trie, key)
 
 
-diaresis_finder = DiaresisFinder()
+diaeresis_finder = DiaeresisFinder()
+
+
+def set_diaeresis(diaeresis_file):
+    global diaeresis_finder
+    diaeresis_finder = DiaeresisFinder(diaeresis_file=diaeresis_file)
 
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
-        diaresis_finder = DiaresisFinder(sys.argv[1])
+        diaeresis_finder = DiaeresisFinder(sys.argv[1])
 
     if len(sys.argv) > 2:
         for arg in sys.argv[2:]:
-            diaresis_finder.wrap_lookup(arg)
+            diaeresis_finder.wrap_lookup(arg)
     else:
         while True:
             line = sys.stdin.readline()
             if not line:
                 break
-            diaresis_finder.wrap_lookup(line.lower().lstrip().rstrip().split())
+            diaeresis_finder.wrap_lookup(line.lower().lstrip().rstrip().split())

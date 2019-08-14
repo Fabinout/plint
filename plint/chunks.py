@@ -199,25 +199,25 @@ class Chunk:
                     # force weight
                     self.weights = [2]
                     new_word_from_chunk.append(self)
+                    return new_word_from_chunk
+            must_force = next_chunk is None and previous_chunk is not None and \
+                         (self.text == "aye" and previous_chunk.text.endswith("bb"))
+            if must_force:
+                # force weight
+                self.weights = [2]
+                new_word_from_chunk.append(self)
             else:
-                must_force = next_chunk is None and previous_chunk is not None and \
-                             (self.text == "aye" and previous_chunk.text.endswith("bb"))
-                if must_force:
-                    # force weight
-                    self.weights = [2]
-                    new_word_from_chunk.append(self)
-                else:
-                    sub_chunks = re.split(re.compile("(y+)"), self.text)
-                    sub_chunks = [x for x in sub_chunks if len(x) > 0]
-                    for j, sub_chunk in enumerate(sub_chunks):
-                        lindex = int(j * len(self.original) / len(sub_chunks))
-                        rindex = int((j + 1) * len(self.original) / len(sub_chunks))
-                        part = self.original[lindex:rindex]
-                        new_subchunk_text = 'Y' if 'y' in sub_chunk else sub_chunk
-                        new_subchunk = self.copy()
-                        new_subchunk.original = part
-                        new_subchunk.text = new_subchunk_text
-                        new_word_from_chunk.append(new_subchunk)
+                sub_chunks = re.split(re.compile("(y+)"), self.text)
+                sub_chunks = [x for x in sub_chunks if len(x) > 0]
+                for j, sub_chunk in enumerate(sub_chunks):
+                    lindex = int(j * len(self.original) / len(sub_chunks))
+                    rindex = int((j + 1) * len(self.original) / len(sub_chunks))
+                    part = self.original[lindex:rindex]
+                    new_subchunk_text = 'Y' if 'y' in sub_chunk else sub_chunk
+                    new_subchunk = self.copy()
+                    new_subchunk.original = part
+                    new_subchunk.text = new_subchunk_text
+                    new_word_from_chunk.append(new_subchunk)
         return new_word_from_chunk
 
     def is_vowels(self):

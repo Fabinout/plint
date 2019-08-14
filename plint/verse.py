@@ -121,7 +121,7 @@ class Verse:
         """return min number of syllables for last word"""
 
         tot = 0
-        for chunk in self.chunks[::-1]:
+        for chunk in self.chunks.chunks[::-1]:
             if chunk.original.endswith(' ') or chunk.original.endswith('-'):
                 if tot > 0:
                     break

@@ -7,14 +7,14 @@ cd "$DIR"
 if [ -f diaeresis_verbs/final_syneresis -a -f diaeresis_verbs/final_diaeresis ]
 then
   cat diaeresis_verbs/final_syneresis | grep -vE -- '-vous$|-nous$' |
-    ./plint.py <(echo 12) diaeresis_empty.json final_syneresis.ctx 1 0
+    ./plint.py <(echo 12) ../data/diaeresis_empty.json final_syneresis.ctx 1 0
   cat diaeresis_verbs/final_syneresis | grep -E -- '-vous$|-nous$' |
-    ./plint.py <(echo 12) diaeresis_empty.json final_syneresis2.ctx 1 1
+    ./plint.py <(echo 12) ../data/diaeresis_empty.json final_syneresis2.ctx 1 1
   cat final_syneresis.ctx final_syneresis2.ctx | sponge final_syneresis.ctx
   cat diaeresis_verbs/final_diaeresis | grep -vE -- '-vous$|-nous$' |
-    ./plint.py <(echo 12) diaeresis_empty.json final_diaeresis.ctx 2 0
+    ./plint.py <(echo 12) ../data/diaeresis_empty.json final_diaeresis.ctx 2 0
   cat diaeresis_verbs/final_diaeresis | grep -E -- '-vous$|-nous$' |
-    ./plint.py <(echo 12) diaeresis_empty.json final_diaeresis2.ctx 2 1
+    ./plint.py <(echo 12) ../data/diaeresis_empty.json final_diaeresis2.ctx 2 1
   cat final_diaeresis.ctx final_diaeresis2.ctx | sponge final_diaeresis.ctx
 fi
 
@@ -26,12 +26,12 @@ do
 done
 
 # run the training
-FILES="andromaque mithridate boileau ../additions ../additions_quicherat cyrano$@"
+FILES="andromaque mithridate boileau ../../additions ../../additions_quicherat cyrano$@"
 mkdir -p contexts
 rm -f contexts/*
-cp diaeresis_empty.json diaeresis0.json;
+cp data/diaeresis_empty.json diaeresis0.json;
 for a in $(seq 0 4); do
   b=$(($a+1));
-  ./onepass.sh $a diaeresis${a}.json $FILES > diaeresis${b}.json;
+  ./onepass.sh $a ../diaeresis${a}.json $FILES > diaeresis${b}.json;
 done;
 cat diaeresis5.json

@@ -52,7 +52,7 @@ If you haven't done so already:
 
 In the directory where plint has been cloned, run:
 
-  git clone https://gitlab.com/a3nm/plint.git
+  git clone https://gitlab.com/a3nm/frhyme.git
   git clone https://gitlab.com/a3nm/haspirater.git
 
 3. Generate frhyme.json
@@ -77,7 +77,7 @@ Run:
 
 Run:
 
-  ./lexique_occurrences_retrieve.sh > occurrences
+  ./lexique_occurrences_retrieve.sh > data/occurrences
 
 6. Locales
 
@@ -142,11 +142,11 @@ simple test suite, run ./versetest.py; they should all pass.
 
 The diaeresis pattern "diaeresis.json" is trained by calling
 
-  ./train_diaeresis.sh > diaeresis.json
+  ./train_diaeresis.sh > data/diaeresis.json
 
 You can also train a specific pattern for _Cyrano de Bergerac_ with:
 
-  ./train_diaeresis.sh _full ../additions_cyrano > diaeresis_cyrano.json
+  ./train_diaeresis.sh _full ../additions_cyrano > data/diaeresis_cyrano.json
 
 This is currently undocumented. The plint folder should contain a copy of the
 haspirater code (possibly as a symlink) in "haspirater/".

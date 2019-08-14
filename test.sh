@@ -5,12 +5,12 @@
 
 echo "It is normal that some errors occur when running this script" >/dev/stderr
 echo "See test_expected_output.out for the usual errors that are output" >/dev/stderr
-for a in test/*.tpl; do
+for a in plint/test_data/*.tpl; do
   echo "$a"
   if [[ $a == *cyrano_full* ]]
   then
-    ./plint.py $a diaeresis_cyrano.json < ${a%.tpl}
+    ./plint.py $(pwd)/$a ../data/diaeresis_cyrano.json < $(pwd)/${a%.tpl}
   else
-    ./plint.py $a < ${a%.tpl}
+    ./plint.py $a < $(pwd)/${a%.tpl}
   fi
 done

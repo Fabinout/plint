@@ -21,7 +21,7 @@ fi
 for f in "$@"
 do
   DEST=$(echo "contexts/$f.$NUM" | sed 's!/\.\.!!g')
-  ./plint.py test/$f.tpl $DFILE "$DEST" < test/$f
+  ./plint.py plint/test_data/$f.tpl $DFILE "$DEST" < plint/test_data/$f
 done
 cat contexts/* | ./haspirater/buildtrie_list.py |
   ./haspirater/compresstrie.py

@@ -14,7 +14,7 @@ contexts_old/
 contextsm
 messages.mo
 messages.pot
-res/*.mo
+plint/res/*.mo
 diaeresis?.json
 Lexique*.zip
 haspirater

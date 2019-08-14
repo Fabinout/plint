@@ -4,7 +4,7 @@
 """Compute the number of syllabes taken by a vowel chunk"""
 
 from plint.common import strip_accents
-from plint.diaeresis import diaresis_finder
+from plint import diaeresis
 
 DEFAULT_THRESHOLD = 3
 
@@ -15,7 +15,7 @@ def possible_weights_ctx(chunks, pos, threshold=None):
         threshold = DEFAULT_THRESHOLD
     chunk = chunks[pos]
     q = make_query(chunks, pos)
-    v = diaresis_finder.lookup(q)
+    v = diaeresis.diaeresis_finder.lookup(q)
     if len(v.keys()) == 1 and v[list(v.keys())[0]] > threshold:
         return [int(list(v.keys())[0])]
     else:
@@ -30,13 +30,17 @@ def make_query(chunks, pos):
             cleared[pos + 1] = " " + cleared[pos + 1]
         else:
             cleared.append(' ')
-    return [cleared[pos]] + intersperse(
+    ret2 = intersperse(
         ''.join(cleared[pos + 1:]),
         ''.join([x[::-1] for x in cleared[:pos][::-1]]))
+    ret = [cleared[pos]] + ret2
+    return ret
 
 
 def clear(chunk):
-    return (chunk.text + ' ') if chunk.word_end is not None else chunk.text
+    if chunk.word_end == True:
+        return (chunk.text + ' ')
+    return chunk.text
 
 
 def intersperse(left, right):

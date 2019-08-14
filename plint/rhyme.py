@@ -5,7 +5,7 @@ import copy
 import re
 import sys
 from pprint import pprint
-import frhyme
+from frhyme import frhyme
 import functools
 from plint.options import default_options
 from plint.common import is_vowels, normalize

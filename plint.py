@@ -1,4 +1,4 @@
-#!/usr/bin/python3 -uO
+#!/usr/bin/python3 -u
 
 from plint import localization, error, template, diaeresis
 import sys
@@ -50,7 +50,8 @@ if __name__ == '__main__':
   if len(sys.argv) > 2:
     diaeresis_name = sys.argv[2]
   else:
-    diaeresis_name = "diaeresis.json"
+    diaeresis_name = "../data/diaeresis.json"
+  diaeresis.set_diaeresis(diaeresis_name)
 
   f = open(template_name)
   x = f.read()

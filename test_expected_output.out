@@ -1,18 +1,16 @@
-test/albatros.tpl
-test/andromaque.tpl
+plint/test_data/albatros.tpl
+plint/test_data/andromaque.tpl
 stdin:378: > Brûlé de plus de feux que je n’en allumai,
 stdin:378: Bad rhyme sound for type B (expected "e", inferred "E")
 stdin:1491: > Que je le hais ; enfin, Seigneur, que je l’aimai ?
 stdin:1491: Bad rhyme sound for type B (expected "e", inferred "E")
 stdin:1724: > Andromaque m’attend. Phœnix, garde son fils.
-stdin:1724: Bad rhyme sound for type B (expected "iz"/"i", inferred "is"/"iss"/"il"/"ilz"/"ils"/"isz")
-test/au_lecteur.tpl
-test/boileau.tpl
+stdin:1724: Bad rhyme sound for type B (expected "i"/"iz", inferred "il"/"iss"/"is"/"ils"/"ilz"/"isz")
+plint/test_data/au_lecteur.tpl
+plint/test_data/boileau.tpl
 stdin:1021: > Entouré à demi d'un vieux parchemin noir,
 stdin:1021: >       HHHH                               
 stdin:1021: Illegal hiatus (see 'H' above)
-stdin:3479: > Va revoir ses billets et compter son argent ;
-stdin:3479: Bad rhyme ending for type B (expected "-nd", inferred "-nt")
 stdin:3741: > Il est vrai. Mais pourtant sans loi et sans police,
 stdin:3741: >                                  HHHH              
 stdin:3741: Illegal hiatus (see 'H' above)
@@ -24,13 +22,13 @@ stdin:4423: Illegal hiatus (see 'H' above)
 stdin:5697: > Que de savants plaideurs désormais inutiles !
 stdin:5697: Bad rhyme sound for type A (expected "ijz"/"ijs"/"ij", inferred "il"/"ilz"/"ils")
 stdin:6052: > Wurts... Ah ! quel nom, grand roi, quel Hector que ce Wurts !
-stdin:6052: Bad rhyme sound for type B (expected "yR"/"yRs"/"yRz", inferred "9Rs"/"uRtz"/"9R"/"9Rz"/"uRt"/"uR"/"uRts"/"uRz"/"uRs")
-test/corneille_clitandre.tpl
+stdin:6052: Bad rhyme sound for type B (expected "yRs"/"yRz"/"yR", inferred "uRts"/"uRs"/"uRz"/"9Rs"/"uRt"/"9R"/"uR"/"uRtz"/"9Rz")
+plint/test_data/corneille_clitandre.tpl
 stdin:487: > Un désaveu démente et tes gens et ton seing ?
 stdin:487: Bad rhyme ending for type B (expected "-in", inferred "-ng")
 stdin:3007: > Afin qu’exécutant son perfide dessein,
 stdin:3007: Bad rhyme ending for type B (expected "-k", inferred "-in")
-test/corneille_galerie_du_palais.tpl
+plint/test_data/corneille_galerie_du_palais.tpl
 stdin:374: > U n bo n poè te  ne vient que d’un  a ma nt p a rfai t.
 stdin:374: > 1    1     2   1  1  1      1  1    1  1      1    1    (total: 13)
 stdin:374: > ok   ok   cut fem ok ok    ok  ok  cut ok    cut  cut  
@@ -51,7 +49,7 @@ stdin:1986: > I l veut te m a rier, mais c’est à D o r i m a nt :
 stdin:1986: > 1    1    1   1  1     1    1    1   1   1   1      (total: 11)
 stdin:1986: > ok   ok   ok cut ok    ok   ok   ok cut cut cut    
 stdin:1986: Illegal metric: expected 12 syllables with hemistiche at 6
-test/corneille_melite.tpl
+plint/test_data/corneille_melite.tpl
 stdin:205: > Que si je suis un fou, j’ai bien raison de l’être.
 stdin:205: Bad rhyme sound for type A (expected "atR", inferred "EtR")
 stdin:635: > Afin de te mieux voir s’est mis à la fenêtre.
@@ -60,9 +58,9 @@ stdin:1233: > Remarque sa couleur, son maintien, sa parole ;
 stdin:1233: Bad rhyme sound for type A (expected "ol", inferred "Ol")
 stdin:2287: > Il voudroit que le jour en fût encore à naître ;
 stdin:2287: Bad rhyme sound for type A (expected "atR", inferred "EtR")
-test/corneille_suivante.tpl
+plint/test_data/corneille_suivante.tpl
 stdin:46: > Ecoute, et tu verras si je suis maladroit.
-stdin:46: Bad rhyme sound for type B (expected "E"/"Et", inferred "at"/"a")
+stdin:46: Bad rhyme sound for type B (expected "Et"/"E", inferred "at"/"a")
 stdin:83: > E t n’en d e m a nda plu s ta nt d’a ss i dui té.
 stdin:83: > 1    1     1   1   1   1    1      1    1   1  1  (total: 11)
 stdin:83: > ok   ok   cut cut  ok  ok   ok    cut  cut cut ok
@@ -75,29 +73,29 @@ stdin:1935: > E t, pour d o nne r cou leur à vo s d é tr a ctio ns,
 stdin:1935: > 1     1     1   1     1  1   1  1     1    1    1     (total: 11)
 stdin:1935: > ok    ok   cut  ok   cut ok  ok ok   cut  cut  cut   
 stdin:1935: Illegal metric: expected 12 syllables with hemistiche at 6
-test/corneille_veuve.tpl
+plint/test_data/corneille_veuve.tpl
 stdin:103: > D’être auprès d’une dame et causer du beau temps,
 stdin:103: Too many occurrences of word "temps" for rhyme B
 stdin:2571: > Il nous faut à grands cris jouer un autre rôle.
 stdin:2571: Bad rhyme sound for type A (expected "Ol", inferred "ol")
-test/cyrano_full.tpl
-test/cyrano.tpl
+plint/test_data/cyrano_full.tpl
+plint/test_data/cyrano.tpl
 stdin:1045: > Dis, veux-tu qu'à nous deux nous la séduisions ?
 stdin:1045: >  1    1    1    1  1    1    1    1  1 1  1      (total: 11)
 stdin:1045: Illegal metric: expected 12 syllables
-test/desdichado.tpl
-test/fils.tpl
-test/letters.tpl
-test/mithridate.tpl
-test/nez.tpl
+plint/test_data/desdichado.tpl
+plint/test_data/fils.tpl
+plint/test_data/letters.tpl
+plint/test_data/mithridate.tpl
+plint/test_data/nez.tpl
 stdin:52: > De la moitié du commencement d'une, car
 stdin:52: Bad rhyme ending for type B (expected "-t", inferred "-ar")
-test/prudhomme.tpl
+plint/test_data/prudhomme.tpl
 stdin:342: > Peu à peu les forçant à croître avec mesure,
 stdin:342: >  HHHHH                                      
 stdin:342: Illegal hiatus (see 'H' above)
-test/racine_alexandre_le_grand.tpl
-test/racine_athalie.tpl
+plint/test_data/racine_alexandre_le_grand.tpl
+plint/test_data/racine_athalie.tpl
 stdin:22: > Se  fait  i n i tier à se s h o nteux m y st è r e s,
 stdin:22: >   1  1    1   1  1   1  1     1   1     1    1   0    (total: 11)
 stdin:22: >  fem ok  cut cut ok  ok ok   cut  ok   cut  cut cut  
@@ -108,7 +106,7 @@ stdin:787: >  ok  cut elidok   cut  cut ok      ok  cut  cut cut ok
 stdin:787: Illegal metric: expected 12 syllables with hemistiche at 6
 stdin:1035: > Que Mathan veut ici lui parler en secret.
 stdin:1035: Bad rhyme ending for type A (expected "-th", inferred "-et")
-test/racine_bajazet.tpl
+plint/test_data/racine_bajazet.tpl
 stdin:634: > Au meurtre tout récent du malheureux Osman.
 stdin:634: Bad rhyme sound for type B (expected "A~", inferred "an")
 stdin:1608: > Du cruel Amurat je reconnais la main.
@@ -118,27 +116,27 @@ stdin:1624: >   1   1   1    1   1  1     1  1  1  1     1     (total: 11)
 stdin:1624: >  fem cut  ok   ok cut ok    ok ok ok ok   cut   
 stdin:1624: Illegal metric: expected 12 syllables with hemistiche at 6
 stdin:1625: > Mais… Quoi donc ? qu’avez-vous résolu ? D’obéir.
-stdin:1625: Bad rhyme sound for type B (expected "ER"/"ERR", inferred "iR"/"iRR")
+stdin:1625: Bad rhyme sound for type B (expected "ERR"/"ER", inferred "iRR"/"iR")
 stdin:1667: > Mais quel indigne emploi moi-même m’imposé-je !
-stdin:1667: Bad rhyme sound for type A (expected "aZ", inferred "EZ"/"2"/"iZ")
-test/racine_berenice.tpl
-test/racine_britannicus.tpl
-test/racine_esther.tpl
+stdin:1667: Bad rhyme sound for type A (expected "aZ", inferred "iZ"/"EZ"/"2")
+plint/test_data/racine_berenice.tpl
+plint/test_data/racine_britannicus.tpl
+plint/test_data/racine_esther.tpl
 stdin:110: > « Lève-toi, m’a-t-il dit, prends ton chemin vers Suse,
 stdin:110: Bad rhyme sound for type B (expected "yz", inferred "2z")
 stdin:886: > Je vois qu’en m’écoutant vos yeux au ciel s’adressent.
-stdin:886: Bad rhyme sound for type B (expected "es"/"A~", inferred "Es")
-test/racine_iphigenie.tpl
-test/racine_la_thebeiade.tpl
-test/racine_les_plaideurs.tpl
+stdin:886: Bad rhyme sound for type B (expected "A~"/"es", inferred "Es")
+plint/test_data/racine_iphigenie.tpl
+plint/test_data/racine_la_thebeiade.tpl
+plint/test_data/racine_les_plaideurs.tpl
 stdin:42: > Autrement, serviteur, et mon homme est aux plaids.
-stdin:42: Bad rhyme sound for type A (expected "E"/"Es"/"Ez", inferred "Eds"/"Edz"/"Ed")
+stdin:42: Bad rhyme sound for type A (expected "Es"/"E"/"Ez", inferred "Eds"/"Ed"/"Edz")
 stdin:60: > Que lle  gueule ! pour moi, je crois qu’il e st s o rcie r.
 stdin:60: >   1    1   1   1   1     1   1   1     1   1      1    2    (total: 13)
 stdin:60: >  cut  fem cut fem  ok    ok  ok  ok   ok   ok    cut  cut  
 stdin:60: Illegal metric: expected 12 syllables with hemistiche at 6
 stdin:131: > Vous n’avez tantôt plus que la peau sur les os.
-stdin:131: Bad rhyme sound for type A (expected "oz"/"o"/"os", inferred "Oss"/"Os"/"Osz")
+stdin:131: Bad rhyme sound for type A (expected "os"/"o"/"oz", inferred "Osz"/"Oss"/"Os")
 stdin:517: > F o lle ! Vous  a ve z to rt. Pou rquoi l’i nj u rie r ?
 stdin:517: >   1    1   1    1  1    1       1    1    1    1   1     (total: 11)
 stdin:517: >  cut  fem  ok  cut ok   ok     cut   ok  cut  cut cut   
@@ -148,7 +146,7 @@ stdin:685: >   1  1   1    1   1   1  1    1   1  2      1    1    (total: 13)
 stdin:685: >  ok  ok cut  cut cut ok  ok  cut cut ok    cut  cut  
 stdin:685: Illegal metric: expected 12 syllables with hemistiche at 6
 stdin:727: > Que devant des témoins vous lui fissiez l’honneur
-stdin:727: Bad rhyme sound for type A (expected "2R"/"2", inferred "9RR"/"9R")
+stdin:727: Bad rhyme sound for type A (expected "2"/"2R", inferred "9RR"/"9R")
 stdin:738: > V o yo ns ce qu’elle  ch a nte. Ho n… S i xiè me  j a nvie r,
 stdin:738: >   1  1     1   1    1    1    1  1      1   1   1   1    1    (total: 13)
 stdin:738: >  cut ok    ok cut  fem  cut  fem ok    cut cut fem cut  cut  
@@ -165,7 +163,7 @@ stdin:774: Illegal metric: expected 12 syllables with hemistiche at 6
 stdin:794: > Frappez : j’ai quatre enfants à nourrir. Ah ! pardon,
 stdin:794: Bad rhyme ending for type A (expected "-k", inferred "-on")
 stdin:1087: > C’est bien fait de fermer la porte à ce crieur.
-stdin:1087: Bad rhyme sound for type A (expected "2R"/"2", inferred "9RR"/"9R")
+stdin:1087: Bad rhyme sound for type A (expected "2"/"2R", inferred "9RR"/"9R")
 stdin:1160: >  E lle  m’é tr a ngle…  ay e  !  ay e !  Vous m’e ntraî ne z, ma foi !
 stdin:1160: >  1    1   1    1     0   1    0   1    1  1     1     1  1     1   1   (total: 13)
 stdin:1160: > cut  fem cut  cut   elidcut  elidcut  fem ok   cut   cut ok    ok  ok 
@@ -187,7 +185,7 @@ stdin:1433: Illegal hiatus (see 'H' above)
 stdin:1475: > Je veux dire la brigue et l’éloquence. Car
 stdin:1475: Bad rhyme ending for type A (expected "-rd", inferred "-ar")
 stdin:1486: > L’ancre de vos bontés nous rassure. D’ailleurs
-stdin:1486: Bad rhyme sound for type A (expected "2s"/"2z"/"2", inferred "9Rs"/"9Rz"/"9R")
+stdin:1486: Bad rhyme sound for type A (expected "2"/"2z"/"2s", inferred "9Rs"/"9R"/"9Rz")
 stdin:1490: > V i ctri x cau sa diis pl a cuit, se d v i cta C a t o ni.
 stdin:1490: >   1    1     1  1  2      1  1     1     1   1   1   1  1  (total: 14)
 stdin:1490: >  cut   ok   cut ok ok    cut ok    ok   cut  ok cut cut ok
@@ -196,7 +194,7 @@ stdin:1559: > Pour nous justifier, voulez-vous d’autres pièces ?
 stdin:1559: Too many occurrences of word "pièces" for rhyme B
 stdin:1586: > La naissance du monde et sa création,
 stdin:1586: Bad rhyme ending for type A (expected "-k", inferred "-on")
-test/racine_phedre.tpl
+plint/test_data/racine_phedre.tpl
 stdin:108: > M’a fait sucer encor cet orgueil qui t’étonne ;
 stdin:108: Bad rhyme sound for type A (expected "on", inferred "On")
 stdin:443: > J’aime… Qui ? Tu connais ce fils de l’Amazone,

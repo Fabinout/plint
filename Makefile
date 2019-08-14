@@ -1,4 +1,4 @@
-LANG=res/messages_fr.mo
+LANG=plint/res/messages_fr.mo
 
 .PHONY: all test
 
