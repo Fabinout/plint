@@ -11,6 +11,7 @@ rm -f test_temp_sorted.txt;
 rm -f test_expected_sorted.txt;
 
 for a in plint/test_data/*.tpl; do
+  echo "$a"
   echo "$a" >> test_temp.txt
   if [[ $a == *cyrano_full* ]]
   then

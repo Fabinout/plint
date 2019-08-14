@@ -5,40 +5,11 @@ from plint import error, rhyme
 from plint.common import normalize
 from plint.nature import nature_count
 from plint.options import default_options
+from plint.pattern import Pattern
 from plint.verse import Verse
 
 
-class Pattern:
-    def __init__(self, metric, myid="", femid="", constraint=None, hemistiches=None):
-        self.metric = metric
-        self.parse_metric()
-        self.myid = myid
-        self.femid = femid
-        self.constraint = constraint
-        if hemistiches:
-            self.hemistiches = hemistiches
-
-    def parse_metric(self):
-        """Parse from a metric description"""
-        try:
-            verse = [int(x) for x in self.metric.split('/')]
-            for i in verse:
-                if i < 1:
-                    raise ValueError
-        except ValueError:
-            raise error.TemplateLoadError(("Metric description should only contain positive integers"))
-        if sum(verse) > 16:
-            raise error.TemplateLoadError(("Metric length limit exceeded"))
-        self.hemistiches = []
-        self.length = 0
-        for v in verse:
-            self.length += v
-            self.hemistiches.append(self.length)
-        self.length = self.hemistiches.pop()
-
-
-class Template:
-    option_aliases = {
+OPTION_ALIASES = {
         'fusionner': 'merge',
         'ambiguous_ok': 'forbidden_ok',
         'ambigu_ok': 'forbidden_ok',
@@ -54,59 +25,90 @@ class Template:
         'pauvre_oeil_vocalique_ok': 'poor_eye_vocalic_ok',
     }
 
-    def __init__(self, string=None):
+
+class Template:
+
+    def __init__(self, template_string=None):
         self.template = []
         self.pattern_line_no = 0
         self.options = dict(default_options)
         self.mergers = []
         self.overflowed = False
-        if string != None:
-            self.load(string)
+        if template_string is not None:
+            self.load(template_string)
         self.line_no = 0
         self.position = 0
         self.prev = None
         self.env = {}
-        self.femenv = {}
-        self.occenv = {}
+        self.feminine_environment = {}
+        self.occurrence_environment = {}
         self.reject_errors = False
 
-    def read_option(self, x):
+    def load(self, template_string):
+        """Load from a string"""
+        for line in template_string.split('\n'):
+            line = line.strip()
+            self.pattern_line_no += 1
+            if len(line) != 0 and line[0] != '#':
+                if line[0] == '!':
+                    # don't count the '!' in the options, that's why we use [1:]
+                    for option_string in line.split()[1:]:
+                        self.read_option(option_string)
+                else:
+                    self.template.append(self.parse_line(line.strip()))
+        if len(self.template) == 0:
+            raise error.TemplateLoadError("Template is empty")
+
+    def read_option(self, option_string):
         try:
-            key, value = x.split(':')
+            key, value = option_string.split(':')
         except ValueError:
-            raise error.TemplateLoadError(("Global options must be provided as key-value pairs"))
-        if key in self.option_aliases.keys():
-            key = self.option_aliases[key]
+            raise error.TemplateLoadError("Global options must be provided as key-value pairs")
+        if key in OPTION_ALIASES:
+            key = OPTION_ALIASES[key]
         if key == 'merge':
             self.mergers.append(value)
         elif key == 'diaeresis':
             if value == "classique":
                 value = "classical"
             if value not in ["permissive", "classical"]:
-                raise error.TemplateLoadError(("Bad value for global option %s") % key)
+                raise error.TemplateLoadError("Bad value for global option %s" % key)
             self.options['diaeresis'] = value
-        elif key in self.options.keys():
+        elif key in self.options:
             self.options[key] = str2bool(value)
         else:
-            raise error.TemplateLoadError(("Unknown global option"))
+            raise error.TemplateLoadError("Unknown global option")
 
-    def load(self, s):
-        """Load from a string"""
-        for line in s.split('\n'):
-            line = line.strip()
-            self.pattern_line_no += 1
-            if line != '' and line[0] != '#':
-                if line[0] == '!':
-                    # don't count the '!' in the options, that's why we use [1:]
-                    for option in line.split()[1:]:
-                        self.read_option(option)
-                else:
-                    self.template.append(self.parse_line(line.strip()))
-        if len(self.template) == 0:
-            raise error.TemplateLoadError(("Template is empty"))
+    def parse_line(self, line):
+        """Parse template line from a line"""
+        split = line.split(' ')
+        metric = split[0]
+        if len(split) >= 2:
+            my_id = split[1]
+        else:
+            my_id = str(self.pattern_line_no)  # unique
+        if len(split) >= 3:
+            feminine_id = split[2]
+        else:
+            feminine_id = str(self.pattern_line_no)  # unique
+        id_split = my_id.split(':')
+        classical = True
+        n_common_suffix_phones = 1
+        if len(id_split) >= 2:
+            constraint = id_split[-1].split('|')
+            if len(constraint) > 0:
+                classical = False if constraint[0] in ["no", "non"] else constraint[0]
+            if len(constraint) > 1:
+                n_common_suffix_phones = int(constraint[1])
+        else:
+            constraint = []
+        if len(constraint) == 0:
+            n_common_suffix_phones = 1
+        if len(constraint) < 2:
+            classical = True
+        return Pattern(metric, my_id, feminine_id, rhyme.Constraint(classical, n_common_suffix_phones))
 
-    def match(self, line, ofile=None, quiet=False, last=False, nsyl=None,
-              offset=0):
+    def match(self, line, output_file=None, last=False, n_syllables=None, offset=0):
         """Check a line against current pattern, return errors"""
 
         was_incomplete = last and not self.beyond
@@ -116,83 +118,65 @@ class Template:
 
         line_with_case = normalize(line, downcase=False)
 
-        v = Verse(line, self, pattern)
+        verse = Verse(line, self, pattern)
 
-        if nsyl:
-            v.annotate()
-            count = 0
-            # only generate a context with the prescribed final weight
-            # where "final" is the offset-th chunk with a weight from the end
-            for i, chunk in enumerate(v.chunks.chunks[::-1]):
-                if chunk.weights is not None:
-                    if count < offset:
-                        count += 1
-                        continue
-                    pos = len(v.chunks.chunks) - i - 1
-                    considered_chunk = v.chunks.chunks[pos]
-                    chunks_before = v.chunks.chunks[:pos]
-                    chunks_after = v.chunks.chunks[pos + 1:]
-                    print(str(nsyl) + ' ' + ' '.join(considered_chunk.make_query(chunks_before, chunks_after)),
-                          file=ofile)
-                    break
-            return errors, pattern, v
+        if n_syllables:
+            verse.print_n_syllables(n_syllables, offset, output_file)
+            return errors, pattern, verse
 
         if last:
             if was_incomplete and not self.options['incomplete_ok'] and not self.overflowed:
-                return [error.ErrorIncompleteTemplate()], pattern, v
-            return [], pattern, v
+                return [error.ErrorIncompleteTemplate()], pattern, verse
+            return [], pattern, verse
 
         if self.overflowed:
-            return [error.ErrorOverflowedTemplate()], pattern, v
+            return [error.ErrorOverflowedTemplate()], pattern, verse
 
         rhyme_failed = False
         # rhymes
-        if pattern.myid not in self.env.keys():
+        if pattern.my_id not in self.env:
             # initialize the rhyme
             # last_count is passed later
-            self.env[pattern.myid] = rhyme.Rhyme(v.normalized,
-                                                 pattern.constraint, self.mergers, self.options)
+            self.env[pattern.my_id] = rhyme.Rhyme(verse.normalized, pattern.constraint, self.mergers, self.options)
         else:
             # update the rhyme
-            self.env[pattern.myid].feed(v.normalized, pattern.constraint)
-            if not self.env[pattern.myid].satisfied_phon():
+            self.env[pattern.my_id].feed(verse.normalized, pattern.constraint)
+            if not self.env[pattern.my_id].satisfied_phon():
                 # no more possible rhymes, something went wrong, check phon
-                self.env[pattern.myid].rollback()
+                self.env[pattern.my_id].rollback()
                 rhyme_failed = True
-                errors.append(error.ErrorBadRhymeSound(self.env[pattern.myid],
-                                                       self.env[pattern.myid].new_rhyme))
+                errors.append(error.ErrorBadRhymeSound(self.env[pattern.my_id],
+                                                       self.env[pattern.my_id].new_rhyme))
 
         # occurrences
         if self.options['check_occurrences']:
-            if pattern.myid not in self.occenv.keys():
-                self.occenv[pattern.myid] = {}
+            if pattern.my_id not in self.occurrence_environment.keys():
+                self.occurrence_environment[pattern.my_id] = {}
             last_word = re.split(r'[- ]', line_with_case)[-1]
-            if last_word not in self.occenv[pattern.myid].keys():
-                self.occenv[pattern.myid][last_word] = 0
-            self.occenv[pattern.myid][last_word] += 1
-            if self.occenv[pattern.myid][last_word] > nature_count(last_word):
+            if last_word not in self.occurrence_environment[pattern.my_id].keys():
+                self.occurrence_environment[pattern.my_id][last_word] = 0
+            self.occurrence_environment[pattern.my_id][last_word] += 1
+            if self.occurrence_environment[pattern.my_id][last_word] > nature_count(last_word):
                 errors.insert(0, error.ErrorMultipleWordOccurrence(last_word,
-                                                                   self.occenv[pattern.myid][last_word]))
+                                                                   self.occurrence_environment[pattern.my_id][last_word]))
 
-        v.phon = self.env[pattern.myid].phon
-        v.parse()
+        verse.phon = self.env[pattern.my_id].phon
+        verse.parse()
 
         # now that we have parsed, adjust rhyme to reflect last word length
         # and check eye
         if not rhyme_failed:
-            self.env[pattern.myid].adjustLastCount(v.last_count())
-            if not self.env[pattern.myid].satisfied_eye():
-                old_phon = len(self.env[pattern.myid].phon)
-                self.env[pattern.myid].rollback()
-                errors.append(error.ErrorBadRhymeEye(self.env[pattern.myid],
-                                                     self.env[pattern.myid].new_rhyme, old_phon))
+            self.env[pattern.my_id].adjustLastCount(verse.last_count())
+            if not self.env[pattern.my_id].satisfied_eye():
+                old_phon = len(self.env[pattern.my_id].phon)
+                self.env[pattern.my_id].rollback()
+                errors.append(error.ErrorBadRhymeEye(self.env[pattern.my_id],
+                                                     self.env[pattern.my_id].new_rhyme, old_phon))
 
-        rhyme_failed = False
+        errors = verse.problems() + errors
 
-        errors = v.problems() + errors
-
-        if ofile:
-            possible = v.possible
+        if output_file:
+            possible = verse.possible
             if len(possible) == 1:
                 for i, chunk in enumerate(possible[0]):
                     if (chunk.weights is not None and len(chunk.weights) > 1
@@ -200,57 +184,30 @@ class Template:
                         chunks_before = possible[0][:i]
                         chunks_after = possible[0][i + 1:]
                         print(str(chunk.weight) + ' '
-                              + ' '.join(chunk.make_query(chunks_before, chunks_after)), file=ofile)
+                              + ' '.join(chunk.make_query(chunks_before, chunks_after)), file=output_file)
 
         # rhyme genres
         # inequality constraint
         # TODO this is simplistic and order-dependent
-        if pattern.femid.swapcase() in self.femenv.keys():
-            new = set(['M', 'F']) - self.femenv[pattern.femid.swapcase()]
+        if pattern.feminine_id.swapcase() in self.feminine_environment.keys():
+            new = {'M', 'F'} - self.feminine_environment[pattern.feminine_id.swapcase()]
             if len(new) > 0:
-                self.femenv[pattern.femid] = new
-        if pattern.femid not in self.femenv.keys():
-            if pattern.femid == 'M':
-                x = set(['M'])
-            elif pattern.femid == 'F':
-                x = set(['F'])
+                self.feminine_environment[pattern.feminine_id] = new
+        if pattern.feminine_id not in self.feminine_environment.keys():
+            if pattern.feminine_id == 'M':
+                x = {'M'}
+            elif pattern.feminine_id == 'F':
+                x = {'F'}
             else:
-                x = set(['M', 'F'])
-            self.femenv[pattern.femid] = x
-        old = list(self.femenv[pattern.femid])
-        new = v.genders()
-        self.femenv[pattern.femid] &= set(new)
-        if len(self.femenv[pattern.femid]) == 0:
+                x = {'M', 'F'}
+            self.feminine_environment[pattern.feminine_id] = x
+        old = list(self.feminine_environment[pattern.feminine_id])
+        new = verse.genders()
+        self.feminine_environment[pattern.feminine_id] &= set(new)
+        if len(self.feminine_environment[pattern.feminine_id]) == 0:
             errors.append(error.ErrorBadRhymeGenre(old, new))
 
-        return errors, pattern, v
-
-    def parse_line(self, line):
-        """Parse template line from a line"""
-        split = line.split(' ')
-        metric = split[0]
-        if len(split) >= 2:
-            myid = split[1]
-        else:
-            myid = str(self.pattern_line_no)  # unique
-        if len(split) >= 3:
-            femid = split[2]
-        else:
-            femid = str(self.pattern_line_no)  # unique
-        idsplit = myid.split(':')
-        if len(idsplit) >= 2:
-            constraint = idsplit[-1].split('|')
-            if len(constraint) > 0:
-                constraint[0] = False if constraint[0] in ["no", "non"] else constraint[0]
-            if len(constraint) > 1:
-                constraint[1] = int(constraint[1])
-        else:
-            constraint = []
-        if len(constraint) == 0:
-            constraint.append(1)
-        if len(constraint) < 2:
-            constraint.append(True)
-        return Pattern(metric, myid, femid, rhyme.Constraint(*constraint))
+        return errors, pattern, verse
 
     def reset_conditional(self, d):
         return dict((k, v) for k, v in d.items() if len(k) > 0 and k[0] == '!')
@@ -259,8 +216,8 @@ class Template:
         """Reset our state, except ids starting with '!'"""
         self.position = 0
         self.env = self.reset_conditional(self.env)
-        self.femenv = self.reset_conditional(self.femenv)
-        self.occenv = {}  # always reset
+        self.feminine_environment = self.reset_conditional(self.feminine_environment)
+        self.occurrence_environment = {}  # always reset
 
     @property
     def beyond(self):
@@ -270,8 +227,8 @@ class Template:
         """Get next state, resetting if needed"""
         self.old_position = self.position
         self.old_env = copy.deepcopy(self.env)
-        self.old_femenv = copy.deepcopy(self.femenv)
-        self.old_occenv = copy.deepcopy(self.occenv)
+        self.old_femenv = copy.deepcopy(self.feminine_environment)
+        self.old_occenv = copy.deepcopy(self.occurrence_environment)
         if self.beyond:
             if not self.options['repeat_ok']:
                 self.overflowed = True
@@ -284,20 +241,17 @@ class Template:
         """Revert to previous state"""
         self.position = self.old_position
         self.env = copy.deepcopy(self.old_env)
-        self.femenv = copy.deepcopy(self.old_femenv)
-        self.occenv = copy.deepcopy(self.old_occenv)
+        self.feminine_environment = copy.deepcopy(self.old_femenv)
+        self.occurrence_environment = copy.deepcopy(self.old_occenv)
 
-    def check(self, line, ofile=None, quiet=False, last=False, nsyl=None,
-              offset=0):
+    def check(self, line, output_file=None, last=False, n_syllables=None, offset=0):
         """Check line (wrapper)"""
         self.line_no += 1
         line = line.rstrip()
         if normalize(line) == '' and not last:
             return None
-        # possible = [compute(p) for p in possible]
-        # possible = sorted(possible, key=rate)
-        errors, pattern, verse = self.match(line, ofile, quiet=quiet, last=last,
-                                            nsyl=nsyl, offset=offset)
+
+        errors, pattern, verse = self.match(line, output_file, last=last, n_syllables=n_syllables, offset=offset)
         if len(errors) > 0:
             if self.reject_errors:
                 self.back()

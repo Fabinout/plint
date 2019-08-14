@@ -150,7 +150,7 @@ class Chunks:
 
     def initialize_chunks(self):
         word_bi_tokens = self.get_word_tokens()
-        pre_chunks = preprocess_bi_tokens(word_bi_tokens)
+        pre_chunks = pre_process_bi_tokens(word_bi_tokens)
         self.separated_chunks = []
         for (is_end_word, pre_chunk) in pre_chunks:
             if len(pre_chunk) != 0:
@@ -176,10 +176,12 @@ class Chunks:
         for i, chunk in enumerate(self.chunks):
             if not chunk.is_vowels():
                 continue
+
             chunks_before = self.chunks[:i]
             chunks_after = self.chunks[i + 1:]
             # for the case of "pays" and related words
             chunk.set_possible_weights_from_context(chunks_before, chunks_after, template, threshold)
+
             next_chunk = self.chunks[i + 1] if i < len(self.chunks) - 1 else None
             previous_chunk = self.chunks[i - 1] if i > 0 else None
             previous_previous_chunk = self.chunks[i - 2] if i > 1 else None
@@ -189,19 +191,47 @@ class Chunks:
     def align2str(self):
         return ''.join([x.text for x in self.chunks])
 
+    def print_n_syllables(self, n_syllables, offset, output_file):
+        count = 0
+        for i, chunk in enumerate(self.chunks[::-1]):
+            if chunk.weights is not None:
+                if count < offset:
+                    count += 1
+                    continue
+                pos = len(self.chunks) - i - 1
+                considered_chunk = self.chunks[pos]
+                chunks_before = self.chunks[:pos]
+                chunks_after = self.chunks[pos + 1:]
+                print(str(n_syllables) + ' ' + ' '.join(considered_chunk.make_query(chunks_before, chunks_after)),
+                      file=output_file)
+                break
 
-def remove_trivial(chunks, predicate):
+    def normalized(self):
+        return ''.join(chunk.normalize() for chunk in self.chunks).lstrip().rstrip()
+
+    def get_line(self):
+        return ''.join(chunk.get_original_text() for chunk in self.chunks)
+
+    def get_errors_set(self, forbidden_ok, hiatus_ok):
+        errors = set()
+        for chunk in self.chunks:
+            errors_chunk = chunk.get_errors_set(forbidden_ok, hiatus_ok)
+            errors = errors.union(errors_chunk)
+        return errors
+
+
+def remove_trivial(words, predicate):
     new_chunks = []
-    accu = ""
-    for i, w in enumerate(chunks):
-        if predicate(w):
+    words_accumulation = ""
+    for i, chunk in enumerate(words):
+        if predicate(chunk):
             if len(new_chunks) == 0:
-                accu = accu + w
+                words_accumulation = words_accumulation + chunk
             else:
-                new_chunks[-1] = new_chunks[-1] + w
+                new_chunks[-1] = new_chunks[-1] + chunk
         else:
-            new_chunks.append(accu + w)
-            accu = ""
+            new_chunks.append(words_accumulation + chunk)
+            words_accumulation = ""
     return new_chunks
 
 
@@ -213,7 +243,7 @@ def is_empty_word(word):
     return re.match(r"^\s*$", word) or len(normalize(word, rm_all=True)) == 0
 
 
-def preprocess_bi_tokens(word_bi_tokens):
+def pre_process_bi_tokens(word_bi_tokens):
     consonants_regexp = get_consonants_regex()
     pre_chunks = [(b, re.split(consonants_regexp, word)) for (b, word) in word_bi_tokens]
     pre_chunks = [(b, remove_trivial(x, is_empty_word)) for (b, x) in pre_chunks]

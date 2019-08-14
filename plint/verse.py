@@ -1,7 +1,8 @@
 #!/usr/bin/python3
-from plint.chunks import Chunks
-from plint.common import normalize, is_vowels, SURE_END_FEM, strip_accents
 from plint import error, common
+from plint.chunks import Chunks
+from plint.common import SURE_END_FEM, strip_accents
+
 
 # the writing is designed to make frhyme succeed
 # end vowels will be elided
@@ -11,13 +12,11 @@ class Verse:
 
     @property
     def line(self):
-        return ''.join(x.original for x in self.chunks.chunks)
+        return self.chunks.get_line()
 
     @property
     def normalized(self):
-        return ''.join(normalize(x.original, strip=False, rm_apostrophe_end=False)
-                       if x.text_pron is None else x.text
-                       for x in self.chunks.chunks).lstrip().rstrip()
+        return self.chunks.normalized()
 
     def __init__(self, input_line, template, pattern, threshold=None):
         self.template = template
@@ -119,7 +118,6 @@ class Verse:
 
     def last_count(self):
         """return min number of syllables for last word"""
-
         tot = 0
         for chunk in self.chunks.chunks[::-1]:
             if chunk.original.endswith(' ') or chunk.original.endswith('-'):
@@ -133,18 +131,10 @@ class Verse:
         return tot
 
     def problems(self):
+        errors = self.chunks.get_errors_set(self.template.options['forbidden_ok'], self.template.options['hiatus_ok'])
         result = []
-        errors = set()
         if len(self.possible) == 0:
             result.append(error.ErrorBadMetric())
-        for chunk in self.chunks.chunks:
-            if chunk.error is not None:
-                if chunk.error == "ambiguous" and not self.template.options['forbidden_ok']:
-                    errors.add(error.ErrorForbiddenPattern)
-                if chunk.error == "hiatus" and not self.template.options['hiatus_ok']:
-                    errors.add(error.ErrorHiatus)
-                if chunk.error == "illegal":
-                    errors.add(error.ErrorBadCharacters)
         for k in errors:
             result.append(k())
         return result
@@ -160,3 +150,9 @@ class Verse:
             # try to infer gender even when metric is wrong
             result.update(set(self.feminine(None)))
         return result
+
+    def print_n_syllables(self, n_syllables, offset, output_file):
+        self.annotate()
+        # only generate a context with the prescribed final weight
+        # where "final" is the offset-th chunk with a weight from the end
+        self.chunks.print_n_syllables(n_syllables, offset, output_file)

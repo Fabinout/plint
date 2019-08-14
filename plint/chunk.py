@@ -1,7 +1,7 @@
 import re
 
 from haspirater import haspirater
-from plint import common, diaeresis
+from plint import common, diaeresis, error
 from plint.common import normalize, strip_accents_one, is_consonants, APOSTROPHES, is_vowels, get_consonants_regex, \
     strip_accents, SURE_END_FEM
 from plint.vowels import contains_trema, intersperse
@@ -502,6 +502,26 @@ class Chunk:
                     self.hemistiche = "fem"
                     return
         self.hemistiche = "ok"
+
+    def normalize(self):
+        if self.text_pron is None:
+            return normalize(self.original, strip=False, rm_apostrophe_end=False)
+        else:
+            return self.text
+
+    def get_original_text(self):
+        return self.original
+
+    def get_errors_set(self, forbidden_ok, hiatus_ok):
+        errors_chunk = set()
+        if self.error is not None:
+            if self.error == "ambiguous" and not forbidden_ok:
+                errors_chunk.add(error.ErrorForbiddenPattern)
+            if self.error == "hiatus" and not hiatus_ok:
+                errors_chunk.add(error.ErrorHiatus)
+            if self.error == "illegal":
+                errors_chunk.add(error.ErrorBadCharacters)
+        return errors_chunk
 
 
 LETTERS = {

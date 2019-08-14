@@ -118,11 +118,11 @@ class ErrorBadRhymeGenre(ErrorBadRhyme):
     return "\"" + result + "\""
 
   def get_id(self, pattern):
-    return pattern.femid
+    return pattern.feminine_id
 
 class ErrorBadRhymeObject(ErrorBadRhyme):
   def get_id(self, pattern):
-    return pattern.myid
+    return pattern.my_id
 
 class ErrorBadRhymeSound(ErrorBadRhymeObject):
   @property
@@ -157,7 +157,7 @@ class ErrorMultipleWordOccurrence:
 
   def report(self, pattern):
     return (_("Too many occurrences of word \"%s\" for rhyme %s")
-        % (self.word, pattern.myid))
+        % (self.word, pattern.my_id))
 
 class ErrorIncompleteTemplate:
   def report(self, pattern):
