@@ -1,6 +1,7 @@
 import gettext
 import locale
 import logging
+import os
 
 def init_locale(loc=None):
   locale.setlocale(locale.LC_ALL, '') # use user's preferred locale
@@ -9,7 +10,7 @@ def init_locale(loc=None):
     loc = locale.getlocale()
   else:
     loc = [loc]
-  filename = "res/messages_%s.mo" % loc[0][0:2]
+  filename = os.path.dirname(__file__) + "/res/messages_%s.mo" % loc[0][0:2]
 
   try:
     logging.debug("Opening message file %s for locale %s", filename, loc[0])
