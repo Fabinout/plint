@@ -30,7 +30,8 @@ def run():
     return is_ok
 
 
-if __name__ == '__main__':
+def main():
+    global template
     localization.init_locale()
     if len(sys.argv) < 2 or len(sys.argv) > 6:
         print("Usage: %s TEMPLATE [DFILE [OCONTEXT [NSYL [OFFSET]]]]" % sys.argv[0],
@@ -46,23 +47,23 @@ if __name__ == '__main__':
         print("OFFSET is to add after the last chunk (diaeresis training)",
               file=sys.stderr)
         sys.exit(2)
-
     template_name = sys.argv[1]
     if len(sys.argv) > 2:
         diaeresis_name = sys.argv[2]
     else:
         diaeresis_name = "../data/diaeresis.json"
     diaeresis.set_diaeresis(diaeresis_name)
-
     f = open(template_name)
     x = f.read()
     f.close()
-
     try:
         template = template.Template(x)
     except error.TemplateLoadError as e:
         print("Could not load template %s: %s" % (template_name, e.msg), file=sys.stderr)
         sys.exit(2)
-
     ok = run()
     sys.exit(0 if ok else 1)
+
+
+if __name__ == '__main__':
+    main()

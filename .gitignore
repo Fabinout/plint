@@ -38,3 +38,6 @@ final_diaeresis2.ctx
 final_syneresis2.ctx
 coverage
 .coverage
+build/
+dist/
+plint.egg-info/
