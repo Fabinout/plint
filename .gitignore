@@ -1,12 +1,10 @@
 __pycache__/*
 .idea
 Lexique382.tsv
+frhyme
 frhyme/*
-frhyme.py
-frhyme.json
+haspirater
 haspirater/*
-haspirater.py
-haspirater.json
 irc/*
 occurrences
 old/*
@@ -41,3 +39,5 @@ coverage
 build/
 dist/
 plint.egg-info/
+ouliplint/stanford-postagger-full-2013-11-12/
+test_temp.txt

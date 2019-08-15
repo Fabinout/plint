@@ -37,7 +37,7 @@ class Verse:
 
     def get_last_count(self):
         """return min number of syllables for last word"""
-        self.chunks.get_last_count()
+        return self.chunks.get_last_count()
 
     def problems(self):
         errors = self.chunks.get_errors_set(self.template.options['forbidden_ok'], self.template.options['hiatus_ok'])

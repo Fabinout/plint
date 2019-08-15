@@ -17,20 +17,19 @@ for a in plint/test_data/*.tpl; do
   then
     python3 -m plint $(pwd)/$a ../data/diaeresis_cyrano.json < $(pwd)/${a%.tpl} &>> test_temp.txt
   else
-    python3 -m plint $a < $(pwd)/${a%.tpl} &>> test_temp.txt
+    ./test_one.sh $(basename "${a%.tpl}") &>> test_temp.txt
   fi
 done
 
-sort test_temp.txt > test_temp_sorted.txt;
-sort test_expected_output.out > test_expected_sorted.txt;
-
-if [ $(python3 compare_test_output.py test_temp_sorted.txt test_expected_sorted.txt | wc -l) -eq  1 ]; then
+if diff test_temp.txt test_expected_output.out
+then
     echo "TEST SUCCEED";
+    RET=0
 else
     echo "TEST FAILED";
-    diff test_temp_sorted.txt test_expected_sorted.txt
+    RET=1
 fi
 
 rm -f test_temp.txt;
-rm -f test_temp_sorted.txt;
-rm -f test_expected_sorted.txt
+
+exit "$RET"

@@ -1,4 +1,3 @@
-from . import __main__
 from . import chunk
 from . import chunks
 from . import common

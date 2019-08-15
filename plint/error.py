@@ -101,7 +101,7 @@ class ErrorBadRhymeGenre(ErrorBadRhyme):
         self.kind = "Bad rhyme genre"
 
     def fmt(self, l):
-        result = ' or '.join(list(l))
+        result = ' or '.join(sorted(list(l)))
         if result == '':
             result = "?"
         return "\"" + result + "\""
@@ -127,7 +127,7 @@ class ErrorBadRhymeSound(ErrorBadRhymeObject):
 
     def fmt(self, l):
         return '/'.join("\"" + common.to_xsampa(x) + "\"" for x in
-                        l.sufficient_phon())
+                        sorted(list(l.sufficient_phon())))
 
 
 class ErrorBadRhymeEye(ErrorBadRhymeObject):

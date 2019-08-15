@@ -2,13 +2,35 @@
 
 - check again xmllitre
 - turn should_be_accepted into a test
-- sort the "expected"/"inferred" lists to make the output deterministic
 - expand the corpus of classical poetry: more Racine, more other authors
   (Boileau, Corneille, Prudhomme, etc.)
+
+possible sources: https://dramacode.github.io/ and 
+corneille_surena https://fr.wikisource.org/wiki/Sur%C3%A9na
+corneille_pulcherie https://fr.wikisource.org/wiki/Pulch%C3%A9rie
+corneille_tite_et_berenice https://fr.wikisource.org/wiki/Tite_et_B%C3%A9r%C3%A9nice
+corneille_attila https://fr.wikisource.org/wiki/Attila
+corneille_othon https://fr.wikisource.org/wiki/Othon/Texte_entier
+corneille_sophonisbe https://fr.wikisource.org/wiki/Sophonisbe_(Corneille)
+corneille_sertorius https://fr.wikisource.org/wiki/Sertorius
+corneille_toison_dor https://fr.wikisource.org/wiki/La_Toison_d%E2%80%99or_(Corneille)
+corneille_nicomede https://fr.wikisource.org/wiki/Nicom%C3%A8de
+corneille_don_sanche_daragon https://fr.wikisource.org/wiki/Don_Sanche_d%E2%80%99Aragon
+corneille_heraclius https://fr.wikisource.org/wiki/H%C3%A9raclius_empereur_d%E2%80%99Orient
+corneille_theodore https://fr.wikisource.org/wiki/Th%C3%A9odore_vierge_et_martyre
+corneille_rodogune https://fr.wikisource.org/wiki/Th%C3%A9odore_vierge_et_martyre
+corneille_menteur_suite https://fr.wikisource.org/wiki/La_Suite_du_Menteur
+corneille_menteur https://fr.wikisource.org/wiki/Le_Menteur
+corneille_pompee https://fr.wikisource.org/wiki/Pomp%C3%A9e
+corneille_polyeucte https://fr.wikisource.org/wiki/Polyeucte/%C3%89dition_Masson,_1887
+corneille_cinna https://fr.wikisource.org/wiki/Cinna_ou_la_Cl%C3%A9mence_d%E2%80%99Auguste
+corneille_horace https://fr.wikisource.org/wiki/Horace_(Corneille)
+corneille_cid https://fr.wikisource.org/wiki/Le_Cid
+corneille_comedie_des_tuileries https://fr.wikisource.org/wiki/La_Com%C3%A9die_des_Tuileries
+
 - fix problems in the new works
 - Train diaresesis.json on new works
-- add option to disable hiatus check on "et"
-- add option to configure the diaeresis tolerance threshold
+- check that diaeresis:permissive is indeed more permissive
 - check for duplicates in additions.txt
 
 == Ideas ==
@@ -61,4 +83,5 @@
 
 - https://fr.wikisource.org/wiki/Imitation_de_J%C3%A9sus-Christ/Texte_entier
 - https://fr.wikisource.org/wiki/Po%C3%A9sies_diverses_(Corneille)
+- corneille_andromede https://fr.wikisource.org/wiki/Androm%C3%A8de (but much free verse)
 
