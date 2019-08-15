@@ -1,133 +1,182 @@
 from plint import common
 
 
-class ErrorCollection:
-  keys = {'hiatus': 'H', 'ambiguous': 'A', 'illegal': 'I'}
+class ReportableError:
 
-  @property
-  def prefix(self):
-    return "stdin:%d: " % self.line_no
+    def report(self, pattern):
+        raise NotImplementedError
 
-  def __init__(self, line_no, line, pattern, verse, errors=[]):
-    self.line_no = line_no
-    self.line = line
-    self.errors = errors
-    self.pattern = pattern
-    self.verse = verse
 
-  def say(self, l, short):
-    return l if short else self.prefix + l
+class ErrorCollection(ReportableError):
+    keys = {'hiatus': 'H', 'ambiguous': 'A', 'illegal': 'I'}
 
-  def align(self):
-      return self.verse.align()
+    @property
+    def prefix(self):
+        return "stdin:%d: " % self.line_no
 
-  def lines(self, short=False):
-    l = []
-    if self.verse.possible != None:
-      l.append([self.say(x, short) for x in self.align()])
-    for e in self.errors:
-      l.append([self.say(e.report(self.pattern), short)])
-    return l
+    def __init__(self, line_no, line, pattern, verse, errors=None):
+        self.line_no = line_no
+        self.line = line
+        self.errors = errors or []
+        self.pattern = pattern
+        self.verse = verse
 
-  def report(self, short=False):
-    return '\n'.join(sum(self.lines(short), []))
+    def say(self, l, short):
+        return l if short else self.prefix + l
 
-class ErrorBadElement:
-  def report(self, pattern):
-    return (self.message
-        + _(" (see '%s' above)") % ErrorCollection.keys[self.key])
+    def align(self):
+        return self.verse.align()
+
+    def lines(self, short=False):
+        result = []
+        if self.verse.possible is not None:
+            result.append([self.say(x, short) for x in self.align()])
+        for e in self.errors:
+            result.append([self.say(e.report(self.pattern), short)])
+        return result
+
+    def report(self, short=False):
+        return '\n'.join(sum(self.lines(short), []))
+
+
+class ErrorBadElement(ReportableError):
+
+    def __init__(self):
+        self.message = None
+        self.key = None
+
+    def report(self, pattern):
+        return (self.message
+                + " (see '%s' above)") % ErrorCollection.keys[self.key]
+
 
 class ErrorBadCharacters(ErrorBadElement):
-  @property
-  def message(self):
-    return _("Illegal characters")
-  key = "illegal"
+
+    def __init__(self):
+        super().__init__()
+        self.message = "Illegal Characters"
+        self.key = "illegal"
+
 
 class ErrorForbiddenPattern(ErrorBadElement):
-  @property
-  def message(self):
-    return _("Illegal ambiguous pattern")
-  key = "ambiguous"
+
+    def __init__(self):
+        super().__init__()
+        self.message = "Illegal ambiguous pattern"
+        self.key = "ambiguous"
+
 
 class ErrorHiatus(ErrorBadElement):
-  @property
-  def message(self):
-    return _("Illegal hiatus")
-  key = "hiatus"
 
-class ErrorBadRhyme:
-  def __init__(self, expected, inferred, old_phon=None):
-    self.expected = expected
-    self.inferred = inferred
-    self.old_phon = old_phon
+    def __init__(self):
+        super().__init__()
+        self.message = "Illegal hiatus"
+        self.key = "hiatus"
 
-  def report(self, pattern):
-    return (_("%s for type %s (expected %s, inferred %s)")
-        % (self.kind, self.get_id(pattern), self.fmt(self.expected),
-          self.fmt(self.inferred)))
+
+class ErrorBadRhyme(ReportableError):
+
+    def __init__(self, expected, inferred, old_phon=None):
+        self.expected = expected
+        self.inferred = inferred
+        self.old_phon = old_phon
+        self.kind = None
+
+    def get_id(self, pattern):
+        raise NotImplementedError
+
+    def fmt(self, l):
+        raise NotImplementedError
+
+    def report(self, pattern):
+        return ("%s for type %s (expected %s, inferred %s)"
+                % (self.kind, self.get_id(pattern), self.fmt(self.expected),
+                   self.fmt(self.inferred)))
+
 
 class ErrorBadRhymeGenre(ErrorBadRhyme):
-  @property
-  def kind(self):
-    return _("Bad rhyme genre")
 
-  def fmt(self, l):
-    result = _(' or ').join(list(l))
-    if result == '':
-      result = "?"
-    return "\"" + result + "\""
+    def __init__(self, expected, inferred, old_phon=None):
+        super().__init__(expected, inferred, old_phon)
+        self.kind = "Bad rhyme genre"
 
-  def get_id(self, pattern):
-    return pattern.feminine_id
+    def fmt(self, l):
+        result = ' or '.join(list(l))
+        if result == '':
+            result = "?"
+        return "\"" + result + "\""
+
+    def get_id(self, pattern):
+        return pattern.feminine_id
+
 
 class ErrorBadRhymeObject(ErrorBadRhyme):
-  def get_id(self, pattern):
-    return pattern.my_id
+
+    def fmt(self, l):
+        raise NotImplementedError
+
+    def get_id(self, pattern):
+        return pattern.my_id
+
 
 class ErrorBadRhymeSound(ErrorBadRhymeObject):
-  @property
-  def kind(self):
-    return _("Bad rhyme sound")
 
-  def fmt(self, l):
-    return '/'.join("\"" + common.to_xsampa(x) + "\"" for x in
-                    l.sufficient_phon())
+    def __init__(self, expected, inferred, old_phon=None):
+        super().__init__(expected, inferred, old_phon)
+        self.kind = "Bad rhyme sound"
+
+    def fmt(self, l):
+        return '/'.join("\"" + common.to_xsampa(x) + "\"" for x in
+                        l.sufficient_phon())
+
 
 class ErrorBadRhymeEye(ErrorBadRhymeObject):
-  @property
-  def kind(self):
-    return _("Bad rhyme ending")
 
-  def fmt(self, l):
-    return "\"-" + l.sufficient_eye(self.old_phon) + "\""
+    def __init__(self, expected, inferred, old_phon=None):
+        super().__init__(expected, inferred, old_phon)
+        self.kind = "Bad rhyme ending"
 
-class ErrorBadMetric:
-  def report(self, pattern):
-    return (_("Illegal metric: expected %d syllable%s%s") %
-        (pattern.length, '' if pattern.length == 1 else 's',
-          '' if len(pattern.hemistiches) == 0
-            else (_(" with hemistiche%s at ") %
-            '' if len(pattern.hemistiches) == 1 else 's')
-            + ','.join(str(a) for a in pattern.hemistiches)))
+    def fmt(self, l):
+        return "\"-" + l.sufficient_eye(self.old_phon) + "\""
 
-class ErrorMultipleWordOccurrence:
-  def __init__(self, word, occurrences):
-    self.word = word
-    self.occurrences = occurrences
 
-  def report(self, pattern):
-    return (_("Too many occurrences of word \"%s\" for rhyme %s")
-        % (self.word, pattern.my_id))
+class ErrorBadMetric(ReportableError):
 
-class ErrorIncompleteTemplate:
-  def report(self, pattern):
-    return _("Poem is not complete")
+    def report(self, pattern):
+        plural_hemistiche = '' if len(pattern.hemistiches) == 1 else 's'
+        plural_syllable = '' if pattern.length == 1 else 's'
+        if len(pattern.hemistiches) == 0:
+            hemistiche_string = ""
+        else:
+            hemistiche_positions = ','.join(str(a) for a in pattern.hemistiches)
+            hemistiche_string = (" with hemistiche%s at " % plural_hemistiche) + hemistiche_positions
+        return ("Illegal metric: expected %d syllable%s%s" %
+                (pattern.length, plural_syllable, hemistiche_string))
 
-class ErrorOverflowedTemplate:
-  def report(self, pattern):
-    return _("Verse is beyond end of poem")
+
+class ErrorMultipleWordOccurrence(ReportableError):
+
+    def __init__(self, word, occurrences):
+        self.word = word
+        self.occurrences = occurrences
+
+    def report(self, pattern):
+        return "Too many occurrences of word \"%s\" for rhyme %s" % (self.word, pattern.my_id)
+
+
+class ErrorIncompleteTemplate(ReportableError):
+
+    def report(self, pattern):
+        return "Poem is not complete"
+
+
+class ErrorOverflowedTemplate(ReportableError):
+
+    def report(self, pattern):
+        return "Verse is beyond end of poem"
+
 
 class TemplateLoadError(BaseException):
-  def __init__(self, msg):
-    self.msg = msg
 
+    def __init__(self, msg):
+        self.msg = msg

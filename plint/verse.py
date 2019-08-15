@@ -1,15 +1,12 @@
 #!/usr/bin/python3
-import sys
 
-from plint import error, common
+from plint import error
 from plint.chunks import Chunks
-from plint.common import SURE_END_FEM, strip_accents
 
 
 # the writing is designed to make frhyme succeed
 # end vowels will be elided
 # missing letters have a default case
-from plint.error import ErrorCollection
 
 
 class Verse:
