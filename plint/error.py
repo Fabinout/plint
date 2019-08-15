@@ -112,7 +112,7 @@ class ErrorBadRhymeGenre(ErrorBadRhyme):
     return _("Bad rhyme genre")
 
   def fmt(self, l):
-    result = _(' or ').join(list(l))
+    result = _(' or ').join(sorted(list(l)))
     if result == '':
       result = "?"
     return "\"" + result + "\""
