@@ -15,9 +15,9 @@ for a in plint/test_data/*.tpl; do
   echo "$a" >> test_temp.txt
   if [[ $a == *cyrano_full* ]]
   then
-    ./plint.py $(pwd)/$a ../data/diaeresis_cyrano.json < $(pwd)/${a%.tpl} &>> test_temp.txt
+    python3 -m plint $(pwd)/$a ../data/diaeresis_cyrano.json < $(pwd)/${a%.tpl} &>> test_temp.txt
   else
-    ./plint.py $a < $(pwd)/${a%.tpl} &>> test_temp.txt
+    python3 -m plint $a < $(pwd)/${a%.tpl} &>> test_temp.txt
   fi
 done
 
