@@ -21,20 +21,15 @@ for a in plint/test_data/*.tpl; do
   fi
 done
 
-sort test_temp.txt > test_temp_sorted.txt;
-sort test_expected_output.out > test_expected_sorted.txt;
-
-if [ $(python3 compare_test_output.py test_temp_sorted.txt test_expected_sorted.txt | wc -l) -eq  1 ]; then
+if diff test_temp.txt test_expected_output.out
+then
     echo "TEST SUCCEED";
     RET=0
 else
     echo "TEST FAILED";
     RET=1
-    diff test_temp_sorted.txt test_expected_sorted.txt
 fi
 
 rm -f test_temp.txt;
-rm -f test_temp_sorted.txt;
-rm -f test_expected_sorted.txt
 
 exit "$RET"
