@@ -131,7 +131,7 @@ class ErrorBadRhymeSound(ErrorBadRhymeObject):
 
   def fmt(self, l):
     return '/'.join("\"" + common.to_xsampa(x) + "\"" for x in
-                    l.sufficient_phon())
+                    sorted(list(l.sufficient_phon())))
 
 class ErrorBadRhymeEye(ErrorBadRhymeObject):
   @property
