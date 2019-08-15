@@ -122,3 +122,9 @@ def to_xsampa(s):
 def from_xsampa(s):
     """convert x-sampa to our modified format"""
     return subst(s, [(x[1], x[0]) for x in SUBSTS])
+
+
+def get_consonants_regex():
+    all_consonants = CONSONANTS + CONSONANTS.upper()
+    consonants_regexp = re.compile('([^' + all_consonants + '*-]+)', re.UNICODE)
+    return consonants_regexp

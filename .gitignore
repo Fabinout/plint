@@ -1,4 +1,6 @@
 __pycache__/*
+.idea
+Lexique382.tsv
 frhyme
 frhyme/*
 haspirater
@@ -35,3 +37,4 @@ final_syneresis2.ctx
 coverage
 .coverage
 ouliplint/stanford-postagger-full-2013-11-12/
+test_temp.txt

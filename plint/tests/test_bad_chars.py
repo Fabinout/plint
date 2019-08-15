@@ -1,16 +1,17 @@
 import unittest
 
+import plint.pattern
 from plint import verse, template
 
 
 class BadChars(unittest.TestCase):
     def testBadAlone(self):
-        v = verse.Verse("42", template.Template(), template.Pattern("12"))
+        v = verse.Verse("42", template.Template(), plint.pattern.Pattern("12"))
         v.parse()
         self.assertFalse(v.valid())
 
     def testBadAndGood(self):
-        v = verse.Verse("bla h42 blah ", template.Template(), template.Pattern("12"))
+        v = verse.Verse("bla h42 blah ", template.Template(), plint.pattern.Pattern("12"))
         v.parse()
         self.assertFalse(v.valid())
 

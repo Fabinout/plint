@@ -1,12 +1,13 @@
 import unittest
 
+import plint.pattern
 from plint import verse, template
 
 
 class Genders(unittest.TestCase):
     def testSingleSyllJe(self):
         text = "Patati patata patatatah où suis-je"
-        v = verse.Verse(text, template.Template(), template.Pattern("12"))
+        v = verse.Verse(text, template.Template(), plint.pattern.Pattern("12"))
         v.parse()
         gend = v.genders()
         self.assertTrue(v.valid())
@@ -15,7 +16,7 @@ class Genders(unittest.TestCase):
 
     def testSingleSyllJeBis(self):
         text = "Patati patata patatah la verrai-je"
-        v = verse.Verse(text, template.Template(), template.Pattern("12"))
+        v = verse.Verse(text, template.Template(), plint.pattern.Pattern("12"))
         v.parse()
         gend = v.genders()
         self.assertTrue(v.valid())
@@ -24,7 +25,7 @@ class Genders(unittest.TestCase):
 
     def testSingleSyllLe(self):
         text = "Patati patata patatata prends-le"
-        v = verse.Verse(text, template.Template(), template.Pattern("12"))
+        v = verse.Verse(text, template.Template(), plint.pattern.Pattern("12"))
         v.parse()
         gend = v.genders()
         self.assertTrue(v.valid())
@@ -33,7 +34,7 @@ class Genders(unittest.TestCase):
 
     def testSingleSyllCe(self):
         text = "Patati patata patatata mais qu'est-ce"
-        v = verse.Verse(text, template.Template(), template.Pattern("12"))
+        v = verse.Verse(text, template.Template(), plint.pattern.Pattern("12"))
         v.parse()
         gend = v.genders()
         self.assertTrue(v.valid())
@@ -42,7 +43,7 @@ class Genders(unittest.TestCase):
 
     def testSingleSyllHyphen(self):
         text = "Patati patata patata mange-les"
-        v = verse.Verse(text, template.Template(), template.Pattern("12"))
+        v = verse.Verse(text, template.Template(), plint.pattern.Pattern("12"))
         v.parse()
         gend = v.genders()
         self.assertTrue(v.valid())
@@ -51,7 +52,7 @@ class Genders(unittest.TestCase):
 
     def testSingleSyllNoHyphen(self):
         text = "Patati patata patata mange les"
-        v = verse.Verse(text, template.Template(), template.Pattern("12"))
+        v = verse.Verse(text, template.Template(), plint.pattern.Pattern("12"))
         v.parse()
         gend = v.genders()
         self.assertTrue(v.valid())
