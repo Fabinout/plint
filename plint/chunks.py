@@ -2,8 +2,9 @@ import re
 import sys
 from pprint import pprint
 
+from plint import common
 from plint.chunk import Chunk
-from plint.common import normalize, get_consonants_regex
+from plint.common import normalize, get_consonants_regex, SURE_END_FEM, strip_accents
 from plint.hyphen_splitter import HyphenSplitter
 
 
@@ -218,6 +219,113 @@ class Chunks:
             errors_chunk = chunk.get_errors_set(forbidden_ok, hiatus_ok)
             errors = errors.union(errors_chunk)
         return errors
+
+    def get_feminine(self, template, threshold, align=None):
+        text = self.annotate(template, threshold)
+        for a in SURE_END_FEM:
+            if text.endswith(a):
+                # if vowel before, it must be fem
+                try:
+                    if strip_accents(text[-len(a) - 1]) in common.VOWELS:
+                        return ['F']
+                except IndexError:
+                    # too short
+                    if text == "es":
+                        return ['M']
+                    else:
+                        return ['F']
+                # check that this isn't a one-syllabe word that ends with "es"
+                # => must be masculine as '-es' cannot be mute then
+                # => except if there is another vowel before ("fées")
+                if text.endswith("es") and (len(text) == 2 or strip_accents(text[-3]) not in common.VOWELS):
+                    for i in range(4):
+                        try:
+                            if self.chunks[-i - 1].is_masculine():
+                                return ['M']
+                        except IndexError:
+                            return ['M']
+                return ['F']
+        if not text.endswith('ent'):
+            return ['M']
+        # verse ends with 'ent'
+        if align:
+            if align and align[-2].weight == 0:
+                return ['F']  # mute -ent
+            if align and align[-2].weight > 0 and align[-2].text == 'e':
+                return ['M']  # non-mute "-ent" by the choice of metric
+        possible = []
+        # now, we must check pronunciation?
+        # "tient" vs. "lient" for instance, "excellent"...
+        for possible_phon in self.verse.phon:
+            if possible_phon.endswith(')') or possible_phon.endswith('#'):
+                possible.append('M')
+            else:
+                possible.append('F')
+                if possible_phon.endswith('E') and text.endswith('aient'):
+                    # imparfait and conditionnel are masculine...
+                    possible.append('M')
+        return possible
+
+    def fit(self, hemistiches, pos=0, count=0):
+        if count > self.verse.pattern.length:
+            return []  # no possibilites
+        if len(hemistiches) > 0 and hemistiches[0] < count:
+            return []  # missed a hemistiche
+        if pos == len(self.chunks):
+            if count == self.verse.pattern.length:
+                return [[]]  # empty list is the only possibility
+            else:
+                return []
+        chunk = self.chunks[pos]
+        result = []
+        for weight in (chunk.weights or [0]):
+            next_hemistiches = hemistiches
+            if (len(hemistiches) > 0 and count + weight == hemistiches[0] and
+                    chunk.is_vowels()):
+                # need to try to hemistiche
+                if chunk.hemistiche == "ok" or (chunk.hemistiche == "elid" and weight == 0):
+                    # we hemistiche here
+                    next_hemistiches = next_hemistiches[1:]
+            current = chunk.copy()
+            if current.weights is not None:
+                current.weight = weight
+            for x in self.fit(next_hemistiches, pos + 1, count + weight):
+                result.append([current] + x)
+        return result
+
+    def get_last_count(self):
+        tot = 0
+        for chunk in self.chunks[::-1]:
+            if chunk.original.endswith(' ') or chunk.original.endswith('-'):
+                if tot > 0:
+                    break
+            if chunk.weights is not None:
+                tot += min(chunk.weights)
+            if ' ' in chunk.original.rstrip() or '-' in chunk.original.rstrip():
+                if tot > 0:
+                    break
+        return tot
+
+    def align_from_keys(self, keys):
+        lines = {}
+        for key in keys:
+            lines[key] = ""
+        for chunk in self.chunks:
+            for key in keys:
+                lines[key] += chunk.get_normalized_rendering(key, keys)
+        if 'weights' in keys:
+            bounds = self.get_weights_bounds()
+            bounds = [str(x) for x in bounds]
+            lines['weights'] += " (total: " + ('-'.join(bounds)
+                                               if bounds[1] > bounds[0] else bounds[0]) + ")"
+        return ["> " + lines[key] for key in keys if len(lines[key].strip()) > 0]
+
+    def get_weights_bounds(self):
+        bounds = [0, 0]
+        for chunk in self.chunks:
+            bounds[0] += chunk.get_min_weight()
+            bounds[1] += chunk.get_max_weight()
+        return bounds
 
 
 def remove_trivial(words, predicate):

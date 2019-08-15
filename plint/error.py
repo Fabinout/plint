@@ -1,4 +1,3 @@
-import sys
 from plint import common
 
 
@@ -20,46 +19,7 @@ class ErrorCollection:
     return l if short else self.prefix + l
 
   def align(self):
-    chunks = self.verse.chunks
-    keys = ['original', 'error']
-    if len(self.verse.possible) == 0:
-      keys.append('weights')
-      if len(self.pattern.hemistiches) > 0:
-        keys.append('hemis')
-    formatters = {'weights': lambda x, y: '-'.join([str(a) for a in x]),
-        'error': lambda x, y: ErrorCollection.keys.get(x, '') *
-        len(chunk.original)}
-    def render(chunk, key):
-      if key == 'error' and chunk.error == 'illegal':
-        return chunk.illegal_str
-      if key == 'original':
-        return (formatters.get(key, lambda x, y: str(x)))(chunk.original, chunk)
-      elif key == 'weights':
-        return (formatters.get(key, lambda x, y: str(x)))(chunk.weights or [], chunk)
-      elif key == 'error':
-        return (formatters.get(key, lambda x, y: str(x)))(chunk.error, chunk)
-      elif key == 'hemis':
-        return (formatters.get(key, lambda x, y: str(x)))(chunk.hemistiche or "", chunk)
-      else:
-        print(key, file=sys.stderr)
-        assert(False)
-    lines = {}
-    for key in keys:
-      lines[key] = ""
-    for chunk in chunks.chunks:
-      l = max(len(render(chunk, key)) for key in keys)
-      for key in keys:
-        lines[key] += ('{:^'+str(l)+'}').format(render(chunk, key))
-    if 'weights' in keys:
-      bounds = [0, 0]
-      for chunk in self.verse.chunks.chunks:
-        weights = chunk.weights or [0]
-        bounds[0] += min(weights)
-        bounds[1] += max(weights)
-      bounds = [str(x) for x in bounds]
-      lines['weights'] += " (total: " + ('-'.join(bounds)
-          if bounds[1] > bounds[0] else bounds[0]) + ")"
-    return ["> " + lines[key] for key in keys if len(lines[key].strip()) > 0]
+      return self.verse.align()
 
   def lines(self, short=False):
     l = []

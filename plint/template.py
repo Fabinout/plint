@@ -166,7 +166,7 @@ class Template:
         # now that we have parsed, adjust rhyme to reflect last word length
         # and check eye
         if not rhyme_failed:
-            self.env[pattern.my_id].adjustLastCount(verse.last_count())
+            self.env[pattern.my_id].adjustLastCount(verse.get_last_count())
             if not self.env[pattern.my_id].satisfied_eye():
                 old_phon = len(self.env[pattern.my_id].phon)
                 self.env[pattern.my_id].rollback()
