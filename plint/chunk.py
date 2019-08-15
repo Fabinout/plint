@@ -559,6 +559,12 @@ class Chunk:
     def get_max_render_size(self, keys):
         return max(len(self.render(key)) for key in keys)
 
+    def print_query(self, chunks_after, chunks_before, output_file):
+        if (self.weights is not None and len(self.weights) > 1
+                and self.weight is not None and self.weight > 0):
+            print(str(self.weight) + ' ' +
+                  ' '.join(self.make_query(chunks_before, chunks_after)), file=output_file)
+
 
 LETTERS = {
     'f': 'effe',

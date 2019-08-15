@@ -73,3 +73,13 @@ class Verse:
             if len(self.pattern.hemistiches) > 0:
                 keys.append('hemis')
         return self.chunks.align_from_keys(keys)
+
+    def print_possible(self, output_file):
+        if not output_file:
+            return
+        possible = self.possible
+        if len(possible) == 1:
+            for i, chunk in enumerate(possible[0]):
+                chunks_before = possible[0][:i]
+                chunks_after = possible[0][i + 1:]
+                chunk.print_query(chunks_after, chunks_before, output_file)
