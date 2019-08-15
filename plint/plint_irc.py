@@ -75,7 +75,7 @@ def manage(line, descriptor=sys.stdout):
     else:
       lbuf = [l]
     return True
-  errors = template.check(text, quiet=False)
+  errors = template.check(text)
   quiet = False
   if errors:
     print(errors.report())

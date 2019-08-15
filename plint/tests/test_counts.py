@@ -1,12 +1,13 @@
 import unittest
 
+import plint.pattern
 from plint import verse, template
 
 
 class Counts(unittest.TestCase):
 
     def runCount(self, text, limit=12, hemistiches=None):
-        v = verse.Verse(text, template.Template(), template.Pattern(str(limit), hemistiches=hemistiches))
+        v = verse.Verse(text, template.Template(), plint.pattern.Pattern(str(limit), hemistiches=hemistiches))
         v.parse()
         return v.possible
 

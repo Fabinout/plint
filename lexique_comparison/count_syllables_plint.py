@@ -4,12 +4,14 @@ import os
 import sys
 
 # modules are in the parent folder
+import plint.pattern
+
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 
 from plint import template, verse, rhyme
 
 templateobj = template.Template()
-patternobj = template.Pattern("12")
+patternobj = plint.pattern.Pattern("12")
 
 for l in sys.stdin.readlines():
     w = (l.strip().split("\t"))[0]
