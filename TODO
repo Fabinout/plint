@@ -4,6 +4,8 @@
 - migrate the readme to markdown
 - ship the occurrence files directly
 - turn should_be_accepted into a test
+- Produce error reports first in a structured format (JSON) and translate that
+  into text or into HTML
 - expand the corpus of classical poetry: more Racine, more other authors
   (Boileau, Corneille, Prudhomme, etc.)
 
@@ -57,8 +59,6 @@ corneille_comedie_des_tuileries https://fr.wikisource.org/wiki/La_Com%C3%A9die_d
 
 === Error reporting ===
 
-- Produce error reports first in a structured format (JSON) and translate that
-  into text or into HTML
 - When reporting hemistiche errors, highlight possible hemistiche positions
   where an hemistiche could have been placed
 
