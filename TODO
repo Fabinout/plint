@@ -1,7 +1,6 @@
 == Ongoing ==
 
-- update to Lexique version 3.83
-- check again xmllitre
+- ship the occurrence files directly
 - turn should_be_accepted into a test
 - expand the corpus of classical poetry: more Racine, more other authors
   (Boileau, Corneille, Prudhomme, etc.)
@@ -33,6 +32,7 @@ corneille_comedie_des_tuileries https://fr.wikisource.org/wiki/La_Com%C3%A9die_d
 - Train diaresesis.json on new works
 - check that diaeresis:permissive is indeed more permissive
 - check for duplicates in additions.txt
+- check again xmllitre
 
 == Ideas ==
 

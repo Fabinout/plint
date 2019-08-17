@@ -7,7 +7,6 @@ haspirater
 haspirater/*
 irc/*
 occurrences
-old/*
 *.pyc
 contexts/
 contexts_old/
