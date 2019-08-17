@@ -15,7 +15,7 @@ class DiaeresisFinder(object):
         try:
             self._load_diaeresis()
         except json.JSONDecodeError:
-            pass # cannot read the file, we assume that another file will be loaded later
+            pass  # cannot read the file, we assume that another file will be loaded later
 
     def _load_diaeresis(self):
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), self._diaeresis_file)) as f:

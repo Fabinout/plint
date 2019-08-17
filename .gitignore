@@ -36,5 +36,8 @@ final_diaeresis2.ctx
 final_syneresis2.ctx
 coverage
 .coverage
+build/
+dist/
+plint.egg-info/
 ouliplint/stanford-postagger-full-2013-11-12/
 test_temp.txt

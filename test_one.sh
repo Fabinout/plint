@@ -2,4 +2,4 @@
 
 TEXT="$1"
 
-./plint.py "plint/test_data/$TEXT.tpl" < "plint/test_data/$TEXT"
+python3 -m plint "plint/test_data/$TEXT.tpl" < "plint/test_data/$TEXT"

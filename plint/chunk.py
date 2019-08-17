@@ -1,9 +1,11 @@
 import re
+import sys
 
 from haspirater import haspirater
 from plint import common, diaeresis, error
 from plint.common import normalize, strip_accents_one, is_consonants, APOSTROPHES, is_vowels, get_consonants_regex, \
     strip_accents, SURE_END_FEM
+from plint.error import ErrorCollection
 from plint.vowels import contains_trema, intersperse
 
 
@@ -63,8 +65,12 @@ class Chunk:
         new_chunk.weight = self.weight
         return new_chunk
 
-    def set_hemistiche(self, hemis):
-        self.hemistiche = hemis
+    def set_hemistiche(self, hemistiche):
+        # The hemistiche can take the following values
+        #    ok: correct
+        #    cut: falls at the middle of a word
+        #    fem: preceding word ends by a mute e
+        self.hemistiche = hemistiche
 
     def check_forbidden_characters(self):
         es = ""
@@ -522,6 +528,42 @@ class Chunk:
             if self.error == "illegal":
                 errors_chunk.add(error.ErrorBadCharacters)
         return errors_chunk
+
+    def is_masculine(self):
+        return (self.had_hyphen or False) or (self.word_end or False)
+
+    def render(self, key):
+        if key == 'error' and self.error == 'illegal':
+            return self.illegal_str
+        if key == 'original':
+            return str(self.original)
+        elif key == 'weights':
+            return '-'.join([str(a) for a in self.weights or []])
+        elif key == 'error':
+            return ErrorCollection.keys.get(self.error, '') * len(self.original)
+        elif key == 'hemis':
+            return str(self.hemistiche or "")
+        else:
+            print(key, file=sys.stderr)
+            assert False
+
+    def get_normalized_rendering(self, key, keys):
+        return ('{:^' + str(self.get_max_render_size(keys)) + '}').format(self.render(key))
+
+    def get_min_weight(self):
+        return min(self.weights or [0])
+
+    def get_max_weight(self):
+        return max(self.weights or [0])
+
+    def get_max_render_size(self, keys):
+        return max(len(self.render(key)) for key in keys)
+
+    def print_query(self, chunks_after, chunks_before, output_file):
+        if (self.weights is not None and len(self.weights) > 1
+                and self.weight is not None and self.weight > 0):
+            print(str(self.weight) + ' ' +
+                  ' '.join(self.make_query(chunks_before, chunks_after)), file=output_file)
 
 
 LETTERS = {

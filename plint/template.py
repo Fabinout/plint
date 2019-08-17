@@ -26,6 +26,10 @@ OPTION_ALIASES = {
     }
 
 
+def reset_conditional(d):
+    return dict((k, v) for k, v in d.items() if len(k) > 0 and k[0] == '!')
+
+
 class Template:
 
     def __init__(self, template_string=None):
@@ -33,6 +37,10 @@ class Template:
         self.pattern_line_no = 0
         self.options = dict(default_options)
         self.mergers = []
+        self.old_position = None
+        self.old_env = None
+        self.old_femenv = None
+        self.old_occenv = None
         self.overflowed = False
         if template_string is not None:
             self.load(template_string)
@@ -157,8 +165,9 @@ class Template:
                 self.occurrence_environment[pattern.my_id][last_word] = 0
             self.occurrence_environment[pattern.my_id][last_word] += 1
             if self.occurrence_environment[pattern.my_id][last_word] > nature_count(last_word):
-                errors.insert(0, error.ErrorMultipleWordOccurrence(last_word,
-                                                                   self.occurrence_environment[pattern.my_id][last_word]))
+                errors.insert(0,
+                              error.ErrorMultipleWordOccurrence(last_word,
+                                                                self.occurrence_environment[pattern.my_id][last_word]))
 
         verse.phon = self.env[pattern.my_id].phon
         verse.parse()
@@ -166,7 +175,7 @@ class Template:
         # now that we have parsed, adjust rhyme to reflect last word length
         # and check eye
         if not rhyme_failed:
-            self.env[pattern.my_id].adjustLastCount(verse.last_count())
+            self.env[pattern.my_id].adjust_last_count(verse.get_last_count())
             if not self.env[pattern.my_id].satisfied_eye():
                 old_phon = len(self.env[pattern.my_id].phon)
                 self.env[pattern.my_id].rollback()
@@ -175,16 +184,7 @@ class Template:
 
         errors = verse.problems() + errors
 
-        if output_file:
-            possible = verse.possible
-            if len(possible) == 1:
-                for i, chunk in enumerate(possible[0]):
-                    if (chunk.weights is not None and len(chunk.weights) > 1
-                            and chunk.weight is not None and chunk.weight > 0):
-                        chunks_before = possible[0][:i]
-                        chunks_after = possible[0][i + 1:]
-                        print(str(chunk.weight) + ' '
-                              + ' '.join(chunk.make_query(chunks_before, chunks_after)), file=output_file)
+        verse.print_possible(output_file)
 
         # rhyme genres
         # inequality constraint
@@ -209,14 +209,11 @@ class Template:
 
         return errors, pattern, verse
 
-    def reset_conditional(self, d):
-        return dict((k, v) for k, v in d.items() if len(k) > 0 and k[0] == '!')
-
-    def reset_state(self, with_femenv=False):
+    def reset_state(self):
         """Reset our state, except ids starting with '!'"""
         self.position = 0
-        self.env = self.reset_conditional(self.env)
-        self.feminine_environment = self.reset_conditional(self.feminine_environment)
+        self.env = reset_conditional(self.env)
+        self.feminine_environment = reset_conditional(self.feminine_environment)
         self.occurrence_environment = {}  # always reset
 
     @property
@@ -265,4 +262,4 @@ def str2bool(x):
         return True
     if x.lower() in ["no", "non", "n", "false", "faux", "f"]:
         return False
-    raise error.TemplateLoadError(("Bad value in global option"))
+    raise error.TemplateLoadError("Bad value in global option")
