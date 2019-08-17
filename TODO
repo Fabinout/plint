@@ -47,6 +47,9 @@ corneille_comedie_des_tuileries https://fr.wikisource.org/wiki/La_Com%C3%A9die_d
 - Improve performance with profiling
 - Only indicate hemistiche status when there is a problem with hemistiches
 - Clean up the code to the extent possible
+- Look at dicollecte
+  <http://grammalecte.net/download/fr/lexique-dicollecte-fr-v6.4.1.zip>, which
+  also features pronunciation, and see how it differs from Lexique
 
 == Low priority ==
 
