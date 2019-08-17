@@ -1,5 +1,6 @@
 == Ongoing ==
 
+- fix the test (wrong version of frhyme)
 - migrate the readme to markdown
 - ship the occurrence files directly
 - turn should_be_accepted into a test
