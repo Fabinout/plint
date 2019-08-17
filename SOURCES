@@ -1,24 +1,32 @@
-All files on dramacode.github.io are originally from http://theatre-classique.fr by Paul Fièvre
+This file explains the origins of the files given in plint/test_data. To my
+knowledge, all of the corresponding works are in the public domain.
 
-All files on Wikisource are the work of many individual contributors
+boileau: Wikisource
+andromaque: Wikisource
+baudelaire: Project Gutenberg
+mithridate: Project Gutenberg
+racine_la_thebaide: https://fr.wikisource.org/wiki/La_Th%C3%A9ba%C3%AFde_ou_les_Fr%C3%A8res_ennemis/Didot
+racine_alexandre_le_grand: https://fr.wikisource.org/wiki/Alexandre_le_Grand/%C3%A9dition_Didot
+racine_les_plaideurs: https://fr.wikisource.org/wiki/Les_Plaideurs_(%C3%A9ditions_Didot,_1854)
+racine_britannicus: https://fr.wikisource.org/wiki/Britannicus_(%C3%A9ditions_Didot,_1854)
+racine_berenice: https://fr.wikisource.org/wiki/B%C3%A9r%C3%A9nice_(%C3%A9ditions_Didot,_1854)
+racine_bajazet: https://fr.wikisource.org/wiki/Bajazet_(%C3%A9ditions_Didot,_1854)
+racine_iphigenie: https://fr.wikisource.org/wiki/Iphig%C3%A9nie_en_Aulide_(Racine),_Didot,_1854
+racine_phedre: https://fr.wikisource.org/wiki/Ph%C3%A8dre_(Racine),_Didot,_1854
+racine_esther: https://fr.wikisource.org/wiki/Esther_(Racine),_Didot,_1854
+racine_athalie: https://fr.wikisource.org/wiki/Athalie_(Racine),_Didot,_1854
+corneille_place_royale: https://dramacode.github.io/naked/corneillep_placeroyale.txt
+corneille_suivante: https://fr.wikisource.org/wiki/La_Suivante
+corneille_galerie_du_palais: https://fr.wikisource.org/wiki/La_Galerie_du_Palais
+corneille_veuve: https://fr.wikisource.org/wiki/La_Veuve_(Corneille)
+corneille_clitandre: https://fr.wikisource.org/wiki/Clitandre
+corneille_melite: https://fr.wikisource.org/wiki/M%C3%A9lite/Texte_entier
+corneille_medee: https://dramacode.github.io/naked/corneillep_medee.txt
+corneille_oedipe: https://dramacode.github.io/naked/corneillep_oedipe.txt
+corneille_pertharite: https://dramacode.github.io/naked/corneillep_pertharite.txt
+corneille_illusion_comique: https://fr.wikisource.org/wiki/L%E2%80%99Illusion_comique_(%C3%A9dition_Didot,_1855)
 
-racine_la_thebaide https://fr.wikisource.org/wiki/La_Th%C3%A9ba%C3%AFde_ou_les_Fr%C3%A8res_ennemis/Didot
-racine_alexandre_le_grand https://fr.wikisource.org/wiki/Alexandre_le_Grand/%C3%A9dition_Didot
-racine_les_plaideurs https://fr.wikisource.org/wiki/Les_Plaideurs_(%C3%A9ditions_Didot,_1854)
-racine_britannicus https://fr.wikisource.org/wiki/Britannicus_(%C3%A9ditions_Didot,_1854)
-racine_berenice https://fr.wikisource.org/wiki/B%C3%A9r%C3%A9nice_(%C3%A9ditions_Didot,_1854)
-racine_bajazet https://fr.wikisource.org/wiki/Bajazet_(%C3%A9ditions_Didot,_1854)
-racine_iphigenie https://fr.wikisource.org/wiki/Iphig%C3%A9nie_en_Aulide_(Racine),_Didot,_1854
-racine_phedre https://fr.wikisource.org/wiki/Ph%C3%A8dre_(Racine),_Didot,_1854
-racine_esther https://fr.wikisource.org/wiki/Esther_(Racine),_Didot,_1854
-racine_athalie https://fr.wikisource.org/wiki/Athalie_(Racine),_Didot,_1854
-corneille_place_royale https://dramacode.github.io/naked/corneillep_placeroyale.txt
-corneille_suivante https://fr.wikisource.org/wiki/La_Suivante
-corneille_galerie_du_palais https://fr.wikisource.org/wiki/La_Galerie_du_Palais
-corneille_veuve https://fr.wikisource.org/wiki/La_Veuve_(Corneille)
-corneille_clitandre https://fr.wikisource.org/wiki/Clitandre
-corneille_melite https://fr.wikisource.org/wiki/M%C3%A9lite/Texte_entier
-corneille_medee https://dramacode.github.io/naked/corneillep_medee.txt
-corneille_oedipe https://dramacode.github.io/naked/corneillep_oedipe.txt
-corneille_pertharite https://dramacode.github.io/naked/corneillep_pertharite.txt
-corneille_illusion_comique https://fr.wikisource.org/wiki/L%E2%80%99Illusion_comique_(%C3%A9dition_Didot,_1855)
+Note that all files on dramacode.github.io are originally from http://theatre-classique.fr by Paul Fièvre
+
+Note that all files on Wikisource are the work of many individual contributors
+

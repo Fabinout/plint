@@ -1,9 +1,11 @@
 plint -- a French poetry validator
-Copyright (C) 2011-2019 by Antoine Amarilli
 Repository URL: https://gitlab.com/a3nm/plint
+Online version: https://plint.a3nm.net/
 Python package name: plint
 
-== 0. Licence ==
+== 0. Author and licence ==
+
+plint is copyright (C) 2011-2019 by Antoine Amarilli
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -16,11 +18,11 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with
 this program (see file "COPYING").  If not, see <http://www.gnu.org/licenses/>.
 
-bottle.py is a third-party file, its license is in file LICENSE_bottle.
+The files in plint/test_data are public domain works used to test and train
+plint. Their sources are given in the file "SOURCES".
 
-test/boileau and test/andromaque are from Wikisource and test/baudelaire and
-test/mithridate are from Project Gutenberg. Both of them are in the public
-domain.
+Many thanks to Julien Romero for contributing to the code and for maintaining
+the PyPI package for plint and its dependencies.
 
 == 1. Features ==
 
@@ -61,28 +63,19 @@ In the directory where plint has been cloned, run:
   git clone https://gitlab.com/a3nm/frhyme.git
   git clone https://gitlab.com/a3nm/haspirater.git
 
-3. Generate frhyme.json
-
-Run:
-
-  cd frhyme
-  lexique/lexique_retrieve.sh > lexique.txt
-  ./make.sh 4 lexique.txt additions > frhyme.json
-  cd ..
-
-4. Generate the occurrences file
+3. Generate the occurrences file
 
 Run:
 
   ./lexique_occurrences_retrieve.sh > data/occurrences
 
-5. Locales
+4. Locales
 
 For locale support, install gettext (Debian package: gettext) and run:
 
   make
 
-6. Running plint
+5. Running plint
 
 If you want to check a poem that consists of classical alexandrines with flat
 rhyme (like the file test/mithridate), write the contents of the poem to check
@@ -92,7 +85,7 @@ into a file poem.txt. Then run:
 
 Plint will display the errors (if any) and exit.
 
-7. Customizing the template
+6. Customizing the template
 
 If you want to customize the template of the poem, you can look at examples on
 the online tool (https://plint.a3nm.net/fr/) or files ending in ".tpl" in the
