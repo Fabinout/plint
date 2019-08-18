@@ -9,7 +9,7 @@ cd "$DIR"
 
 wget $URL
 unzip -qq $ZIP $FILE
-cat $FILE | ./lexique_fix.sh | cut -f1 |
+cat $FILE | sed 1d | cut -f1 |
   rev | cut -d' ' -f1 | rev |
   cat - additions_occurrences |
   sort | uniq -c |
