@@ -144,7 +144,7 @@ Run:
 When the code is changed, to update the localization information to French, do:
 
   cd plint
-  pygettext *.py ../plint.py
+  pygettext *.py 
   msgmerge -U res/messages_fr.po messages.pot
   poedit res/messages_fr.po
   cd ..

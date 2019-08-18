@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: plint\n"
-"POT-Creation-Date: 2019-08-14 16:48+CEST\n"
-"PO-Revision-Date: 2019-08-14 16:49+0200\n"
+"POT-Creation-Date: 2019-08-18 14:35+CEST\n"
+"PO-Revision-Date: 2019-08-18 14:37+0200\n"
 "Last-Translator: Antoine Amarilli <a3nm@a3nm.net>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -16,93 +16,111 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 "X-Generator: Poedit 2.2.3\n"
 
-#: ../plint.py:35
-msgid "Usage: %s TEMPLATE [DFILE [OCONTEXT [NSYL [OFFSET]]]]"
-msgstr "Usage : %s MODÈLE [FICHIERD [CONTEXTEO [NSYL [DÉCALAGE]]]]"
+#: __main__.py:47
+msgid "Check poem on stdin according to a template"
+msgstr "Vérifier le poème fourni sur l'entrée standard suivant un modèle"
 
-#: ../plint.py:37
-msgid "Check stdin according to TEMPLATE, report errors on stdout"
-msgstr ""
-"Vérifie l'entrée standard suivant MODÈLE, signale les erreurs sur la sortie "
-"standard"
+#: __main__.py:49
+msgid "the file containing the template for the input poem"
+msgstr "le fichier contenant le modèle pour le poème d'entrée"
 
-#: ../plint.py:39
-msgid "For internal use:"
-msgstr "Pour usage interne :"
+#: __main__.py:52
+msgid "error output format (text or json)"
+msgstr "format de sortie pour les erreurs (\"text\" ou \"json\")"
 
-#: ../plint.py:41
-msgid "DFILE is the diaeresis file, OCONTEXT is the context output file"
-msgstr ""
-"FICHIERD est le fichier de diérèses, CONTEXTEO est le fichier de sortie pour "
-"les contextes"
+#: __main__.py:56
+msgid "diaeresis training: diaeresis file to use"
+msgstr "entraînement des diérèses : fichier de diérèses à utiliser"
 
-#: ../plint.py:43
-msgid "NSYL is the assigned weight to the last chunk (diaeresis training)"
-msgstr ""
-"NSYL est le poids assigné au dernier groupe vocalique pour l'entraînement "
-"des diérèses"
+#: __main__.py:59
+msgid "diaeresis training: output file where to write the contexts"
+msgstr "entraînement des diérèses : fichier de sortie pour l'écriture des contextes"
 
-#: ../plint.py:45
-msgid "OFFSET is to add after the last chunk (diaeresis training)"
-msgstr ""
-"DÉCALAGE est le décalage avec lequel prendre en compte le dernier groupe "
-"vocalique pour l'entraînement des diérèses"
+#: __main__.py:62
+msgid "diaeresis training: fixed weight for a specific chunk"
+msgstr "entraînement des diérèses : poids fixe attribué à un bloc spécifique"
 
-#: error.py:78
+#: __main__.py:65
+msgid "diaeresis training: position of the specific chunk from the end"
+msgstr "entraînement des diérèses : position du bloc spécifique à partir de la fin"
+
+#: __main__.py:79
+msgid "Could not load template %s: %s"
+msgstr "Impossible de charger le modèle %s: %s"
+
+#: error.py:67
 msgid " (see '%s' above)"
 msgstr " (voir '%s' ci-dessus)"
 
-#: error.py:83
+#: error.py:79
 msgid "Illegal characters"
 msgstr "Caractères interdits"
 
-#: error.py:89
+#: error.py:88
 msgid "Illegal ambiguous pattern"
 msgstr "Motif ambigu interdit"
 
-#: error.py:95
+#: error.py:97
 msgid "Illegal hiatus"
 msgstr "Hiatus interdit"
 
-#: error.py:105
+#: error.py:119
 msgid "%s for type %s (expected %s, inferred %s)"
 msgstr "%s pour le type %s (attendu : %s, lu : %s)"
 
-#: error.py:112
+#: error.py:137
 msgid "Bad rhyme genre"
 msgstr "Mauvais genre de rime"
 
-#: error.py:115
+#: error.py:142
 msgid " or "
 msgstr " ou "
 
-#: error.py:130
+#: error.py:168
 msgid "Bad rhyme sound"
 msgstr "Mauvaise rime"
 
-#: error.py:139
+#: error.py:186
 msgid "Bad rhyme ending"
 msgstr "Mauvaise rime pour l'œil"
 
-#: error.py:146
-msgid "Illegal metric: expected %d syllable%s%s"
-msgstr "Métrique illégale: attendu : %d syllabe%s%s"
-
-#: error.py:149
+#: error.py:209
 msgid " with hemistiche%s at "
 msgstr " avec hémistiche%s en "
 
-#: error.py:159
+#: error.py:211
+msgid "Illegal metric: expected %d syllable%s%s"
+msgstr "Métrique illégale: attendu : %d syllabe%s%s"
+
+#: error.py:231
 msgid "Too many occurrences of word \"%s\" for rhyme %s"
 msgstr "Trop d'occurrences du mot \"%s\" pour la rime %s"
 
-#: error.py:164
+#: error.py:247
 msgid "Poem is not complete"
 msgstr "Poème incomplet"
 
-#: error.py:168
+#: error.py:262
 msgid "Verse is beyond end of poem"
 msgstr "Vers au-delà de la fin du poème"
+
+#~ msgid "Usage: %s TEMPLATE [DFILE [OCONTEXT [NSYL [OFFSET]]]]"
+#~ msgstr "Usage : %s MODÈLE [FICHIERD [CONTEXTEO [NSYL [DÉCALAGE]]]]"
+
+#~ msgid "Check stdin according to TEMPLATE, report errors on stdout"
+#~ msgstr "Vérifie l'entrée standard suivant MODÈLE, signale les erreurs sur la sortie standard"
+
+#~ msgid "For internal use:"
+#~ msgstr "Pour usage interne :"
+
+#~ msgid "DFILE is the diaeresis file, OCONTEXT is the context output file"
+#~ msgstr "FICHIERD est le fichier de diérèses, CONTEXTEO est le fichier de sortie pour les contextes"
+
+#~ msgid "NSYL is the assigned weight to the last chunk (diaeresis training)"
+#~ msgstr "NSYL est le poids assigné au dernier groupe vocalique pour l'entraînement des diérèses"
+
+#~ msgid "OFFSET is to add after the last chunk (diaeresis training)"
+#~ msgstr "DÉCALAGE est le décalage avec lequel prendre en compte le dernier groupe vocalique pour l'entraînement des diérèses"
 
 #~ msgid "Metric description should only contain positive integers"
 #~ msgstr "La métrique ne doit contenir que des entiers strictement positifs"
@@ -111,9 +129,7 @@ msgstr "Vers au-delà de la fin du poème"
 #~ msgstr "La longueur de la métrique est trop grande"
 
 #~ msgid "Global options must be provided as key-value pairs"
-#~ msgstr ""
-#~ "Les options globales doivent être fournies sous la forme de paires clé-"
-#~ "valeur"
+#~ msgstr "Les options globales doivent être fournies sous la forme de paires clé-valeur"
 
 #~ msgid "Bad value for global option %s"
 #~ msgstr "Mauvaise valeur pour l'option globale %s"

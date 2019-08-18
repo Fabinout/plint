@@ -44,25 +44,25 @@ def main():
     global template
     localization.init_locale()
     parser = argparse.ArgumentParser(
-            description="Check poem on stdin according to a template")
+            description=_("Check poem on stdin according to a template"))
     parser.add_argument("template",
-            help="the file containing the template for the input poem",
+            help=_("the file containing the template for the input poem"),
             type=str)
     parser.add_argument("--format", type=str,
-            help="error output format (text or json)",
+            help=_("error output format (text or json)"),
             choices = ["text", "json"],
             default="text")
     parser.add_argument("--diaeresis", type=str,
-            help="diaeresis training: diaeresis file to use",
+            help=_("diaeresis training: diaeresis file to use"),
             default="../data/diaeresis.json")
     parser.add_argument("--ocontext", type=str,
-            help="diaeresis training: output file where to write the contexts",
+            help=_("diaeresis training: output file where to write the contexts"),
             default=None)
     parser.add_argument("--weight", type=int,
-            help="diaeresis training: fixed weight for a specific chunk",
+            help=_("diaeresis training: fixed weight for a specific chunk"),
             default=None)
     parser.add_argument("--offset", type=int,
-            help="diaeresis training: position of the specific chunk from the end",
+            help=_("diaeresis training: position of the specific chunk from the end"),
             default=0)
     args = parser.parse_args()
 
@@ -76,7 +76,7 @@ def main():
     try:
         template = template.Template(x)
     except error.TemplateLoadError as e:
-        print("Could not load template %s: %s" % (template_name, e.msg), file=sys.stderr)
+        print(_("Could not load template %s: %s") % (template_name, e.msg), file=sys.stderr)
         sys.exit(2)
     ok = run(ocontext=args.ocontext, weight=args.weight, offset=args.offset,
             fmt=args.format)
