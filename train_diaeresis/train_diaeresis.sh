@@ -10,14 +10,22 @@ cd .. # go in the main folder
 if [ -f $DIR/diaeresis_verbs/final_syneresis -a -f $DIR/diaeresis_verbs/final_diaeresis ]
 then
   cat $DIR/diaeresis_verbs/final_syneresis | grep -vE -- '-vous$|-nous$' |
-    python3 -m plint <(echo 12) $DIR/diaeresis_empty.json $DIR/final_syneresis.ctx 1 0
+    python3 -m plint <(echo 12) \
+    --diaeresis=$DIR/diaeresis_empty.json --ocontext=$DIR/final_syneresis.ctx\
+    --weight=1 --offset=0
   cat $DIR/diaeresis_verbs/final_syneresis | grep -E -- '-vous$|-nous$' |
-    python3 -m plint <(echo 12) $DIR/diaeresis_empty.json $DIR/final_syneresis2.ctx 1 1
+    python3 -m plint <(echo 12) \
+    --diaeresis=$DIR/diaeresis_empty.json --ocontext=$DIR/final_syneresis2.ctx\
+    --weight=1 --offset=1
   cat $DIR/final_syneresis.ctx $DIR/final_syneresis2.ctx | sponge $DIR/final_syneresis.ctx
   cat $DIR/diaeresis_verbs/final_diaeresis | grep -vE -- '-vous$|-nous$' |
-    python3 -m plint <(echo 12) $DIR/diaeresis_empty.json $DIR/final_diaeresis.ctx 2 0
+    python3 -m plint <(echo 12) \
+    --diaeresis=$DIR/diaeresis_empty.json --ocontext=$DIR/final_diaeresis.ctx\
+    --weight=2 --offset=0
   cat $DIR/diaeresis_verbs/final_diaeresis | grep -E -- '-vous$|-nous$' |
-    python3 -m plint <(echo 12) $DIR/diaeresis_empty.json $DIR/final_diaeresis2.ctx 2 1
+    python3 -m plint <(echo 12) \
+    --diaeresis=$DIR/diaeresis_empty.json --ocontext=$DIR/final_diaeresis2.ctx\
+    --weight=2 --offset=1
   cat $DIR/final_diaeresis.ctx $DIR/final_diaeresis2.ctx | sponge $DIR/final_diaeresis.ctx
 fi
 
