@@ -6,7 +6,6 @@ frhyme/*
 haspirater
 haspirater/*
 irc/*
-occurrences
 *.pyc
 contexts/
 contexts_old/

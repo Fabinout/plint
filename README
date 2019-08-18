@@ -18,6 +18,14 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with
 this program (see file "COPYING").  If not, see <http://www.gnu.org/licenses/>.
 
+The file "data/occurrences" in the directory "frhyme" is a derivative work of
+the French lexical database Lexique <http://www.lexique.org/>, version
+3.82, by Boris New <http://psycho-usmb.fr/boris.new/> and Christophe
+Pallier <http://www.pallier.org/>. Hence, this file is under the same
+license as Lexique, namely, the license CC BY SA 4.0 (according to the
+file README-Lexique.txt in the downloadable archive of Lexique). The
+license in LICENSE does *not* apply to this file "data/occurrences".
+
 The files in plint/test_data are public domain works used to test and train
 plint. Their sources are given in the file "SOURCES".
 
@@ -63,19 +71,13 @@ In the directory where plint has been cloned, run:
   git clone https://gitlab.com/a3nm/frhyme.git
   git clone https://gitlab.com/a3nm/haspirater.git
 
-3. Generate the occurrences file
-
-Run:
-
-  ./lexique_occurrences_retrieve.sh > data/occurrences
-
-4. Locales
+3. Locales
 
 For locale support, install gettext (Debian package: gettext) and run:
 
   make
 
-5. Running plint
+4. Running plint
 
 If you want to check a poem that consists of classical alexandrines with flat
 rhyme (like the file test/mithridate), write the contents of the poem to check
@@ -85,7 +87,7 @@ into a file poem.txt. Then run:
 
 Plint will display the errors (if any) and exit.
 
-6. Customizing the template
+5. Customizing the template
 
 If you want to customize the template of the poem, you can look at examples on
 the online tool (https://plint.a3nm.net/fr/) or files ending in ".tpl" in the
@@ -123,7 +125,16 @@ You can also train a specific pattern for _Cyrano de Bergerac_ with:
 This is currently undocumented. The plint folder should contain a copy of the
 haspirater code (possibly as a symlink) in "haspirater/".
 
-== 5. Updating the localization ==
+== 5. Occurrences file ==
+
+This is how the file data/occurrences is generated
+
+Run:
+
+  ./lexique_occurrences_retrieve.sh > data/occurrences
+
+
+== 6. Updating the localization ==
 
 When the code is changed, to update the localization information to French, do:
 
@@ -134,7 +145,7 @@ When the code is changed, to update the localization information to French, do:
   cd ..
   make
 
-== 6. Related work ==
+== 7. Related work ==
 
 * http://pentametron.com/
 * http://virga.org/cvf/alexanql.php
