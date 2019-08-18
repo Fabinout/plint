@@ -64,7 +64,7 @@ class ErrorBadElement(ReportableError):
     def report(self, pattern, fmt="text"):
         if fmt == "text":
             return (self.message
-                + " (see '%s' above)") % ErrorCollection.keys[self.key]
+                + _(" (see '%s' above)")) % ErrorCollection.keys[self.key]
         elif fmt == "json":
             return {'error': self.report_key,
                     'error_kind': "local_error_collection"}
@@ -76,7 +76,7 @@ class ErrorBadCharacters(ErrorBadElement):
 
     def __init__(self):
         super().__init__()
-        self.message = "Illegal Characters"
+        self.message = _("Illegal characters")
         self.key = "illegal"
         self.report_key = "illegal_characters"
 
@@ -85,7 +85,7 @@ class ErrorForbiddenPattern(ErrorBadElement):
 
     def __init__(self):
         super().__init__()
-        self.message = "Illegal ambiguous pattern"
+        self.message = _("Illegal ambiguous pattern")
         self.key = "ambiguous"
         self.report_key = "ambiguous_patterns"
 
@@ -94,7 +94,7 @@ class ErrorHiatus(ErrorBadElement):
 
     def __init__(self):
         super().__init__()
-        self.message = "Illegal hiatus"
+        self.message = _("Illegal hiatus")
         self.key = "hiatus"
         self.report_key = "hiatus"
 
@@ -116,8 +116,8 @@ class ErrorBadRhyme(ReportableError):
 
     def report(self, pattern, fmt="text"):
         if fmt == "text":
-            return ("%s for type %s (expected %s, inferred %s)"
-                % (self.kind, self.get_id(pattern),
+            return (_("%s for type %s (expected %s, inferred %s)")
+                % (self.kind_human, self.get_id(pattern),
                     self.fmt(self.expected, fmt=fmt),
                     self.fmt(self.inferred, fmt=fmt)))
         elif fmt == "json":
@@ -134,12 +134,12 @@ class ErrorBadRhymeGenre(ErrorBadRhyme):
 
     def __init__(self, expected, inferred, old_phon=None):
         super().__init__(expected, inferred, old_phon)
-        self.kind_human = "Bad rhyme genre"
+        self.kind_human = _("Bad rhyme genre")
         self.kind = "rhyme_genre"
 
     def fmt(self, l, fmt="text"):
         if fmt == "text":
-            result = ' or '.join(sorted(list(l)))
+            result = _(' or ').join(sorted(list(l)))
             if result == '':
                 result = "?"
             return "\"" + result + "\""
@@ -165,7 +165,7 @@ class ErrorBadRhymeSound(ErrorBadRhymeObject):
 
     def __init__(self, expected, inferred, old_phon=None):
         super().__init__(expected, inferred, old_phon)
-        self.kind_human = "Bad rhyme sound"
+        self.kind_human = _("Bad rhyme sound")
         self.kind = "rhyme_sound"
 
     def fmt(self, l, fmt="text"):
@@ -183,7 +183,7 @@ class ErrorBadRhymeEye(ErrorBadRhymeObject):
 
     def __init__(self, expected, inferred, old_phon=None):
         super().__init__(expected, inferred, old_phon)
-        self.kind_human = "Bad rhyme ending"
+        self.kind_human = _("Bad rhyme ending")
         self.kind = "rhyme_ending"
 
     def fmt(self, l, fmt="text"):
@@ -206,9 +206,9 @@ class ErrorBadMetric(ReportableError):
             else:
                 hemistiche_positions = (','.join(str(a)
                             for a in pattern.hemistiches))
-                hemistiche_string = ((" with hemistiche%s at "
+                hemistiche_string = ((_(" with hemistiche%s at ")
                             % plural_hemistiche) + hemistiche_positions)
-            return ("Illegal metric: expected %d syllable%s%s" %
+            return (_("Illegal metric: expected %d syllable%s%s") %
                     (pattern.length, plural_syllable, hemistiche_string))
         elif fmt == "json":
             return {
@@ -228,7 +228,7 @@ class ErrorMultipleWordOccurrence(ReportableError):
 
     def report(self, pattern, fmt="text"):
         if fmt == "text":
-            return ("Too many occurrences of word \"%s\" for rhyme %s"
+            return (_("Too many occurrences of word \"%s\" for rhyme %s")
                     % (self.word, pattern.my_id))
         elif fmt == "json":
             return {
@@ -244,7 +244,7 @@ class ErrorIncompleteTemplate(ReportableError):
 
     def report(self, pattern, fmt="text"):
         if fmt == "text":
-            return "Poem is not complete"
+            return _("Poem is not complete")
         elif fmt == "json":
             return {
                 'error': "incomplete_poem",
@@ -259,7 +259,7 @@ class ErrorOverflowedTemplate(ReportableError):
 
     def report(self, pattern, fmt="text"):
         if fmt == "text":
-            return "Verse is beyond end of poem"
+            return _("Verse is beyond end of poem")
         elif fmt == "json":
             return {
                 'error': "verse_beyond_end_of_poem",
