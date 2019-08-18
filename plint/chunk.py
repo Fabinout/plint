@@ -532,23 +532,52 @@ class Chunk:
     def is_masculine(self):
         return (self.had_hyphen or False) or (self.word_end or False)
 
-    def render(self, key):
+    def render(self, key, fmt="text"):
         if key == 'error' and self.error == 'illegal':
-            return self.illegal_str
+            if fmt == "text":
+                return self.illegal_str
+            elif fmt == "json":
+                # don't know how to represent the specific characters
+                # cleanly in JSON
+                return "illegal_characters"
+            else:
+                raise ValueError("bad format")
         if key == 'original':
             return str(self.original)
         elif key == 'weights':
-            return '-'.join([str(a) for a in self.weights or []])
+            if fmt == "text":
+                return '-'.join([str(a) for a in self.weights or []])
+            elif fmt == "json":
+                if self.weights is None:
+                    return None
+                return [a for a in self.weights or []]
+            else:
+                raise ValueError("bad format")
         elif key == 'error':
-            return ErrorCollection.keys.get(self.error, '') * len(self.original)
+            if fmt == "text":
+                return ErrorCollection.keys.get(self.error, '') * len(self.original)
+            elif fmt == "json":
+                return self.error or None
+            else:
+                raise ValueError("bad format")
         elif key == 'hemis':
-            return str(self.hemistiche or "")
+            if fmt == "text":
+                return str(self.hemistiche or "")
+            elif fmt == "json":
+                return self.hemistiche or None
+            else:
+                raise ValueError("bad format")
         else:
             print(key, file=sys.stderr)
             assert False
 
-    def get_normalized_rendering(self, key, keys):
-        return ('{:^' + str(self.get_max_render_size(keys)) + '}').format(self.render(key))
+    def get_normalized_rendering(self, key, keys, fmt="text"):
+        if fmt == "text":
+            return ('{:^' + str(self.get_max_render_size(keys)) + '}').format(self.render(key))
+        elif fmt == "json":
+            return self.render(key, fmt=fmt)
+        else:
+            raise ValueError("bad format")
 
     def get_min_weight(self):
         return min(self.weights or [0])

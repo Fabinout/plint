@@ -248,13 +248,13 @@ class Template:
         if normalize(line) == '' and not last:
             return None
 
-        errors, pattern, verse = self.match(line, output_file, last=last, n_syllables=n_syllables, offset=offset)
-        if len(errors) > 0:
-            if self.reject_errors:
-                self.back()
-                self.line_no -= 1
-            return error.ErrorCollection(self.line_no, line, pattern, verse, errors)
-        return None
+        errors, pattern, verse = self.match(line, output_file,
+                last=last, n_syllables=n_syllables, offset=offset)
+        if len(errors) > 0 and self.reject_errors:
+            self.back()
+            self.line_no -= 1
+        return error.ErrorCollection(self.line_no,
+                line, pattern, verse, errors)
 
 
 def str2bool(x):

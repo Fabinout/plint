@@ -3,9 +3,10 @@
 from plint import localization, error, template, diaeresis
 import sys
 import argparse
+import json
 
 
-def run(ocontext=None, weight=None, offset=0):
+def run(ocontext=None, weight=None, offset=0, fmt="text"):
     is_ok = True
     f2 = None
     n_syllables = None
@@ -14,6 +15,7 @@ def run(ocontext=None, weight=None, offset=0):
     if weight:
         n_syllables = int(weight)
     should_end = False
+    ret = []
     while True:
         line = sys.stdin.readline()
         if not line:
@@ -21,10 +23,20 @@ def run(ocontext=None, weight=None, offset=0):
             line = ""
         errors = template.check(line, f2, last=should_end, n_syllables=n_syllables, offset=offset)
         if errors:
-            print(errors.report(), file=sys.stderr)
-            is_ok = False
+            if not errors.isEmpty():
+                is_ok = False
+            if not errors.isEmpty():
+                if fmt == "text":
+                    print(errors.report(fmt=fmt), file=sys.stderr)
+                elif fmt == "json":
+                    ret.append(errors.report(fmt=fmt))
+                else:
+                    raise ValueError("bad format")
         if should_end:
             break
+    if fmt == "json":
+        print(json.dumps(ret, sort_keys=True, indent=4,
+            separators={',', ': '}))
     return is_ok
 
 
@@ -36,6 +48,10 @@ def main():
     parser.add_argument("template",
             help="the file containing the template for the input poem",
             type=str)
+    parser.add_argument("--format", type=str,
+            help="error output format (text or json)",
+            choices = ["text", "json"],
+            default="text")
     parser.add_argument("--diaeresis", type=str,
             help="diaeresis training: diaeresis file to use",
             default="../data/diaeresis.json")
@@ -52,15 +68,18 @@ def main():
 
     template_name = args.template
     diaeresis.set_diaeresis(args.diaeresis)
+    
     f = open(template_name)
     x = f.read()
     f.close()
+
     try:
         template = template.Template(x)
     except error.TemplateLoadError as e:
         print("Could not load template %s: %s" % (template_name, e.msg), file=sys.stderr)
         sys.exit(2)
-    ok = run(ocontext=args.ocontext, weight=args.weight, offset=args.offset)
+    ok = run(ocontext=args.ocontext, weight=args.weight, offset=args.offset,
+            fmt=args.format)
     sys.exit(0 if ok else 1)
 
 

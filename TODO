@@ -3,8 +3,6 @@
 - update the localization
 - migrate the readme to markdown
 - turn should_be_accepted into a test
-- Produce error reports first in a structured format (JSON) and translate that
-  into text or into HTML
 - expand the corpus of classical poetry: more Racine, more other authors
   (Boileau, Corneille, Prudhomme, etc.)
 

@@ -66,13 +66,13 @@ class Verse:
         # where "final" is the offset-th chunk with a weight from the end
         self.chunks.print_n_syllables(n_syllables, offset, output_file)
 
-    def align(self):
+    def align(self, fmt="text"):
         keys = ['original', 'error']
-        if len(self.possible) == 0:
+        if self.possible is not None and len(self.possible) == 0:
             keys.append('weights')
             if len(self.pattern.hemistiches) > 0:
                 keys.append('hemis')
-        return self.chunks.align_from_keys(keys)
+        return self.chunks.align_from_keys(keys, fmt=fmt)
 
     def print_possible(self, output_file):
         if not output_file:

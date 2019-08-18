@@ -306,19 +306,39 @@ class Chunks:
                     break
         return tot
 
-    def align_from_keys(self, keys):
-        lines = {}
-        for key in keys:
-            lines[key] = ""
-        for chunk in self.chunks:
+    def align_from_keys(self, keys, fmt="text"):
+        if fmt == "text":
+            lines = {}
             for key in keys:
-                lines[key] += chunk.get_normalized_rendering(key, keys)
-        if 'weights' in keys:
+                lines[key] = ""
+            for chunk in self.chunks:
+                for key in keys:
+                    lines[key] += chunk.get_normalized_rendering(
+                            key, keys, fmt=fmt)
+            if 'weights' in keys:
+                bounds = self.get_weights_bounds()
+                bounds = [str(x) for x in bounds]
+                lines['weights'] += " (total: " + ('-'.join(bounds)
+                                                   if bounds[1] > bounds[0] else bounds[0]) + ")"
+            return ["> " + lines[key] for key in keys if len(lines[key].strip()) > 0]
+        elif fmt == "json":
+            ret = {'chunks': []}
+            for chunk in self.chunks:
+                d = {}
+                for key in keys:
+                    v = chunk.get_normalized_rendering(
+                        key, keys, fmt=fmt)
+                    if v is not None:
+                        d[key] = v
+                ret['chunks'].append(d)
             bounds = self.get_weights_bounds()
-            bounds = [str(x) for x in bounds]
-            lines['weights'] += " (total: " + ('-'.join(bounds)
-                                               if bounds[1] > bounds[0] else bounds[0]) + ")"
-        return ["> " + lines[key] for key in keys if len(lines[key].strip()) > 0]
+            ret['total_weight'] = {
+                    'min': bounds[0],
+                    'max': bounds[1]}
+            return ret
+        else:
+            raise ValueError("bad format")
+
 
     def get_weights_bounds(self):
         bounds = [0, 0]
