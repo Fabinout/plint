@@ -60,10 +60,6 @@ stdin:1618: >  ok   cut fem cut cut ok  cut  cut ok    ok    cut cut fem
 stdin:1618: Illegal metric: expected 12 syllables with hemistiche at 6
 stdin:1622: > Et, sans prendre intérêt en pas un de leurs rôles,
 stdin:1622: Bad rhyme sound for type A (expected "Ol"/"Ols"/"Olz", inferred "ol"/"ols"/"olz")
-stdin:1629: > Mo n fi ls c o m é dien ! D’un a rt si d i ff i c i l e 
-stdin:1629: >  1    1      1   1  1      1   1     1   1    1   1   0  (total: 11)
-stdin:1629: >  ok   ok    cut cut ok     ok  ok    ok cut  cut cut fem
-stdin:1629: Illegal metric: expected 12 syllables with hemistiche at 6
 plint/test_data/corneille_medee.tpl
 stdin:16: > Sans l’entendre nommer je l’avais deviné,
 stdin:16: Bad rhyme ending for type B (expected "-er", inferred "-né")
@@ -136,10 +132,6 @@ stdin:500: > C e tt e   a ss i dui té de Fl o r a m e   a ve c vou s
 stdin:500: >   1    0   1    1   1  1  1    1   1   0   1  1     1   (total: 11)
 stdin:500: >  cut  elidcut  cut cut ok ok  cut cut elidcut ok   cut 
 stdin:500: Illegal metric: expected 12 syllables with hemistiche at 6
-stdin:1935: > E t, pour d o nne r cou leur à vo s d é tr a ctio ns,
-stdin:1935: > 1     1     1   1     1  1   1  1     1    1    1     (total: 11)
-stdin:1935: > ok    ok   cut  ok   cut ok  ok ok   cut  cut  cut   
-stdin:1935: Illegal metric: expected 12 syllables with hemistiche at 6
 plint/test_data/corneille_veuve.tpl
 stdin:103: > D’être auprès d’une dame et causer du beau temps,
 stdin:103: Too many occurrences of word "temps" for rhyme B
