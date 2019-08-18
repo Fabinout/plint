@@ -1,6 +1,6 @@
 __pycache__/*
 .idea
-Lexique382.tsv
+Lexique*.tsv
 frhyme
 frhyme/*
 haspirater
@@ -15,6 +15,7 @@ messages.pot
 plint/res/*.mo
 diaeresis?.json
 Lexique*.zip
+Lexique*.zip.*
 haspirater
 *.pyo
 poem

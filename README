@@ -131,7 +131,7 @@ This is how the file data/occurrences is generated
 
 Run:
 
-  ./lexique_occurrences_retrieve.sh > data/occurrences
+  ./prepare_occurrences/lexique_occurrences_retrieve.sh > data/occurrences
 
 
 == 6. Updating the localization ==

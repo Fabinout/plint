@@ -4,7 +4,8 @@ ZIP="Lexique383.zip"
 URL="http://www.lexique.org/databases/Lexique383/$ZIP"
 FILE="Lexique383.tsv"
 
-cd "$( dirname "$0" )"
+DIR="$( cd "$( dirname "$0" )" && pwd )"
+cd "$DIR"
 
 wget $URL
 unzip -qq $ZIP $FILE
