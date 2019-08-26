@@ -11,6 +11,9 @@
 - check for duplicates in additions.txt
 - check again xmllitre
 
+- download in bulk all possible sources to train on them in an error-tolerant
+  way, and to be able to check easily the usage of a given word
+
 == Ideas ==
 
 - Use the latest lexique (with our corrections) to generate a file of known
