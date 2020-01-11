@@ -24,7 +24,7 @@ the French lexical database Lexique <http://www.lexique.org/>, version
 Pallier <http://www.pallier.org/>. Hence, this file is under the same
 license as Lexique, namely, the license CC BY SA 4.0 (according to the
 file README-Lexique.txt in the downloadable archive of Lexique). The
-license in LICENSE does *not* apply to this file "data/occurrences".
+GNP GPL licence does *not* apply to this file "data/occurrences".
 
 The files in plint/test_data are public domain works used to test and train
 plint. Their sources are given in the file "SOURCES".
