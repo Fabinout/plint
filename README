@@ -52,6 +52,9 @@ https://a3nm.net/git/plint_extra.
 This section provides a quick summary of how to get started with setting up and
 using plint. If these instructions do not work for you, please let me know.
 
+Plint has been packaged for Python and can now be installed by running 
+"pip3 install plint". These instructions explain how to install it manually.
+
 0. Basic setup
 
 Make sure that you have a working python3 installation and that you have unzip
