@@ -83,7 +83,7 @@ If you want to check a poem that consists of classical alexandrines with flat
 rhyme (like the file test/mithridate), write the contents of the poem to check
 into a file poem.txt. Then run:
 
-  ./plint.py test/mithridate.tpl < poem.txt
+  python3 -m plint plint/test_data/mithridate.tpl < poem.txt
 
 Plint will display the errors (if any) and exit.
 
@@ -94,7 +94,7 @@ the online tool (https://plint.a3nm.net/fr/) or files ending in ".tpl" in the
 source repository. You can then write your template into a file called
 template.tpl and run:
 
-  ./plint.py template.tpl < poem.txt
+  python3 -m plint template.tpl < poem.txt
 
 The file format for templates is tersely documented on
 https://plint.a3nm.net/en/about#template
@@ -103,7 +103,7 @@ https://plint.a3nm.net/en/about#template
 
 To use the program's command-line interface, run:
 
-  ./plint.py TEMPLATE
+  python3 -m plint TEMPLATE
 
 where TEMPLATE is the template file, and provide the poem on stdin. Errors are
 reported on stderr.
