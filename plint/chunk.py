@@ -25,6 +25,7 @@ class Chunk:
         self.text_pron = None
         self.elision = None
         self.no_hiatus = None
+        self.causes_hiatus = None
         self.elidable = None
         self.word_end = False
         # TODO What is a weight without s?
@@ -185,7 +186,7 @@ class Chunk:
 
     def elide_vowel_problems(self, chunk_group):
         if self.elision is None:
-            self.elision = elision_wrap(chunk_group)
+            self.elision_wrap(chunk_group)
 
     def process_y_cases(self, previous_chunk, next_chunk):
         new_word_from_chunk = []
@@ -274,7 +275,7 @@ class Chunk:
               or (only_two_parts and previous_chunk.text == 'e' and self.text == 't')):
             # it happens if the next word is not marked no_hiatus
             # and starts with something that causes elision
-            if all(next_chunk.elision) and next_chunk.no_hiatus is None:
+            if next_chunk.causes_hiatus and next_chunk.no_hiatus is None:
                 self.error = "hiatus"
                 next_chunk.error = "hiatus"
 
@@ -594,6 +595,27 @@ class Chunk:
             print(str(self.weight) + ' ' +
                   ' '.join(self.make_query(chunks_before, chunks_after)), file=output_file)
 
+    # set self.elision and self.causes_hiatus
+    def elision_wrap(self, chunk_group):
+        first_letter = common.remove_punctuation(chunk_group[0].original.strip())
+        word = ''.join(chunk.text for chunk in chunk_group)
+        original_word = ''.join(chunk.original for chunk in chunk_group)
+        self.elision = elision(word,
+                       original_word,
+                       first_letter == first_letter.upper())
+    
+        self.causes_hiatus = False
+        if is_vowels(word[0]):
+            # "oui, oui" often occurs
+            if word not in ["oui", "ouis"]:
+                self.causes_hiatus = True
+        elif word[0] == 'h':
+            result = list(map((lambda s: not s),
+                            haspirater.lookup(normalize(original_word))))
+            if len(result) == 1 and True in result:
+                self.causes_hiatus = True
+
+
 
 LETTERS = {
     'f': 'effe',
@@ -611,13 +633,6 @@ LETTERS = {
     'z': 'zaide'
 }
 
-
-def elision_wrap(chunk_group):
-    first_letter = common.remove_punctuation(chunk_group[0].original.strip())
-    temp = elision(''.join(chunk.text for chunk in chunk_group),
-                   ''.join(chunk.original for chunk in chunk_group),
-                   first_letter == first_letter.upper())
-    return temp
 
 
 def elision(word, original_word, was_cap):
