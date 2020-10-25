@@ -28,8 +28,12 @@ class Chunk:
         self.causes_hiatus = None
         self.elidable = None
         self.word_end = False
-        # TODO What is a weight without s?
+
+        # self.weight contains the weight attributed to the chunk when fitting
+        # all chunks of the verse (function fit in chunks.py) to respect the
+        # metric
         self.weight = None
+
         self.verse = verse
 
     def __repr__(self):
