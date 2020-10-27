@@ -112,8 +112,6 @@ class Template:
             constraint = []
         if len(constraint) == 0:
             n_common_suffix_phones = 1
-        if len(constraint) < 2:
-            classical = True
         return Pattern(metric, my_id, feminine_id, rhyme.Constraint(classical, n_common_suffix_phones))
 
     def match(self, line, output_file=None, last=False, n_syllables=None, offset=0):
