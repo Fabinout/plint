@@ -9,7 +9,7 @@ setuptools.setup(
     author="Antoine Amarilli",
     author_email="a3nm@a3nm.net",
     description="French poetry validator",
-    package_data={'plint' :['../data/*']},
+    package_data={'plint' :['data/*', 'res/*']},
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://gitlab.com/a3nm/plint",

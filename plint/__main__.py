@@ -54,7 +54,7 @@ def main():
             default="text")
     parser.add_argument("--diaeresis", type=str,
             help=_("diaeresis training: diaeresis file to use"),
-            default="../data/diaeresis.json")
+            default="data/diaeresis.json")
     parser.add_argument("--ocontext", type=str,
             help=_("diaeresis training: output file where to write the contexts"),
             default=None)

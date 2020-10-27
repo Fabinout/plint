@@ -9,7 +9,7 @@ import sys
 
 class DiaeresisFinder(object):
 
-    def __init__(self, diaeresis_file="../data/diaeresis.json"):
+    def __init__(self, diaeresis_file="data/diaeresis.json"):
         self._trie = None
         self._diaeresis_file = diaeresis_file
         try:

@@ -15,7 +15,7 @@ for a in plint/test_data/*.tpl; do
   echo "$a" >> test_temp.txt
   if [[ $a == *cyrano_full* ]]
   then
-    python3 -m plint $(pwd)/$a --diaeresis=../data/diaeresis_cyrano.json < $(pwd)/${a%.tpl} &>> test_temp.txt
+    python3 -m plint $(pwd)/$a --diaeresis=data/diaeresis_cyrano.json < $(pwd)/${a%.tpl} &>> test_temp.txt
   else
     ./test_one.sh $(basename "${a%.tpl}") &>> test_temp.txt
   fi
