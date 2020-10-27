@@ -18,13 +18,13 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with
 this program (see file "COPYING").  If not, see <http://www.gnu.org/licenses/>.
 
-The file "data/occurrences" in the directory "frhyme" is a derivative work of
-the French lexical database Lexique <http://www.lexique.org/>, version
-3.83, by Boris New <http://psycho-usmb.fr/boris.new/> and Christophe
-Pallier <http://www.pallier.org/>. Hence, this file is under the same
-license as Lexique, namely, the license CC BY SA 4.0 (according to the
-file README-Lexique.txt in the downloadable archive of Lexique). The
-GNP GPL licence does *not* apply to this file "data/occurrences".
+The file "plint/data/occurrences" is a derivative work of the French lexical
+database Lexique <http://www.lexique.org/>, version 3.83, by Boris New
+<http://psycho-usmb.fr/boris.new/> and Christophe Pallier
+<http://www.pallier.org/>. Hence, this file is under the same license as
+Lexique, namely, the license CC BY SA 4.0 (according to the file
+README-Lexique.txt in the downloadable archive of Lexique). The GNP GPL licence
+does *not* apply to this file "plint/data/occurrences".
 
 The files in plint/test_data are public domain works used to test and train
 plint. Their sources are given in the file "SOURCES".
@@ -124,22 +124,22 @@ haspirater in the main repository folder:
 
 and then calling:
 
-  ./train_diaeresis/train_diaeresis.sh > data/diaeresis.json
+  ./train_diaeresis/train_diaeresis.sh > plint/data/diaeresis.json
 
 You can also train a specific pattern for _Cyrano de Bergerac_ with:
 
-  ./train_diaeresis/train_diaeresis.sh _full ./train_diaeresis/additions_cyrano > data/diaeresis_cyrano.json
+  ./train_diaeresis/train_diaeresis.sh _full ./train_diaeresis/additions_cyrano > plint/data/diaeresis_cyrano.json
 
 This is currently undocumented. The plint folder should contain a copy of the
 haspirater code (possibly as a symlink) in "haspirater/".
 
 == 5. Occurrences file ==
 
-This is how the file data/occurrences is generated
+This is how the file plint/data/occurrences is generated
 
 Run:
 
-  ./prepare_occurrences/lexique_occurrences_retrieve.sh > data/occurrences
+  ./prepare_occurrences/lexique_occurrences_retrieve.sh > plint/data/occurrences
 
 
 == 6. Updating the localization ==
