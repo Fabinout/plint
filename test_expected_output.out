@@ -6,6 +6,7 @@ stdin:1491: > Que je le hais ; enfin, Seigneur, que je l’aimai ?
 stdin:1491: Bad rhyme sound for type B (expected "e", inferred "E")
 stdin:1724: > Andromaque m’attend. Phœnix, garde son fils.
 stdin:1724: Bad rhyme sound for type B (expected "i"/"iz", inferred "il"/"ils"/"ilz"/"is"/"iss"/"isz")
+plint/test_data/au_lecteur.tpl
 plint/test_data/boileau.tpl
 stdin:1021: > Entouré à demi d'un vieux parchemin noir,
 stdin:1021: >       HHHH                               
@@ -140,6 +141,7 @@ stdin:1045: > Dis, veux-tu qu'à nous deux nous la séduisions ?
 stdin:1045: >  1    1    1    1  1    1    1    1  1 1  1      (total: 11)
 stdin:1045: Illegal metric: expected 12 syllables
 plint/test_data/desdichado.tpl
+plint/test_data/fils.tpl
 plint/test_data/heredia_les_trophees_les_conquerants_de_lor.tpl
 stdin:52: > S' e mb a rquè re nt  a ve c P a scual d' A nd a g o ya 
 stdin:52: >    1    1    1  1     1  1     1   2      1    1   1  1  (total: 13)
